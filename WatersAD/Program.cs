@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WatersAD.Data;
+using WatersAD.Data.Entities;
 using WatersAD.Data.Repository;
+using WatersAD.Helpers;
 
 namespace WatersAD
 {
@@ -10,10 +13,25 @@ namespace WatersAD
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddIdentity<User, IdentityRole>(cfg =>
+            {
+                cfg.User.RequireUniqueEmail = true;
+                cfg.Password.RequireDigit = false;
+                cfg.Password.RequiredUniqueChars = 0;
+                cfg.Password.RequireLowercase = false;
+                cfg.Password.RequireUppercase = false;
+                cfg.Password.RequireNonAlphanumeric = false;
+                cfg.Password.RequiredLength = 6;
+            })
+                .AddEntityFrameworkStores<DataContext>();
+
             //Inject datacontext
             builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer("name=LocalConnection"));
 
+            builder.Services.AddScoped<IUserHelper, UserHelper>();
             builder.Services.AddScoped<IClientRepository, ClientRepository>();
+            builder.Services.AddScoped<IImageHelper, ImageHelper>();
+            builder.Services.AddScoped<IConverterHelper, ConverterHelper>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -36,7 +54,11 @@ namespace WatersAD
 
             app.UseRouting();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
+
+           
 
             app.MapControllerRoute(
                 name: "default",

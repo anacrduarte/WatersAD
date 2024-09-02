@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -8,23 +9,35 @@ using Microsoft.EntityFrameworkCore;
 using WatersAD.Data;
 using WatersAD.Data.Entities;
 using WatersAD.Data.Repository;
+using WatersAD.Helpers;
+using WatersAD.Models;
 
 namespace WatersAD.Controllers
 {
     public class ClientsController : Controller
     {
         private readonly IClientRepository _clientRepository;
+        private readonly IUserHelper _userHelper;
+        private readonly IImageHelper _imageHelper;
+        private readonly IConverterHelper _converterHelper;
 
-        public ClientsController(IClientRepository clientRepository)
+        public ClientsController(
+            IClientRepository clientRepository,
+            IUserHelper userHelper,
+            IImageHelper imageHelper,
+            IConverterHelper converterHelper)
         {
             
             _clientRepository = clientRepository;
+            _userHelper = userHelper;
+            _imageHelper = imageHelper;
+            _converterHelper = converterHelper;
         }
 
         // GET: Clients
         public IActionResult Index()
         {
-            return View(_clientRepository.GetAll());
+            return View(_clientRepository.GetAll().OrderBy(p => p.FirstName));
         }
 
         // GET: Clients/Details/5
@@ -56,16 +69,57 @@ namespace WatersAD.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Client client)
+        public async Task<IActionResult> Create(ClientViewModel model)
         {
-            if (ModelState.IsValid)
+            var path = string.Empty;
+
+            if (model.ImageFile != null && model.ImageFile.Length > 0)
             {
-               await _clientRepository.CreateAsync(client);
-               
-                return RedirectToAction(nameof(Index));
+                path = await _imageHelper.UploadImageAsync(model.ImageFile, "clients");
             }
-            return View(client);
+
+            var client = _converterHelper.ToClient(model, path, true);
+
+            client.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
+
+            await _clientRepository.CreateAsync(client);
+
+            return RedirectToAction(nameof(Index));
+            //TODO : assim é o correto, ver alterações
+            //if (ModelState.IsValid)
+            //{
+            //    var path = string.Empty;
+
+            //    if (model.ImageFile != null && model.ImageFile.Length > 0)
+            //    {
+            //        path = await _imageHelper.UploadImageAsync(model.ImageFile, "clients");
+            //    }
+
+            //    var client = _converterHelper.ToClient(model, path, true);
+
+            //    client.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
+
+            //    await _clientRepository.CreateAsync(client);
+
+            //    return RedirectToAction(nameof(Index));
+
+
+            //}
+            //// Debugging: Log ModelState Errors
+            ////foreach (var modelStateKey in ModelState.Keys)
+            ////{
+            ////    var value = ModelState[modelStateKey];
+            ////    foreach (var error in value.Errors)
+            ////    {
+            ////        Console.WriteLine($"Key: {modelStateKey}, Error: {error.ErrorMessage}");
+            ////    }
+            ////}
+            //return View(model);
         }
+
+    
 
         // GET: Clients/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -81,31 +135,40 @@ namespace WatersAD.Controllers
             {
                 return NotFound();
             }
-            return View(client);
+
+            var model = _converterHelper.ToClientViewModel(client);
+            return View(model);
         }
+
+      
 
         // POST: Clients/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Client client)
+        public async Task<IActionResult> Edit(ClientViewModel model)
         {
-            if (id != client.Id)
-            {
-                return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                   
+                    var path = model.ImageUrl;
+
+                    if (model.ImageFile != null && model.ImageFile.Length > 0)
+                    {
+                        path = await _imageHelper.UploadImageAsync(model.ImageFile, "clients");
+                    }
+
+                    var client = _converterHelper.ToClient(model, path, false);
+
+                    client.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                     await _clientRepository.UpdateAsync(client);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _clientRepository.ExistAsync(client.Id))
+                    if (!await _clientRepository.ExistAsync(model.Id))
                     {
                         return NotFound();
                     }
@@ -116,7 +179,7 @@ namespace WatersAD.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(client);
+            return View(model);
         }
 
         // GET: Clients/Delete/5
