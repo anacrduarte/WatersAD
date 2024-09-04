@@ -28,6 +28,8 @@ namespace WatersAD
             //Inject datacontext
             builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer("name=LocalConnection"));
 
+            builder.Services.AddTransient<SeedDb>();
+
             builder.Services.AddScoped<IUserHelper, UserHelper>();
             builder.Services.AddScoped<IClientRepository, ClientRepository>();
             builder.Services.AddScoped<IImageHelper, ImageHelper>();
@@ -40,6 +42,19 @@ namespace WatersAD
             builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
             var app = builder.Build();
+
+            SeedData();
+
+            void SeedData()
+            {
+                IServiceScopeFactory? scopedFactory = app.Services.GetService<IServiceScopeFactory>();
+
+                using (IServiceScope? scope = scopedFactory?.CreateScope())
+                {
+                    SeedDb? service = scope?.ServiceProvider.GetService<SeedDb>();
+                    service?.SeedAsync().Wait();
+                }
+            }
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -66,5 +81,7 @@ namespace WatersAD
 
             app.Run();
         }
+
+      
     }
 }

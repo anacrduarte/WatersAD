@@ -20,7 +20,7 @@ namespace WatersAD.Controllers
         /// <returns></returns>
         public IActionResult Login()
         {
-            if (User.Identity.IsAuthenticated)
+            if (User!.Identity!.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Home");
             }
