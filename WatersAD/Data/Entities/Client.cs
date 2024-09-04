@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WatersAD.Data.Entities
 {
@@ -21,9 +23,9 @@ namespace WatersAD.Data.Entities
 
 
         [Display(Name = "Image")]
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
-        public User User { get; set; }
+        public User? User { get; set; }
 
         [Required]
         public int NIF { get; set; }
@@ -31,7 +33,7 @@ namespace WatersAD.Data.Entities
         [Required]
         public int PhoneNumber { get; set; }
 
-        public string ImageFullPath
+        public string? ImageFullPath
         {
             get
             {

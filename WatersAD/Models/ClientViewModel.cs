@@ -8,6 +8,6 @@ namespace WatersAD.Models
     public class ClientViewModel : Client 
     {
         [Display(Name="Image")]
-        public IFormFile ImageFile { get; set; }
+        public IFormFile? ImageFile { get; set; }
     }
 }

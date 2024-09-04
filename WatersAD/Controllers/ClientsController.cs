@@ -71,53 +71,30 @@ namespace WatersAD.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ClientViewModel model)
         {
-            var path = string.Empty;
 
-            if (model.ImageFile != null && model.ImageFile.Length > 0)
+            if (ModelState.IsValid)
             {
-                path = await _imageHelper.UploadImageAsync(model.ImageFile, "clients");
+                var path = string.Empty;
+
+                if (model.ImageFile != null && model.ImageFile.Length > 0)
+                {
+                    path = await _imageHelper.UploadImageAsync(model.ImageFile, "clients");
+                }
+
+                var client = _converterHelper.ToClient(model, path, true);
+
+                client.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
+
+                await _clientRepository.CreateAsync(client);
+
+                return RedirectToAction(nameof(Index));
+
+
+             
             }
-
-            var client = _converterHelper.ToClient(model, path, true);
-
-            client.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
-
-
-            await _clientRepository.CreateAsync(client);
-
-            return RedirectToAction(nameof(Index));
-            //TODO : assim é o correto, ver alterações
-            //if (ModelState.IsValid)
-            //{
-            //    var path = string.Empty;
-
-            //    if (model.ImageFile != null && model.ImageFile.Length > 0)
-            //    {
-            //        path = await _imageHelper.UploadImageAsync(model.ImageFile, "clients");
-            //    }
-
-            //    var client = _converterHelper.ToClient(model, path, true);
-
-            //    client.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
-
-
-            //    await _clientRepository.CreateAsync(client);
-
-            //    return RedirectToAction(nameof(Index));
-
-
-            //}
-            //// Debugging: Log ModelState Errors
-            ////foreach (var modelStateKey in ModelState.Keys)
-            ////{
-            ////    var value = ModelState[modelStateKey];
-            ////    foreach (var error in value.Errors)
-            ////    {
-            ////        Console.WriteLine($"Key: {modelStateKey}, Error: {error.ErrorMessage}");
-            ////    }
-            ////}
-            //return View(model);
-        }
+            return View(model);
+            }
 
     
 
@@ -149,7 +126,7 @@ namespace WatersAD.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ClientViewModel model)
         {
-
+            
             if (ModelState.IsValid)
             {
                 try
