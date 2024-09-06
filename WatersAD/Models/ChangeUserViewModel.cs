@@ -11,5 +11,9 @@ namespace WatersAD.Models
         [Required]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
+
+        public string? ImageUrl { get; set; }
+
+        public IFormFile? ImageFile { get; set; }
     }
 }

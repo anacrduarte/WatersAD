@@ -5,34 +5,34 @@ namespace WatersAD.Helpers
 {
     public class ConverterHelper : IConverterHelper
     {
-        public Client ToClient(ClientViewModel model, string path, bool isNew)
+        public RegisterNewUserViewModel ToRegisterNewUserViewModel(User user)
         {
-            return new Client
+            throw new NotImplementedException();
+        }
+
+        public User ToUser(RegisterNewUserViewModel model, string path, bool isNew)
+        {
+            return new User
             {
-                Id = isNew ? 0 : model.Id,
-                ImageUrl = path,
+                
                 FirstName = model.FirstName,
                 LastName = model.LastName,
+                Email = model.Username,
+                UserName = model.Username,
                 Address = model.Address,
-                NIF = model.NIF,
-                PhoneNumber = model.PhoneNumber,
-                User = model.User,
+                ImageUrl = path,
 
             };
         }
 
-        public ClientViewModel ToClientViewModel(Client client)
+        public User ToUser(ChangeUserViewModel model, string path, bool isNew)
         {
-            return new ClientViewModel
+            return new User
             {
-                Id = client.Id,
-                ImageUrl = client.ImageUrl,
-                FirstName = client.FirstName,
-                LastName = client.LastName,
-                Address = client.Address,
-                NIF = client.NIF,
-                PhoneNumber = client.PhoneNumber,
-                User = client.User,
+
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                ImageUrl = path,
 
             };
         }

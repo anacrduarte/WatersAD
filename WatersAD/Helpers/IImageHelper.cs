@@ -2,6 +2,6 @@
 {
     public interface IImageHelper
     {
-        Task<string> UploadImageAsync(IFormFile imageFile, string folder);
+        Task<string> UploadImageAsync(IFormFile imageFile, string folder, string oldPath = null);
     }
 }

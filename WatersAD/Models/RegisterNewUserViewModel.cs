@@ -23,5 +23,15 @@ namespace WatersAD.Models
         [Required]
         [Compare("Password")]
         public string Confirm { get; set; }
+
+
+        [Display(Name = "Image")]
+        public IFormFile? ImageFile { get; set; }
+
+        [Required]
+        [MaxLength(200, ErrorMessage = "The field {0} only can contain {1} characters length.")]
+        public string? Address { get; set; }
     }
+
+
 }

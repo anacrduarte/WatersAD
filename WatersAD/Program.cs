@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Vereyon.Web;
 using WatersAD.Data;
 using WatersAD.Data.Entities;
 using WatersAD.Data.Repository;
@@ -28,6 +30,8 @@ namespace WatersAD
             //Inject datacontext
             builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer("name=LocalConnection"));
 
+            builder.Services.AddFlashMessage();
+
             builder.Services.AddTransient<SeedDb>();
 
             builder.Services.AddScoped<IUserHelper, UserHelper>();
@@ -38,8 +42,11 @@ namespace WatersAD
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+        
             //Add runtime compilation
             builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+
+
 
             var app = builder.Build();
 

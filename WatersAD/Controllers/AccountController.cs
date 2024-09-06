@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using WatersAD.Data.Entities;
+using Vereyon.Web;
 using WatersAD.Helpers;
 using WatersAD.Models;
 
@@ -9,10 +9,16 @@ namespace WatersAD.Controllers
     public class AccountController : Controller
     {
         private readonly IUserHelper _userHelper;
+        private readonly IConverterHelper _converterHelper;
+        private readonly IImageHelper _imageHelper;
+        private readonly IFlashMessage _flashMessage;
 
-        public AccountController(IUserHelper userHelper)
+        public AccountController(IUserHelper userHelper, IConverterHelper converterHelper, IImageHelper imageHelper, IFlashMessage flashMessage)
         {
             _userHelper = userHelper;
+            _converterHelper = converterHelper;
+            _imageHelper = imageHelper;
+            _flashMessage = flashMessage;
         }
         /// <summary>
         /// Show the page
@@ -22,6 +28,7 @@ namespace WatersAD.Controllers
         {
             if (User!.Identity!.IsAuthenticated)
             {
+
                 return RedirectToAction("Index", "Home");
             }
 
@@ -34,13 +41,23 @@ namespace WatersAD.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
+
             if (ModelState.IsValid)
             {
+                //TODO tirar ou arranjar solução para a imagem do user
+                var user = await _userHelper.GetUserByEmailAsync(model.UserName);
+                ViewBag.ImageUser = user.ImageUrl;
+
+
+                //tirar
                 var result = await _userHelper.LoginAsync(model);
                 if (result.Succeeded)
                 {
+
+
                     if (this.Request.Query.Keys.Contains("ReturnUrl"))
                     {
                         return Redirect(this.Request.Query["ReturnUrl"].First());
@@ -53,6 +70,7 @@ namespace WatersAD.Controllers
             this.ModelState.AddModelError(string.Empty, "Failed to login");
             return View(model);
         }
+
         public async Task<IActionResult> Logout()
         {
             await _userHelper.LogoutAsync();
@@ -66,25 +84,29 @@ namespace WatersAD.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterNewUserViewModel model)
         {
             if (ModelState.IsValid)
             {
                 var user = await _userHelper.GetUserByEmailAsync(model.Username);
+
                 if (user == null)
                 {
-                    user = new User
+                    var path = string.Empty;
+
+                    if (model.ImageFile != null && model.ImageFile.Length > 0)
                     {
-                        FirstName = model.FirstName,
-                        LastName = model.LastName,
-                        Email = model.Username,
-                        UserName = model.Username,
-                    };
+                        path = await _imageHelper.UploadImageAsync(model.ImageFile, "user");
+                    }
+
+                    user = _converterHelper.ToUser(model, path, true);
+
 
                     var result = await _userHelper.AddUserAsync(user, model.Password);
                     if (result != IdentityResult.Success)
                     {
-                        ModelState.AddModelError(string.Empty, "The user couldn´t be created.");
+                        _flashMessage.Info("Erro no loggin");
                         return View(model);
                     }
 
@@ -105,6 +127,7 @@ namespace WatersAD.Controllers
                     ModelState.AddModelError(string.Empty, "The user couldn´t be logged.");
 
                 }
+                _flashMessage.Info("Utilizador já existe");
             }
             return View(model);
 
@@ -118,12 +141,14 @@ namespace WatersAD.Controllers
             {
                 model.FirstName = user.FirstName;
                 model.LastName = user.LastName;
+                model.ImageUrl = user.ImageFullPath;
             }
 
             return View(model);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangeUser(ChangeUserViewModel model)
         {
             if (ModelState.IsValid)
@@ -131,12 +156,28 @@ namespace WatersAD.Controllers
                 var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                 if (user != null)
                 {
-                    user.FirstName = model.FirstName;
-                    user.LastName = model.LastName;
+                  
+                    var oldPath = user.ImageUrl;
+
+                    var path = oldPath;
+
+                    if (model.ImageFile != null && model.ImageFile.Length > 0)
+                    {
+                        path = await _imageHelper.UploadImageAsync(model.ImageFile, "user", oldPath);
+                    }
+
+                    var convertUser = _converterHelper.ToUser(model, path, false);
+
+                    user.FirstName = convertUser.FirstName;
+                    user.LastName = convertUser.LastName;
+                    user.ImageUrl = convertUser.ImageUrl;
+
                     var response = await _userHelper.UpdateUserAsync(user);
                     if (response.Succeeded)
                     {
-                        ViewBag.UserMessage = "User updated!";
+
+                        _flashMessage.Confirmation("User updated!");
+                        return RedirectToAction("ChangeUser");
                     }
                     else
                     {
@@ -156,6 +197,7 @@ namespace WatersAD.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
             if (ModelState.IsValid)

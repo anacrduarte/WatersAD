@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -18,19 +19,16 @@ namespace WatersAD.Controllers
     {
         private readonly IClientRepository _clientRepository;
         private readonly IUserHelper _userHelper;
-        private readonly IImageHelper _imageHelper;
         private readonly IConverterHelper _converterHelper;
 
         public ClientsController(
             IClientRepository clientRepository,
             IUserHelper userHelper,
-            IImageHelper imageHelper,
             IConverterHelper converterHelper)
         {
             
             _clientRepository = clientRepository;
             _userHelper = userHelper;
-            _imageHelper = imageHelper;
             _converterHelper = converterHelper;
         }
 
@@ -58,6 +56,7 @@ namespace WatersAD.Controllers
             return View(client);
         }
 
+        [Authorize(Roles = "Admin")]
         // GET: Clients/Create
         public IActionResult Create()
         {
@@ -69,19 +68,12 @@ namespace WatersAD.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ClientViewModel model)
+        
+        public async Task<IActionResult> Create(Client client)
         {
 
             if (ModelState.IsValid)
             {
-                var path = string.Empty;
-
-                if (model.ImageFile != null && model.ImageFile.Length > 0)
-                {
-                    path = await _imageHelper.UploadImageAsync(model.ImageFile, "clients");
-                }
-
-                var client = _converterHelper.ToClient(model, path, true);
 
                 client.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
 
@@ -93,12 +85,13 @@ namespace WatersAD.Controllers
 
              
             }
-            return View(model);
+            return View(client);
             }
 
-    
+
 
         // GET: Clients/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -113,8 +106,8 @@ namespace WatersAD.Controllers
                 return NotFound();
             }
 
-            var model = _converterHelper.ToClientViewModel(client);
-            return View(model);
+            //var model = _converterHelper.ToClientViewModel(client);
+            return View(client);
         }
 
       
@@ -124,28 +117,19 @@ namespace WatersAD.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ClientViewModel model)
+        public async Task<IActionResult> Edit(Client client)
         {
             
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var path = model.ImageUrl;
-
-                    if (model.ImageFile != null && model.ImageFile.Length > 0)
-                    {
-                        path = await _imageHelper.UploadImageAsync(model.ImageFile, "clients");
-                    }
-
-                    var client = _converterHelper.ToClient(model, path, false);
-
                     client.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                     await _clientRepository.UpdateAsync(client);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _clientRepository.ExistAsync(model.Id))
+                    if (!await _clientRepository.ExistAsync(client.Id))
                     {
                         return NotFound();
                     }
@@ -156,10 +140,11 @@ namespace WatersAD.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(model);
+            return View(client);
         }
 
         // GET: Clients/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -180,6 +165,7 @@ namespace WatersAD.Controllers
         // POST: Clients/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var client = await _clientRepository.GetByIdAsync(id);

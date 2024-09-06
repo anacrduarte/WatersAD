@@ -21,28 +21,22 @@ namespace WatersAD.Data.Entities
         [MaxLength(100, ErrorMessage = "The field {0} only can contain {1} characters length.")]
         public string Address { get; set; }
 
-
-        [Display(Name = "Image")]
-        public string? ImageUrl { get; set; }
-
         public User? User { get; set; }
 
         [Required]
         public int NIF { get; set; }
 
         [Required]
-        public int PhoneNumber { get; set; }
+        [Display(Name ="Phone Number")]
+        public string? PhoneNumber { get; set; }
 
-        public string? ImageFullPath
+        [Display(Name ="Name")]
+        public string? FullName
         {
             get
             {
-                if (string.IsNullOrEmpty(ImageUrl))
-                {
-                    return null;
-                }
 
-                return $"https://localhost:44334{ImageUrl.Substring(1)}";
+                return $"{FirstName} {LastName}";
             }
         }
     }

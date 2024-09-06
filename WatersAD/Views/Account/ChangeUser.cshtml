@@ -4,11 +4,12 @@
 }
 
 <h2>ChangeUser</h2>
-
+<flash dismissable="true" />
 <div class="row">
     <div class="col-md-4 offset-md-4">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly"></div>
+            <input type="hidden" asp-for="ImageUrl" />
 
             <div class="form-group">
                 <label asp-for="FirstName">First Name</label>
@@ -22,12 +23,23 @@
                 <span asp-validation-for="LastName" class="text-warning"></span>
             </div>
             <div class="form-group">
+                <label asp-for="ImageFile" class="control-label"></label>
+                <input asp-for="ImageFile" class="form-control" type="file" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Update" class="btn btn-primary" />
                 <a asp-action="ChangePassword" class="btn btn-success">Change Password</a>
             </div>
-
-            <div class="text-success">@ViewBag.UserMessage</div>
+            
+          @*   <div class="text-success">@ViewBag.UserMessage</div> *@
         </form>
+    </div>
+    <div class="col-md-4">
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Url.Content(Model.ImageUrl)" alt="Image" style="width:300px; height:450px; max-width:100%; height:auto" />
+        }
     </div>
 </div>
 

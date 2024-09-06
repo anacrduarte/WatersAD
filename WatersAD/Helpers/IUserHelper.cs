@@ -18,5 +18,11 @@ namespace WatersAD.Helpers
         Task<IdentityResult> UpdateUserAsync(User user);
 
         Task<IdentityResult> ChangePasswordAsync(User user, string odlPassword, string newPassword);
+
+        Task CheckRoleAsync(string roleName);
+
+        Task AddUserToRoleAsync(User user, string roleName);
+
+        Task<bool> IsUserInRoleAsync(User user, string roleName);
     }
 }

@@ -5,8 +5,10 @@ namespace WatersAD.Helpers
 {
     public interface IConverterHelper
     {
-        Client ToClient(ClientViewModel model, string path, bool isNew);
+        User ToUser(RegisterNewUserViewModel model, string path, bool isNew);
 
-        ClientViewModel ToClientViewModel(Client client);
+        RegisterNewUserViewModel ToRegisterNewUserViewModel(User user);
+
+        User ToUser(ChangeUserViewModel model, string path, bool isNew);
     }
 }

@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -28,13 +29,33 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Clients" asp-action="Index">Client</a>
                         </li>
+                        @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
+                        {
+                            
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li> <a class="dropdown-item" asp-area="" asp-controller="" asp-action="">Users</a></li>
+                                    <li> <a class="dropdown-item" asp-area="" asp-controller="" asp-action="">Roles</a></li>
+                                </ul>
+                            </li>
+                        }
                     </ul>
                     <ul class="nav navbar-nav navbar-rigth">
                         @if (this.User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="ChangeUser">@this.User.Identity.Name</a>
+                            <li class="nav-item"> 
                             </li>
+                            <li class="nav-item">
+
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="ChangeUser">
+                                    @this.User.Identity.Name
+                                    </a>
+                            </li>
+                         
+                           @*  <li class="nav-item">
+                                <img src="@Url.Content(ViewBag.ImageUser)" alt="Imagem do Usuário" />
+                            </li> *@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
                             </li>
@@ -54,6 +75,7 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+           
             @RenderBody()
         </main>
     </div>
