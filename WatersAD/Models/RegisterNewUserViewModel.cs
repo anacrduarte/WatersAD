@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
+using WatersAD.Enum;
 
 namespace WatersAD.Models
 {
@@ -31,6 +33,12 @@ namespace WatersAD.Models
         [Required]
         [MaxLength(200, ErrorMessage = "The field {0} only can contain {1} characters length.")]
         public string? Address { get; set; }
+
+        [Display(Name = "Type User")]
+        public IEnumerable<SelectListItem>? Roles { get; set; }
+
+        [Required]
+        public string SelectedRole { get; set; }
     }
 
 

@@ -7,7 +7,7 @@ namespace WatersAD.Data.Repository
     {
         private readonly DataContext _context;
 
-        public ClientRepository(DataContext context) : base(context) 
+        public ClientRepository(DataContext context) : base(context)
         {
             _context = context;
         }

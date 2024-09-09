@@ -4,7 +4,7 @@
     {
         Admin,
         Employee,
-        Client,
+        Customer,
 
     }
 }

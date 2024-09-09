@@ -1,4 +1,5 @@
 ﻿using WatersAD.Data.Entities;
+using WatersAD.Enum;
 using WatersAD.Models;
 
 namespace WatersAD.Helpers
@@ -10,8 +11,10 @@ namespace WatersAD.Helpers
             throw new NotImplementedException();
         }
 
-        public User ToUser(RegisterNewUserViewModel model, string path, bool isNew)
+        public User ToUser(RegisterNewUserViewModel model, string path)
         {
+            UserType userType = ConvertRoleToUserType(model.SelectedRole);
+
             return new User
             {
                 
@@ -21,11 +24,12 @@ namespace WatersAD.Helpers
                 UserName = model.Username,
                 Address = model.Address,
                 ImageUrl = path,
+                UserType = userType,
 
             };
         }
 
-        public User ToUser(ChangeUserViewModel model, string path, bool isNew)
+        public User ToUser(ChangeUserViewModel model, string path)
         {
             return new User
             {
@@ -35,6 +39,21 @@ namespace WatersAD.Helpers
                 ImageUrl = path,
 
             };
+        }
+
+        public UserType ConvertRoleToUserType(string roleName)
+        {
+            switch (roleName)
+            {
+                case "Admin":
+                    return UserType.Admin;
+                case "Customer":
+                    return UserType.Customer;
+                case "Employee":
+                    return UserType.Employee;
+                default:
+                    throw new ArgumentException($"Role inválida: {roleName}");
+            }
         }
     }
 }

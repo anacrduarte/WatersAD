@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using WatersAD.Data;
+using Vereyon.Web;
 using WatersAD.Data.Entities;
 using WatersAD.Data.Repository;
 using WatersAD.Helpers;
-using WatersAD.Models;
 
 namespace WatersAD.Controllers
 {
@@ -19,17 +12,18 @@ namespace WatersAD.Controllers
     {
         private readonly IClientRepository _clientRepository;
         private readonly IUserHelper _userHelper;
-        private readonly IConverterHelper _converterHelper;
+        private readonly IFlashMessage _flashMessage;
 
         public ClientsController(
             IClientRepository clientRepository,
             IUserHelper userHelper,
-            IConverterHelper converterHelper)
+            IFlashMessage flashMessage
+            )
         {
-            
+
             _clientRepository = clientRepository;
             _userHelper = userHelper;
-            _converterHelper = converterHelper;
+            _flashMessage = flashMessage;
         }
 
         // GET: Clients
@@ -68,25 +62,69 @@ namespace WatersAD.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        
+
         public async Task<IActionResult> Create(Client client)
         {
-
             if (ModelState.IsValid)
             {
 
-                client.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+                var associatedUser = await _userHelper.GetUserByEmailAsync(client.Email);
 
+                if (associatedUser == null)
+                {
+                    //TODO enviar notificação ao cliente ou email para activar conta
+                    var newUser = new User
+                    {
+                        FirstName = client.FirstName,
+                        LastName = client.LastName,
+                        Email = client.Email,
+                        UserName = client.Email,
+                        UserType = Enum.UserType.Customer,
+                        Address = client.Address,
+                        PhoneNumber = client.PhoneNumber,
+                    };
+
+                    
+                    var result = await _userHelper.AddUserAsync(newUser, "123456"); 
+
+                    if (!result.Succeeded)
+                    {
+                       
+                        _flashMessage.Danger("Erro ao criar utilizador.");
+                        return View(client);
+                    }
+
+                   
+                    await _userHelper.AddUserToRoleAsync(newUser, Enum.UserType.Customer.ToString());
+
+                    
+                    client.User = newUser;
+                }
+                else
+                {
+
+                    if (associatedUser.UserType != Enum.UserType.Customer)
+                    {
+                        associatedUser.UserType = Enum.UserType.Customer;
+                        await _userHelper.UpdateUserAsync(associatedUser);
+                    }
+
+                    client.User = associatedUser;
+
+                    if (!await _userHelper.IsUserInRoleAsync(associatedUser, Enum.UserType.Customer.ToString()))
+                    {
+                        await _userHelper.AddUserToRoleAsync(associatedUser, Enum.UserType.Customer.ToString());
+                    }
+                }
 
                 await _clientRepository.CreateAsync(client);
-
                 return RedirectToAction(nameof(Index));
-
-
-             
             }
+
             return View(client);
-            }
+
+           
+        }
 
 
 
@@ -106,11 +144,10 @@ namespace WatersAD.Controllers
                 return NotFound();
             }
 
-            //var model = _converterHelper.ToClientViewModel(client);
             return View(client);
         }
 
-      
+
 
         // POST: Clients/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -119,11 +156,12 @@ namespace WatersAD.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Client client)
         {
-            
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    //TODO FALTA ALTERAR O EMAIL NO EDITAR
                     client.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                     await _clientRepository.UpdateAsync(client);
                 }
@@ -172,13 +210,13 @@ namespace WatersAD.Controllers
 
             if (client != null)
             {
-              await _clientRepository.DeleteAsync(client);
+                await _clientRepository.DeleteAsync(client);
             }
 
-            
+
             return RedirectToAction(nameof(Index));
         }
 
-        
+
     }
 }

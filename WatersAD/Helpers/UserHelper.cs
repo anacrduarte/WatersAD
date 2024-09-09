@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using WatersAD.Data;
 using WatersAD.Data.Entities;
+using WatersAD.Enum;
 using WatersAD.Models;
 
 namespace WatersAD.Helpers
@@ -9,12 +13,16 @@ namespace WatersAD.Helpers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly DataContext _dataContext;
+        private readonly IConverterHelper _converterHelper;
 
-        public UserHelper(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityRole> roleManager)
+        public UserHelper(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityRole> roleManager, DataContext dataContext, IConverterHelper converterHelper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
+            _dataContext = dataContext;
+            _converterHelper = converterHelper;
         }
         public async Task<IdentityResult> AddUserAsync(User user, string password)
         {
@@ -42,6 +50,27 @@ namespace WatersAD.Helpers
                     Name = roleName,
                 });
             }
+        }
+
+        public IEnumerable<SelectListItem> GetComboTypeRole()
+        {
+            
+            var roles =  _roleManager.Roles.Select(r => new SelectListItem
+                        {
+                            Value = r.Name,
+                            Text = r.Name,   
+                        })
+                        .OrderBy(l => l.Text).ToList();
+
+          
+            roles.Insert(0, new SelectListItem
+            {
+                Value = "",
+                Text = "Selecione um Role"
+            });
+
+            return roles;
+
         }
 
         public async Task<User> GetUserByEmailAsync(string email)
@@ -72,5 +101,21 @@ namespace WatersAD.Helpers
         {
             return await _userManager.UpdateAsync(user);
         }
+
+
+        public async Task<IEnumerable<User>> GetUsersWithRole(UserType roleName)
+        {
+          
+            return await _userManager.Users
+                .Where(u => u.UserType == roleName)
+                .OrderBy(u => u.FirstName).ToListAsync();
+        }
+
+        //public IQueryable<User> GetUsersWithRole(string roleName)
+        //{
+        //    return _userManager.Users
+        //        .Where(u => u.UserType.Equals(roleName))
+        //        .OrderBy(u => u.FirstName);
+        //}
     }
 }

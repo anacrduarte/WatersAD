@@ -111,7 +111,7 @@ namespace WatersAD.Data
         private async Task CheckRolesAsync()
         {
             await _userHelper.CheckRoleAsync(UserType.Admin.ToString());
-            await _userHelper.CheckRoleAsync(UserType.Client.ToString());
+            await _userHelper.CheckRoleAsync(UserType.Customer.ToString());
             await _userHelper.CheckRoleAsync(UserType.Employee.ToString());
 
         }

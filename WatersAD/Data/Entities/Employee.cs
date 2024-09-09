@@ -1,12 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace WatersAD.Data.Entities
 {
-    public class Client : IEntity
+    public class Employee : IEntity
     {
-
         public int Id { get; set; }
 
         [Required]
@@ -31,10 +28,10 @@ namespace WatersAD.Data.Entities
         public int NIF { get; set; }
 
         [Required]
-        [Display(Name ="Phone Number")]
+        [Display(Name = "Phone Number")]
         public string? PhoneNumber { get; set; }
 
-        [Display(Name ="Name")]
+        [Display(Name = "Name")]
         public string? FullName
         {
             get

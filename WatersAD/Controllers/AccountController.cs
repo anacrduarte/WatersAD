@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using Vereyon.Web;
+using WatersAD.Enum;
 using WatersAD.Helpers;
 using WatersAD.Models;
 
@@ -77,9 +80,16 @@ namespace WatersAD.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Register()
         {
-            return View();
+            var model = new RegisterNewUserViewModel
+            {
+                Roles = _userHelper.GetComboTypeRole() 
+            };
+
+
+            return View(model);
         }
 
 
@@ -93,6 +103,8 @@ namespace WatersAD.Controllers
 
                 if (user == null)
                 {
+                   
+
                     var path = string.Empty;
 
                     if (model.ImageFile != null && model.ImageFile.Length > 0)
@@ -100,31 +112,21 @@ namespace WatersAD.Controllers
                         path = await _imageHelper.UploadImageAsync(model.ImageFile, "user");
                     }
 
-                    user = _converterHelper.ToUser(model, path, true);
-
+                    user = _converterHelper.ToUser(model, path);
 
                     var result = await _userHelper.AddUserAsync(user, model.Password);
-                    if (result != IdentityResult.Success)
+
+                    if (!string.IsNullOrEmpty(model.SelectedRole))
                     {
-                        _flashMessage.Info("Erro no loggin");
-                        return View(model);
+                        await _userHelper.AddUserToRoleAsync(user, model.SelectedRole);
                     }
 
-                    var loginViewModel = new LoginViewModel
+                    if (result.Succeeded)
                     {
-                        Password = model.Password,
-                        RememberMe = false,
-                        UserName = model.Username,
-                    };
+                        _flashMessage.Info("Utilizador adicionado com sucesso.");
+                        return RedirectToAction("Register");
 
-                    var result2 = await _userHelper.LoginAsync(loginViewModel);
-
-                    if (result2.Succeeded)
-                    {
-                        return RedirectToAction("Index", "Home");
                     }
-
-                    ModelState.AddModelError(string.Empty, "The user couldn´t be logged.");
 
                 }
                 _flashMessage.Info("Utilizador já existe");
@@ -142,6 +144,7 @@ namespace WatersAD.Controllers
                 model.FirstName = user.FirstName;
                 model.LastName = user.LastName;
                 model.ImageUrl = user.ImageFullPath;
+               
             }
 
             return View(model);
@@ -166,7 +169,7 @@ namespace WatersAD.Controllers
                         path = await _imageHelper.UploadImageAsync(model.ImageFile, "user", oldPath);
                     }
 
-                    var convertUser = _converterHelper.ToUser(model, path, false);
+                    var convertUser = _converterHelper.ToUser(model, path);
 
                     user.FirstName = convertUser.FirstName;
                     user.LastName = convertUser.LastName;
@@ -222,6 +225,84 @@ namespace WatersAD.Controllers
             }
             return this.View(model);
         }
+
+        public async Task<IActionResult> ChangeRole(string role)
+        {
+            if (string.IsNullOrEmpty(role))
+            {
+                return BadRequest("Role not specified.");
+            }
+
+            var roleType = _converterHelper.ConvertRoleToUserType(role);
+            var model = new ChangeRoleViewModel
+            {
+               CurrentRole = roleType,
+               User = await _userHelper.GetUsersWithRole(roleType)
+            };
+            return View(model);
+        }
+
+        public async Task<IActionResult> EditRole(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return NotFound();
+            }
+
+            var user = await _userHelper.GetUserByEmailAsync(email);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var model = new ChangeRoleViewModel()
+            {
+                UserName = user.Email,
+                CurrentRole = user.UserType,
+                Roles = _userHelper.GetComboTypeRole(),
+            };
+
+
+            return View(model);
+
+           
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditRole(ChangeRoleViewModel model, string currentRole)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userHelper.GetUserByEmailAsync(model.UserName);
+
+                if (user != null)
+                {
+                    user.UserType = _converterHelper.ConvertRoleToUserType(model.SelectedRole);
+                }
+
+                if (!string.IsNullOrEmpty(model.SelectedRole))
+                {
+                    await _userHelper.AddUserToRoleAsync(user, model.SelectedRole);
+                }
+
+                var response = await _userHelper.UpdateUserAsync(user);
+                if (response.Succeeded)
+                {
+
+                    _flashMessage.Confirmation("User updated!");
+                    return RedirectToAction("ChangeRole", new { role = model.CurrentRole });
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, response.Errors.FirstOrDefault().Description);
+                }
+            }
+
+            return View(model);
+        }
+
+
     }
 
 }

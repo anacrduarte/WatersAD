@@ -18,10 +18,10 @@ namespace WatersAD.Data.Entities
         [Display(Name = "Type User")]
         public UserType UserType { get; set; }
 
-        
+
         [Required]
         [MaxLength(200, ErrorMessage = "The field {0} only can contain {1} characters length.")]
-        public string? Address { get; set; }
+        public string? Address { get; set; };
 
 
         [Display(Name = "Image")]
