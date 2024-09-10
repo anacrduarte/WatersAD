@@ -39,6 +39,7 @@ namespace WatersAD
             builder.Services.AddScoped<IImageHelper, ImageHelper>();
             builder.Services.AddScoped<IConverterHelper, ConverterHelper>();
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

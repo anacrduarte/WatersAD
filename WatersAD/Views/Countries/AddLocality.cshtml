@@ -1,0 +1,44 @@
+﻿@model WatersAD.Models.LocalityViewModel
+@{
+    ViewData["Title"] = "AddLocality";
+}
+
+
+<h4>Adicionar localidade</h4>
+<flash dismissable="true" />
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddLocality">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CityId" />
+
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PostalCode" class="control-label">Postal Code</label>
+                <input asp-for="PostalCode" class="form-control" />
+                <span asp-validation-for="PostalCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RemainPostalCode" class="control-label">Postal Code</label>
+                <input asp-for="RemainPostalCode" class="form-control" required />
+                <span asp-validation-for="RemainPostalCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-action="DetailsCity" asp-route-id="@Model.CityId" class="btn btn-success">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

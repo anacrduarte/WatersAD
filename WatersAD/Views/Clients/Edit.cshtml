@@ -1,4 +1,4 @@
-﻿@model WatersAD.Data.Entities.Client
+﻿@model WatersAD.Models.ClientViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -10,9 +10,9 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit" enctype="multipart/form-data">
+        <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ClientId" />
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
                 <input asp-for="FirstName" class="form-control" />
@@ -39,6 +39,29 @@
                 <span asp-validation-for="NIF" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Email">E-mail</label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-warning"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CountryId" class="control-label"></label>
+                <select asp-for="CountryId" asp-items="Model.Countries" class="form-control" id="CountryId"></select>
+                <span asp-validation-for="CountryId" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="CityId" class="control-label"></label>
+                <select asp-for="CityId" asp-items="Model.Cities" class="form-control" id="CityId"></select>
+                <span asp-validation-for="CityId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LocalityId" class="control-label"></label>
+                <select asp-for="LocalityId" asp-items="Model.Localities" class="form-control" id="LocalityId"></select>
+                <span asp-validation-for="LocalityId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
@@ -51,4 +74,65 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+        <script type="text/javascript">
+            $(document).ready(function () {
+                // Quando o país for alterado
+                $("#CountryId").change(function () {
+                    var countryId = $(this).val();
+
+                    if (countryId) {
+                        $("#CityId").empty();
+                        $("#LocalityId").empty();
+
+                        $.ajax({
+                            url: '@Url.Action("GetCitiesAsync", "Clients")',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: { countryId: countryId },
+                            success: function (cities) {
+                                $("#CityId").append('<option value="">(Select a city...)</option>');
+                                $.each(cities, function (i, city) {
+                                    $("#CityId").append('<option value="' + city.id + '">' + city.name + '</option>');
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Failed to retrieve cities: ' + error);
+                                alert('Failed to retrieve cities.');
+                            }
+                        });
+                    } else {
+                        $("#CityId").empty().append('<option value="">(Select a city...)</option>');
+                        $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', true);
+                    }
+                });
+
+                // Quando a cidade for alterada
+                $("#CityId").change(function () {
+                    var cityId = $(this).val();
+
+                    if (cityId) {
+                        $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', false);
+
+                        $.ajax({
+                            url: '@Url.Action("GetLocalitiesAsync", "Clients")',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: { cityId: cityId },
+                            success: function (localities) {
+                                $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>');
+                                $.each(localities, function (i, locality) {
+                                    $("#LocalityId").append('<option value="' + locality.id + '">' + locality.name + '</option>');
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Failed to retrieve localities: ' + error);
+                                alert('Failed to retrieve localities.');
+                            }
+                        });
+                    } else {
+                        $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', true);
+                    }
+                });
+            });
+        </script>
 }

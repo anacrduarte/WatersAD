@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WatersAD.Data;
 
@@ -11,9 +12,11 @@ using WatersAD.Data;
 namespace WatersAD.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240909144747_AddCountryCityAndLocality")]
+    partial class AddCountryCityAndLocality
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -208,9 +211,6 @@ namespace WatersAD.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("LocalityId")
-                        .HasColumnType("int");
-
                     b.Property<int>("NIF")
                         .HasColumnType("int");
 
@@ -222,8 +222,6 @@ namespace WatersAD.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("LocalityId");
 
                     b.HasIndex("NIF")
                         .IsUnique();
@@ -316,12 +314,8 @@ namespace WatersAD.Migrations
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
-
-                    b.Property<string>("RemainPostalCode")
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -480,17 +474,9 @@ namespace WatersAD.Migrations
 
             modelBuilder.Entity("WatersAD.Data.Entities.Client", b =>
                 {
-                    b.HasOne("WatersAD.Data.Entities.Locality", "Locality")
-                        .WithMany()
-                        .HasForeignKey("LocalityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("WatersAD.Data.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
-
-                    b.Navigation("Locality");
 
                     b.Navigation("User");
                 });

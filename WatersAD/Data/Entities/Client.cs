@@ -34,6 +34,10 @@ namespace WatersAD.Data.Entities
         [Display(Name ="Phone Number")]
         public string? PhoneNumber { get; set; }
 
+
+        public int LocalityId { get; set; }
+        public Locality? Locality { get; set; }
+
         [Display(Name ="Name")]
         public string? FullName
         {

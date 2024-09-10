@@ -1,0 +1,60 @@
+﻿@model WatersAD.Data.Entities.City
+@{
+    ViewData["Title"] = "DetailsCity";
+}
+
+
+
+<h2>Detalhes Cidade</h2>
+<flash dismissable="true" />
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+    </dl>
+</div>
+
+
+<div>
+    <a asp-action="EditCity" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+    <a asp-action="AddLocality" asp-route-id="@Model.Id" class="btn btn-info">Add locality</a>
+    <a asp-action="Details" asp-route-id="@Model.CountryId" class="btn btn-success">Back to List</a>
+</div>
+
+<h4>Cities</h4>
+@if (Model.Localities == null || Model.Localities.Count == 0)
+{
+    <h5>No localities added yet</h5>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Localities.FirstOrDefault().Name)
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model.Localities.OrderBy(c => c.Name))
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(model => item.Name)
+                    </td>
+                    <td id="@item.Id">
+                        <a asp-action="EditLocality" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
+                        <a asp-action="DeleteLocality" asp-route-id="@item.Id" class="btn btn-danger" id="btnDelete">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

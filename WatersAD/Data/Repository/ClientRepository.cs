@@ -12,5 +12,12 @@ namespace WatersAD.Data.Repository
             _context = context;
         }
 
+        public IEnumerable<Client> GetAllWithLocalities()
+        {
+            return _context.Clients
+                           .Include(c => c.Locality) 
+                           .OrderBy(c => c.FirstName)
+                           .ToList();
+        }
     }
 }
