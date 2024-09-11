@@ -40,7 +40,7 @@
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger" id="btnDelete">Delete</a>
+                    <a asp-route-id="@item.Id" data-id="@item.Id" class="btn btn-danger" id="btnDelete">Delete</a>
 
                 </td>
             </tr>
@@ -79,7 +79,7 @@
 
             $('a[id*=btnDelete]').click(function () {
                 debugger;
-                id = $(this).parent()[0].id;
+                id = $(this).data("id"); /* $(this).parent()[0].id; */
                 $("#deleteDialog").modal('show');
                 return false;
             });

@@ -51,10 +51,59 @@ else
                     </td>
                     <td id="@item.Id">
                         <a asp-action="EditLocality" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
-                        <a asp-action="DeleteLocality" asp-route-id="@item.Id" class="btn btn-danger" id="btnDelete">Delete</a>
+                        <a data-id="@item.Id" asp-route-id="@item.Id" class="btn btn-danger" id="btnDelete">Delete</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+}
+
+<div id="deleteDialog" class="modal fade">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Delete</h4>
+                <button type="button" class="close" data-dismiss="modal"><i class="fa fa-window-close"></i></button>
+
+            </div>
+            <div class="modal-body">
+                <p>Do you want to delete the country?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="btnYesDelete">Delete</button>
+                <button type="button" class="btn btn-success" id="btnNoDelete">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var id = 0;
+
+            $('a[id*=btnDelete]').click(function () {
+                debugger;
+                id = $(this).data("id"); 
+                $("#deleteDialog").modal('show');
+                return false;
+            });
+
+            $("#btnNoDelete").click(function () {
+                $("#deleteDialog").modal('hide');
+                return false;
+            });
+
+            $("#btnYesDelete").click(function () {
+                window.location.href = '/Countries/DeleteLocality/' + id;
+            });
+
+        });
+    </script>
 }

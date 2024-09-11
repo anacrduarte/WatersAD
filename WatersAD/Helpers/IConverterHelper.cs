@@ -36,8 +36,18 @@ namespace WatersAD.Helpers
         /// <returns>A value that corresponds to the specified role name.</returns>
         UserType ConvertRoleToUserType(string roleName);
 
+        /// <summary>
+        /// Converts a <see cref="ClientViewModel"/> object to a <see cref="Client"/> object.
+        /// </summary>
+        /// <param name="client">The <see cref="ClientViewModel"/> object to be converted.</param>
+        /// <returns>A <see cref="Client"/> object that represents the converted data from the <see cref="ClientViewModel"/>.</returns>
         Client ToCliente(ClientViewModel client);
 
-        Task<ClientViewModel> ToClientViewModel(Client client);
+        /// <summary>
+        /// Converts a <see cref="Client"/> object to a <see cref="ClientViewModel"/> object asynchronously.
+        /// </summary>
+        /// <param name="client">The <see cref="Client"/> object to be converted.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="ClientViewModel"/> object that represents the converted data from the <see cref="Client"/>.</returns>
+        Task<ClientViewModel> ToClientViewModelAsync(Client client);
     }
 }

@@ -80,7 +80,7 @@ namespace WatersAD.Helpers
             };
         }
 
-        public async Task<ClientViewModel> ToClientViewModel(Client client)
+        public async Task<ClientViewModel> ToClientViewModelAsync(Client client)
         {
             var model = new ClientViewModel();
 

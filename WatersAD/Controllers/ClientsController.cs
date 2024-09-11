@@ -158,7 +158,7 @@ namespace WatersAD.Controllers
             {
                 return NotFound();
             }
-            var model = await _converterHelper.ToClientViewModel(client);
+            var model = await _converterHelper.ToClientViewModelAsync(client);
 
             return View(model);
         }
