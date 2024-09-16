@@ -22,6 +22,9 @@ namespace WatersAD.Data
 
         public DbSet<Locality> Localities { get; set; }
 
+        public DbSet<WaterMeter> WaterMeters { get; set; }
+
+        public DbSet<WaterMeterService> WaterMeterServices{ get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 

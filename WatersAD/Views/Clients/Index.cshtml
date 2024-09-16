@@ -5,7 +5,7 @@
 }
 
 <h1>Index</h1>
-
+<flash dismissable="true" />
 <p>
     <a asp-action="Create">Create New</a>
 </p>
@@ -27,6 +27,10 @@
             <th>
                 @Html.DisplayNameFor(model => model.Locality.Name)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumberWaterMeters)
+            </th>
+
             <th></th>
         </tr>
     </thead>
@@ -48,10 +52,14 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Locality.Name)
                 </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NumberWaterMeters)
+                </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="AddWaterMeterToClient" asp-route-id="@item.Id">Add Water Meter</a>
             </td>
         </tr>
 }

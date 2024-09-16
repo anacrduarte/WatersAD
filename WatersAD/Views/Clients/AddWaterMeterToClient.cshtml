@@ -1,60 +1,103 @@
-﻿@model WatersAD.Data.Entities.Employee
+﻿@model WatersAD.Models.WaterMeterViewModel
+
 @{
     ViewData["Title"] = "Create";
 }
 
 <h1>Create</h1>
 
-<h4>Employee</h4>
+<h4>WaterMeter</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="AddWaterMeterToClient">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ClientId" />
 
-          
-            <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
             <div class="form-group">
                 <label asp-for="Address" class="control-label"></label>
                 <input asp-for="Address" class="form-control" />
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+                <label asp-for="HouseNumber" class="control-label"></label>
+                <input asp-for="HouseNumber" class="form-control" />
+                <span asp-validation-for="HouseNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="NIF" class="control-label"></label>
-                <input asp-for="NIF" class="form-control" />
-                <span asp-validation-for="NIF" class="text-danger"></span>
+                <label asp-for="CountryId" class="control-label"></label>
+                <select asp-for="CountryId" asp-items="Model.Countries" class="form-control" id="CountryId"></select>
+                <span asp-validation-for="CountryId" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="CityId" class="control-label"></label>
+                <select asp-for="CityId" asp-items="Model.Cities" class="form-control" id="CityId"></select>
+                <span asp-validation-for="CityId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LocalityId" class="control-label"></label>
+                <select asp-for="LocalityId" asp-items="Model.Localities" class="form-control" id="LocalityId"></select>
+                <span asp-validation-for="LocalityId" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="WaterMeterServicesId" class="control-label"></label>
+                <select asp-for="WaterMeterServicesId" asp-items="Model.WaterMeterServices" class="form-control" id="WaterMeterServicesId"></select>
+                <span asp-validation-for="WaterMeterServicesId" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="InstallationDate" class="control-label"></label>
+                <input asp-for="InstallationDate" class="form-control" />
+                <span asp-validation-for="InstallationDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PhoneNumber" class="control-label"></label>
-                <input asp-for="PhoneNumber" class="form-control" />
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                <label asp-for="PostalCode" class="control-label"></label>
+                <input asp-for="PostalCode" class="form-control" />
+                <span asp-validation-for="PostalCode" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="RemainPostalCode" class="control-label"></label>
+                <input asp-for="RemainPostalCode" class="form-control" />
+                <span asp-validation-for="RemainPostalCode" class="text-danger"></span>
+            </div>
+
+          
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
+
+
         </form>
+        @* <form asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group">
+        <label asp-for="Quantity" class="control-label"></label>
+        <input asp-for="Quantity" class="form-control" type="number"/>
+        <span asp-validation-for="Quantity" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+        </div>
+        </form> *@
     </div>
 </div>
 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script type="text/javascript">
         $(document).ready(function () {
             // Quando o país for alterado

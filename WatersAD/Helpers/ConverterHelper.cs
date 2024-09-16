@@ -65,7 +65,7 @@ namespace WatersAD.Helpers
             }
         }
 
-        public Client ToCliente(ClientViewModel client)
+        public Client ToCliente(ClientViewModel client, Locality locality)
         {
             return new Client
             {
@@ -73,58 +73,56 @@ namespace WatersAD.Helpers
                 LastName = client.LastName,
                 Address = client.Address,
                 Email = client.Email,
-                LocalityId = client.LocalityId,
+                LocalityId = locality.Id,
                 PhoneNumber = client.PhoneNumber,
+                PostalCode = client.PostalCode,
+                RemainPostalCode = client.RemainPostalCode,
+                HouseNumber = client.HouseNumber,
                 NIF = client.NIF,
                 User = client.User,
+                WaterMeters = new List<WaterMeter>(),
+                
             };
         }
 
-        public async Task<ClientViewModel> ToClientViewModelAsync(Client client)
+        public WaterMeter ToWaterMeter(ClientViewModel model, int clientId, Locality locality, WaterMeterService service)
         {
-            var model = new ClientViewModel();
-
-            model.ClientId = client.Id;
-            model.FirstName = client.FirstName;
-            model.LastName = client.LastName;
-            model.Address = client.Address;
-            model.Email = client.Email;
-            model.PhoneNumber = client.PhoneNumber;
-            model.NIF = client.NIF;
-            model.User = client.User;
-
-            try
+            return new WaterMeter
             {
+                ClientId = clientId,
+                Address = model.Address,
+                HouseNumber = model.HouseNumber,
+                InstallationDate = model.InstallationDate,
+                LocalityId = locality.Id,
+                WaterMeterServiceId = service.Id ,
+                IsActive = true,
+            };
+        }
 
-                var locality = await _countryRepository.GetLocalityAsync(client.LocalityId);
+        public ClientViewModel ToClientViewModel(Client client)
+        {
 
-                if (locality != null)
-                {
-                    var city = await _countryRepository.GetCityAsync(locality.CityId);
-
-                    if (city != null)
-                    {
-                        var country = await _countryRepository.GetCountryAsync(city);
-
-                        if (country != null)
-                        {
-                            model.CountryId = country.Id; ;
-                            model.Cities = _countryRepository.GetComboCities(country.Id);
-                            model.Countries = _countryRepository.GetComboCountries();
-                            model.CityId = city.Id;
-                            model.Localities = _countryRepository.GetComboLocalities(city.Id);
-                            model.LocalityId = locality.Id;
-
-
-                        }
-                    }
-                }
-            }
-            catch (Exception)
+            var model = new ClientViewModel
             {
+                Client = client,
+                FirstName = client.FirstName,
+                LastName = client.LastName,
+                PhoneNumber = client.PhoneNumber,
+                ClientId = client.Id,
+                Address = client.Address,
+                HouseNumber = client.HouseNumber,
+                PostalCode = client.PostalCode,
+                RemainPostalCode = client.RemainPostalCode,
+                LocalityId = client.LocalityId,
+                Locality = client.Locality,
+                CountryId = client.Locality.City.CountryId,
+                Country = client.Locality.City.Country,
+                CityId = client.Locality.CityId,
+                City = client.Locality.City,
+                Email = client.Email,
 
-                throw;
-            }
+            };
+        
 
             return model;
         }

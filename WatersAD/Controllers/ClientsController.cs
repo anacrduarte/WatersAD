@@ -16,13 +16,15 @@ namespace WatersAD.Controllers
         private readonly IFlashMessage _flashMessage;
         private readonly ICountryRepository _countryRepository;
         private readonly IConverterHelper _converterHelper;
+        private readonly IWaterMeterRepository _waterMeterRepository;
 
         public ClientsController(
             IClientRepository clientRepository,
             IUserHelper userHelper,
             IFlashMessage flashMessage,
             ICountryRepository countryRepository,
-            IConverterHelper converterHelper
+            IConverterHelper converterHelper,
+            IWaterMeterRepository waterMeterRepository
             )
         {
 
@@ -31,12 +33,13 @@ namespace WatersAD.Controllers
             _flashMessage = flashMessage;
             _countryRepository = countryRepository;
             _converterHelper = converterHelper;
+            _waterMeterRepository = waterMeterRepository;
         }
 
         // GET: Clients
         public IActionResult Index()
         {
-            return View(_clientRepository.GetAllWithLocalities());
+            return View(_clientRepository.GetAllWithLocalitiesAndWaterMeter());
         }
 
         // GET: Clients/Details/5
@@ -47,14 +50,19 @@ namespace WatersAD.Controllers
                 return NotFound();
             }
 
-            var client = await _clientRepository.GetByIdAsync(id.Value);
+            var client = await _clientRepository.GetClientAndLocalityAndCityAsync(id.Value);
 
             if (client == null)
             {
                 return NotFound();
             }
 
-            return View(client);
+            var model = _converterHelper.ToClientViewModel(client);
+            //model.Countries = _countryRepository.GetComboCountries();
+            //model.Cities = _countryRepository.GetComboCities(model.CountryId);
+            //model.Localities = _countryRepository.GetComboLocalities(model.CityId);
+
+            return View(model);
         }
 
         [Authorize(Roles = "Admin")]
@@ -66,6 +74,7 @@ namespace WatersAD.Controllers
                 Countries = _countryRepository.GetComboCountries(),
                 Cities = _countryRepository.GetComboCities(0),
                 Localities = _countryRepository.GetComboLocalities(0),
+                WaterMeterServices = _waterMeterRepository.GetComboWaterMeterServices(),
             };
             return View(model);
         }
@@ -80,7 +89,12 @@ namespace WatersAD.Controllers
         {
             if (ModelState.IsValid)
             {
-                var client = _converterHelper.ToCliente(model);
+                var locality = await _countryRepository.GetLocalityAsync(model.LocalityId);
+
+                
+                var client = _converterHelper.ToCliente(model, locality);
+
+                client.Locality = locality;               
 
                 var associatedUser = await _userHelper.GetUserByEmailAsync(client.Email);
 
@@ -131,8 +145,9 @@ namespace WatersAD.Controllers
                         await _userHelper.AddUserToRoleAsync(associatedUser, Enum.UserType.Customer.ToString());
                     }
                 }
-
                 await _clientRepository.CreateAsync(client);
+                
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -152,13 +167,16 @@ namespace WatersAD.Controllers
                 return NotFound();
             }
 
-            var client = await _clientRepository.GetByIdAsync(id.Value);
+            var client = await _clientRepository.GetClientAndLocalityAndCityAsync(id.Value);
 
             if (client == null)
             {
                 return NotFound();
             }
-            var model = await _converterHelper.ToClientViewModelAsync(client);
+            var model = _converterHelper.ToClientViewModel(client);
+            model.Countries = _countryRepository.GetComboCountries();
+            model.Cities = _countryRepository.GetComboCities(model.CountryId);
+            model.Localities = _countryRepository.GetComboLocalities(model.CityId);
 
             return View(model);
         }
@@ -195,6 +213,9 @@ namespace WatersAD.Controllers
                     client.NIF = model.NIF;
                     client.User = model.User;
                     client.LocalityId = model.LocalityId;
+                    client.HouseNumber = model.HouseNumber;
+                    client.PostalCode = model.PostalCode;
+                    client.RemainPostalCode = model.RemainPostalCode;
 
                     await _clientRepository.UpdateAsync(client);
                 }
@@ -237,11 +258,119 @@ namespace WatersAD.Controllers
 
             if (client != null)
             {
-                await _clientRepository.DeleteAsync(client);
+                client.IsActive = false;
+                await _clientRepository.UpdateAsync(client);
+                //await _clientRepository.DeleteAsync(client);
             }
 
 
             return RedirectToAction(nameof(Index));
+        }
+
+
+
+        [Authorize(Roles = "Admin")]
+        // GET: Clients/AddWaterMeterToClient
+        public async Task<IActionResult> AddWaterMeterToClient(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var client = await _clientRepository.GetClientAndLocalityAndCityAsync(id.Value);
+
+            if (client == null)
+            {
+                return NotFound();
+            }
+
+            var model = new WaterMeterViewModel
+            {
+                ClientId = client.Id,
+                Address = client.Address,
+                HouseNumber = client.HouseNumber,
+                PostalCode = client.PostalCode,
+                RemainPostalCode = client.RemainPostalCode,
+                LocalityId = client.Locality.Id,
+                CityId = client.Locality.City.Id,
+                CountryId = client.Locality.City.Country.Id,
+                Countries = _countryRepository.GetComboCountries(),
+                Cities = _countryRepository.GetComboCities(client.Locality.City.Country.Id),
+                Localities = _countryRepository.GetComboLocalities(client.Locality.City.Id),
+                WaterMeterServices = _waterMeterRepository.GetComboWaterMeterServices(),
+            };
+
+            return View(model);
+        }
+
+        // POST: Clients/AddWaterMeterToClient
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+
+        public async Task<IActionResult> AddWaterMeterToClient(WaterMeterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var client = await _clientRepository.GetClientWithWaterMeter(model.ClientId);
+
+
+                if (client == null)
+                {
+                    return NotFound();
+                }
+
+                if (client.WaterMeters == null)
+                {
+                    client.WaterMeters = new List<WaterMeter>();
+                }
+
+                var locality = await _countryRepository.GetLocalityAsync(model.LocalityId);
+
+                var waterMeterService = await _waterMeterRepository.GetWaterServiceByIdAsync(model.WaterMeterServicesId);
+
+
+                if (waterMeterService == null)
+                {
+                    return NotFound();
+                }
+
+                waterMeterService.Available = false;
+
+                await _waterMeterRepository.UpdateWaterServiceAsync(waterMeterService);
+
+                var waterMeter = new WaterMeter
+                {
+                    ClientId = client.Id,
+                    LocalityId = locality.Id,
+                    WaterMeterServiceId = waterMeterService.Id,
+                    Address = model.Address,
+                    HouseNumber = model.HouseNumber,
+                    InstallationDate = model.InstallationDate,
+                    PostalCode = model.PostalCode,
+                    RemainPostalCode = model.RemainPostalCode,
+                };
+
+                await _waterMeterRepository.CreateAsync(waterMeter);
+
+
+                waterMeter.WaterMeterService = waterMeterService;
+                waterMeter.Locality = locality;
+                waterMeter.Client = client;
+
+
+
+                client.WaterMeters.Add(waterMeter);
+
+                await _clientRepository.UpdateAsync(client);
+
+                _flashMessage.Confirmation("Contador adicionado com sucesso");
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(model);
         }
 
 

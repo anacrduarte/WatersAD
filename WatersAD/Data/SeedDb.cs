@@ -62,44 +62,10 @@ namespace WatersAD.Data
 
 
                                     });
-
-            //var user = await _userHelper.GetUserByEmailAsync("anaduarte@gmail.com");
-
-            //if (user == null)
-            //{
-            //    user = new User
-            //    {
-            //        FirstName = "Ana",
-            //        LastName = "Duarte",
-            //        Email = "anaduarte@gmail.com",
-            //        UserName = "anaduarte@gmail.com",
-            //        PhoneNumber = "123456789",
-            //    };
-            //    var result = await _userHelper.AddUserAsync(user, "123456");
-            //    if (result != IdentityResult.Success)
-            //    {
-            //        throw new InvalidOperationException("Could not create the user in seeder");
-            //    }
-
-            //    await _userHelper.AddUserToRoleAsync(user, "Admin");
-            //}
-
-            //var isInRole = await _userHelper.IsUserInRoleAsync(user, "Admin");
-
-            //if (!isInRole)
-            //{
-            //    await _userHelper.AddUserToRoleAsync(user, "Admin");
-            //}
+           await AddWaterMeterServiceAsync();
 
 
-            //if (!_context.Clients.Any())
-            //{
-            //    AddClient("Ana", "Duarte", user);
-            //    AddClient("Susana", "Duarte", user);
-
-
-            //    await _context.SaveChangesAsync();
-            //}
+           
         }
 
         private async Task<User> CheckUserAsync(string firstName, string lastName, string email, string phone, string address, UserType userType, string image)
@@ -132,19 +98,66 @@ namespace WatersAD.Data
             return user;
         }
 
-        private void AddClient(string firstName,string lastName, User user)
+        private async Task AddWaterMeterServiceAsync()
         {
-            _context.Clients.Add(new Client
+            if(!_context.WaterMeterServices.Any())
             {
-                FirstName = firstName,
-                LastName = lastName,
-                NIF = _random.Next(1000),
-                Address = "Rua da flores",
-                PhoneNumber = "99999999",
-                User = user,
+                var waterMeters = new List<WaterMeterService>();
 
-            });
+                for (int i = 0; i < 20; i++)
+                {
+
+                    var serialNumber = Guid.NewGuid().ToString().Substring(0, 8);
+
+                    var waterMeter = new WaterMeterService
+                    {
+                        SerialNumber = serialNumber
+                    };
+
+                    waterMeters.Add(waterMeter);
+                }
+
+                foreach (var waterMeter in waterMeters)
+                {
+                    await _context.WaterMeterServices.AddAsync(waterMeter);
+                }
+                await _context.SaveChangesAsync();
+
+            }
+           
+
         }
+
+        //private async Task AddClientsAsync()
+        //{
+        //    if (!_context.Clients.Any())
+        //    {
+        //        var waterMeters = new List<WaterMeterService>();
+
+        //        for (int i = 0; i < 20; i++)
+        //        {
+
+        //            var serialNumber = Guid.NewGuid().ToString().Substring(0, 8);
+
+        //            var waterMeter = new WaterMeterService
+        //            {
+        //                SerialNumber = serialNumber
+        //            };
+
+        //            waterMeters.Add(waterMeter);
+        //        }
+
+        //        foreach (var waterMeter in waterMeters)
+        //        {
+        //            await _context.WaterMeterServices.AddAsync(waterMeter);
+        //        }
+        //        await _context.SaveChangesAsync();
+
+        //    }
+
+
+        //}
+
 
         private async Task AddCountryAsync(string nameCountry, ICollection<(string cityName, string localityName, string postalCode)> citiesWithLocality)
         {

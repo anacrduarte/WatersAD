@@ -4,6 +4,14 @@ namespace WatersAD.Data.Repository
 {
     public interface IClientRepository : IGenericRepository<Client>
     {
-        IEnumerable<Client> GetAllWithLocalities();
+        IEnumerable<Client> GetAllWithLocalitiesAndWaterMeter();
+
+        //IQueryable<Client> GetAllActive();
+
+        //IQueryable<Client> GetAllInactive();
+
+        Task<Client> GetClientAndLocalityAndCityAsync(int clientId);
+
+        Task<Client> GetClientWithWaterMeter(int clientId);
     }
 }
