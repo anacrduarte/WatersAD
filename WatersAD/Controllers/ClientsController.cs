@@ -58,9 +58,7 @@ namespace WatersAD.Controllers
             }
 
             var model = _converterHelper.ToClientViewModel(client);
-            //model.Countries = _countryRepository.GetComboCountries();
-            //model.Cities = _countryRepository.GetComboCities(model.CountryId);
-            //model.Localities = _countryRepository.GetComboLocalities(model.CityId);
+          
 
             return View(model);
         }
@@ -80,8 +78,6 @@ namespace WatersAD.Controllers
         }
 
         // POST: Clients/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
 
@@ -184,8 +180,6 @@ namespace WatersAD.Controllers
 
 
         // POST: Clients/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ClientViewModel model)
@@ -221,7 +215,7 @@ namespace WatersAD.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Erro ao atualizar o cliente: " + ex.Message);
+                    _flashMessage.Danger($"Erro a actualizar o cliente " + ex.Message);
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -236,36 +230,26 @@ namespace WatersAD.Controllers
             {
                 return NotFound();
             }
+            var client = await _clientRepository.GetClientWithWaterMeter(id.Value);
 
-            var client = await _clientRepository.GetByIdAsync(id.Value);
-
-            if (client == null)
-            {
-                return NotFound();
+            if(client == null)
+            { 
+                return NotFound(); 
             }
 
-         
-            return View(client);
-        }
-
-        // POST: Clients/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var client = await _clientRepository.GetByIdAsync(id);
-
-            if (client != null)
+            if (client.WaterMeters != null && client.WaterMeters.Any())
             {
-                client.IsActive = false;
-                await _clientRepository.UpdateAsync(client);
-                //await _clientRepository.DeleteAsync(client);
-            }
+                _flashMessage.Warning("Tem que desativar primeiro os contadores antes de remover o cliente");
+                return RedirectToAction(nameof(Index));
 
+            }
+            client.IsActive = false;
+            await _clientRepository.UpdateAsync(client);
 
             return RedirectToAction(nameof(Index));
         }
+
+     
 
 
 
@@ -373,6 +357,34 @@ namespace WatersAD.Controllers
             return View(model);
         }
 
+        
+        // GET: 
+        public IActionResult FormerClients()
+        {
+            return View(_clientRepository.GetAllWithLocalitiesAndWaterMeterInactive());
+        }
+
+        public async Task<IActionResult> AddClientAgain(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var client = await _clientRepository.GetByIdAsync(id.Value);
+            if (client != null)
+            {
+                client.IsActive = true;
+
+                await _clientRepository.UpdateAsync(client);
+            }
+
+
+            return RedirectToAction(nameof(FormerClients));
+        }
+
+
+
 
         [HttpPost]
         [Route("Clients/GetCitiesAsync")]
@@ -405,6 +417,7 @@ namespace WatersAD.Controllers
 
             return Json(localities);
         }
+
 
     }
 }

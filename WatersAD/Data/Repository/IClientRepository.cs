@@ -6,12 +6,10 @@ namespace WatersAD.Data.Repository
     {
         IEnumerable<Client> GetAllWithLocalitiesAndWaterMeter();
 
-        //IQueryable<Client> GetAllActive();
-
-        //IQueryable<Client> GetAllInactive();
-
         Task<Client> GetClientAndLocalityAndCityAsync(int clientId);
 
         Task<Client> GetClientWithWaterMeter(int clientId);
+
+        IEnumerable<Client> GetAllWithLocalitiesAndWaterMeterInactive();
     }
 }

@@ -1,22 +1,22 @@
-﻿@model IEnumerable<WatersAD.Data.Entities.Client>
-
+﻿@model IEnumerable<WatersAD.Data.Entities.Employee>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "FormerEmployees";
 }
 
-<h1>Index</h1>
-<flash dismissable="true" />
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h1>FormerEmployees</h1>
+
 <table class="table">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.FullName)
             </th>
+            
             <th>
                 @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.NIF)
@@ -24,25 +24,23 @@
             <th>
                 @Html.DisplayNameFor(model => model.PhoneNumber)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Locality.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NumberWaterMeters)
-            </th>
-
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address)
-            </td>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FullName)
+                </td>
+                
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.NIF)
                 </td>
@@ -50,27 +48,8 @@
                     @Html.DisplayFor(modelItem => item.PhoneNumber)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Locality.Name)
-                </td>
-                <td>@if(item.NumberWaterMeters > 0)
-                    {
-                        <a asp-action="ClientWaterMetersDetails" asp-route-id="@item.Id">
-                            @item.NumberWaterMeters
-                        </a>
-                    }
-                    else
-                    {
-                        @Html.DisplayFor(modelItem => item.NumberWaterMeters)
-                    }
 
-                    
-                </td>
-               
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="AddWaterMeterToClient" asp-route-id="@item.Id">Add Water Meter</a>
-                    <a asp-action="Delete" data-id="@item.Id" asp-route-id="@item.Id" id="btnDelete">Remove</a>
+                    <a asp-action="AddEmployeeAgain" data-id="@item.Id" asp-route-id="@item.Id" id="btnAdd">Add Again</a>
                 </td>
             </tr>
         }
@@ -85,10 +64,10 @@
 
             </div>
             <div class="modal-body">
-                <p>Do you want to remove this customer?</p>
+                <p>Do you want to add this employee?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="btnYesDelete">Remove</button>
+                <button type="button" class="btn btn-danger" id="btnYesDelete">Add</button>
                 <button type="button" class="btn btn-success" id="btnNoDelete">No</button>
             </div>
         </div>
@@ -105,7 +84,7 @@
 
             var id = 0;
 
-            $('a[id*=btnDelete]').click(function () {
+            $('a[id*=btnAdd]').click(function () {
                 debugger;
                 id = $(this).data("id"); /* $(this).parent()[0].id; */
                 $("#deleteDialog").modal('show');
@@ -118,11 +97,9 @@
             });
 
             $("#btnYesDelete").click(function () {
-                window.location.href = '/Clients/Delete/' + id;
+                window.location.href = '/Employees/AddEmployeeAgain/' + id;
             });
 
         });
     </script>
 }
-
-

@@ -13,21 +13,23 @@ namespace WatersAD.Data.Repository
             _context = context;
         }
 
-        //public IQueryable<Client> GetAllActive()
-        //{
-        //    return _context.Clients.AsNoTracking().Where(c => c.IsActive == true);
-        //}
-
-        //public IQueryable<Client> GetAllInactive()
-        //{
-        //    return _context.Clients.AsNoTracking().Where(c => c.IsActive == false);
-        //}
+        
         public IEnumerable<Client> GetAllWithLocalitiesAndWaterMeter()
         {
             return _context.Clients
                            .Include(c => c.Locality)
-                           .Where(c => c.IsActive)
                            .Include(c => c.WaterMeters)
+                           .Where(c => c.IsActive)
+                           .OrderBy(c => c.FirstName)
+                           .ToList();
+        }
+
+        public IEnumerable<Client> GetAllWithLocalitiesAndWaterMeterInactive()
+        {
+            return _context.Clients
+                           .Include(c => c.Locality)
+                           .Include(c => c.WaterMeters)
+                           .Where(c => !c.IsActive)
                            .OrderBy(c => c.FirstName)
                            .ToList();
         }
@@ -38,16 +40,14 @@ namespace WatersAD.Data.Repository
                 .Include(l => l.Locality)
                  .ThenInclude(ci => ci.City)
                  .ThenInclude(co => co.Country)
-                .Where(c => c.Id == clientId)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(c => c.Id == clientId);
         }
 
         public async Task<Client> GetClientWithWaterMeter(int clientId)
         {
             return await _context.Clients
                 .Include(c=> c.WaterMeters)
-                .Where(c => c.Id == clientId)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(c => c.Id == clientId);
         }
     }
 }

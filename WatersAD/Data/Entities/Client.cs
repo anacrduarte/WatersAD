@@ -32,7 +32,7 @@ namespace WatersAD.Data.Entities
 
         [Required]
         [RegularExpression(@"^\d{9}$", ErrorMessage = "The NIF must be exactly 9 digits.")]
-        public int NIF { get; set; }
+        public string? NIF { get; set; }
 
         [Required]
         [Display(Name = "Phone Number")]

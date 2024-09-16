@@ -108,6 +108,7 @@ namespace WatersAD.Helpers
                 FirstName = client.FirstName,
                 LastName = client.LastName,
                 PhoneNumber = client.PhoneNumber,
+                NIF = client.NIF,
                 ClientId = client.Id,
                 Address = client.Address,
                 HouseNumber = client.HouseNumber,
@@ -123,6 +124,55 @@ namespace WatersAD.Helpers
 
             };
         
+
+            return model;
+        }
+
+        public Employee ToEmployee(EmployeeViewModel employee, Locality locality)
+        {
+            return new Employee
+            {
+                FirstName = employee.FirstName,
+                LastName = employee.LastName,
+                Address = employee.Address,
+                Email = employee.Email,
+                LocalityId = locality.Id,
+                PhoneNumber = employee.PhoneNumber,
+                PostalCode = employee.PostalCode,
+                RemainPostalCode = employee.RemainPostalCode,
+                HouseNumber = employee.HouseNumber,
+                NIF = employee.NIF,
+                User = employee.User,
+                
+
+            };
+        }
+
+        public EmployeeViewModel ToEmployeeViewModel(Employee employee)
+        {
+
+            var model = new EmployeeViewModel
+            {
+                EmployeeId = employee.Id,
+                Employee = employee,
+                FirstName = employee.FirstName,
+                LastName = employee.LastName,
+                PhoneNumber = employee.PhoneNumber,
+                NIF = employee.NIF,
+                Address = employee.Address,
+                HouseNumber = employee.HouseNumber,
+                PostalCode = employee.PostalCode,
+                RemainPostalCode = employee.RemainPostalCode,
+                LocalityId = employee.LocalityId,
+                Locality = employee.Locality,
+                CountryId = employee.Locality.City.CountryId,
+                Country = employee.Locality.City.Country,
+                CityId = employee.Locality.CityId,
+                City = employee.Locality.City,
+                Email = employee.Email,
+
+            };
+
 
             return model;
         }

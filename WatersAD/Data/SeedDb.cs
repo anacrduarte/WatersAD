@@ -128,36 +128,6 @@ namespace WatersAD.Data
 
         }
 
-        //private async Task AddClientsAsync()
-        //{
-        //    if (!_context.Clients.Any())
-        //    {
-        //        var waterMeters = new List<WaterMeterService>();
-
-        //        for (int i = 0; i < 20; i++)
-        //        {
-
-        //            var serialNumber = Guid.NewGuid().ToString().Substring(0, 8);
-
-        //            var waterMeter = new WaterMeterService
-        //            {
-        //                SerialNumber = serialNumber
-        //            };
-
-        //            waterMeters.Add(waterMeter);
-        //        }
-
-        //        foreach (var waterMeter in waterMeters)
-        //        {
-        //            await _context.WaterMeterServices.AddAsync(waterMeter);
-        //        }
-        //        await _context.SaveChangesAsync();
-
-        //    }
-
-
-        //}
-
 
         private async Task AddCountryAsync(string nameCountry, ICollection<(string cityName, string localityName, string postalCode)> citiesWithLocality)
         {

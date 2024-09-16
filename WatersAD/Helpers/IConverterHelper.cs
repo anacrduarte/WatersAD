@@ -51,5 +51,9 @@ namespace WatersAD.Helpers
         ClientViewModel ToClientViewModel(Client client);
 
         WaterMeter ToWaterMeter(ClientViewModel model, int clientId, Locality locality, WaterMeterService service);
+
+        Employee ToEmployee(EmployeeViewModel employee, Locality locality);
+
+        EmployeeViewModel ToEmployeeViewModel(Employee employee);
     }
 }
