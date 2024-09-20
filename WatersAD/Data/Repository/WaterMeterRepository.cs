@@ -71,7 +71,13 @@ namespace WatersAD.Data.Repository
             await _context.SaveChangesAsync();
         }
 
-        
+        public async Task<WaterMeter?> GetWaterMeterWithConsumptionsAsync(int waterMeterId)
+        {
+            return await _context.WaterMeters
+                .Include(wm => wm.Consumptions)
+                .FirstOrDefaultAsync(wm => wm.Id == waterMeterId);
+        }
+
 
         public IEnumerable<SelectListItem> GetComboWaterMeterServices()
         {
@@ -98,6 +104,26 @@ namespace WatersAD.Data.Repository
 
             await _context.SaveChangesAsync();
         }
+
+        //TODO arranjar outra maneira de mostar os water meter
+        public IEnumerable<SelectListItem> GetComboWaterMeter()
+        {
+            var list = _context.WaterMeters.Select(c => new SelectListItem
+            {
+                Text = c.Address,
+                Value = c.Id.ToString(),
+
+            }).OrderBy(l => l.Text).ToList();
+
+            list.Insert(0, new SelectListItem
+            {
+                Text = "(Select a Water Meter...)",
+                Value = "0",
+            });
+
+            return list;
+        }
+
 
     }
 }

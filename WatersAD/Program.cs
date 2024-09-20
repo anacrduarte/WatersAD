@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using Vereyon.Web;
 using WatersAD.Data;
 using WatersAD.Data.Entities;
@@ -17,6 +19,8 @@ namespace WatersAD
 
             builder.Services.AddIdentity<User, IdentityRole>(cfg =>
             {
+                cfg.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+                cfg.SignIn.RequireConfirmedEmail = true;
                 cfg.User.RequireUniqueEmail = true;
                 cfg.Password.RequireDigit = false;
                 cfg.Password.RequiredUniqueChars = 0;
@@ -24,8 +28,12 @@ namespace WatersAD
                 cfg.Password.RequireUppercase = false;
                 cfg.Password.RequireNonAlphanumeric = false;
                 cfg.Password.RequiredLength = 6;
-            })
-                .AddEntityFrameworkStores<DataContext>();
+                cfg.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                cfg.Lockout.MaxFailedAccessAttempts = 3;
+                cfg.Lockout.AllowedForNewUsers = true;
+            }).AddDefaultTokenProviders()
+            .AddEntityFrameworkStores<DataContext>();
+         
 
             //Inject datacontext
             builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer("name=LocalConnection"));
@@ -41,6 +49,10 @@ namespace WatersAD
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             builder.Services.AddScoped<ICountryRepository, CountryRepository>();
             builder.Services.AddScoped<IWaterMeterRepository, WaterMeterRepository>();
+            builder.Services.AddScoped<IConsumptionRepository, ConsumptionRepository>();
+            builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+            builder.Services.AddScoped<ITierRepository, TierRepository>();
+            builder.Services.AddScoped<IMailHelper, MailHelper>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

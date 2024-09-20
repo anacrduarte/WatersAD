@@ -34,7 +34,7 @@ namespace WatersAD.Data.Repository
             {
                 return;
             }
-            city.Localities.Add(new Locality { Name = model.Name, PostalCode = model.PostalCode, RemainPostalCode = model.RemainPostalCode });
+            city.Localities.Add(new Locality { Name = model.Name});
             _context.Cities.Update(city);
             await _context.SaveChangesAsync();
         }

@@ -14,14 +14,17 @@ namespace WatersAD.Controllers
         private readonly IFlashMessage _flashMessage;
         private readonly ICountryRepository _countryRepository;
         private readonly IClientRepository _clientRepository;
+        private readonly IConsumptionRepository _consumptionRepository;
 
-        public WaterMetersController(IWaterMeterRepository waterMeterRepository, IFlashMessage flashMessage, ICountryRepository countryRepository, IClientRepository clientRepository)
+        public WaterMetersController(IWaterMeterRepository waterMeterRepository, IFlashMessage flashMessage, ICountryRepository countryRepository, IClientRepository clientRepository,
+            IConsumptionRepository consumptionRepository)
         {
 
             _waterMeterRepository = waterMeterRepository;
             _flashMessage = flashMessage;
             _countryRepository = countryRepository;
             _clientRepository = clientRepository;
+            _consumptionRepository = consumptionRepository;
         }
 
         // GET: WaterMeters
@@ -60,6 +63,7 @@ namespace WatersAD.Controllers
                 Country = water.Locality.City.Country,
                 City = water.Locality.City,
                 WaterMeterService = water.WaterMeterService,
+
              
             };
 
@@ -120,7 +124,7 @@ namespace WatersAD.Controllers
                 }
 
                 waterMeterService.Available = false;
-
+                //TODO ver se ao usar isto a lista de consumption ATENÇAO
                 await _waterMeterRepository.UpdateWaterServiceAsync(waterMeterService);
 
                 var waterMeter = new WaterMeter
@@ -133,9 +137,26 @@ namespace WatersAD.Controllers
                     InstallationDate = model.InstallationDate,
                     PostalCode = model.PostalCode,
                     RemainPostalCode = model.RemainPostalCode,
+                    Consumptions = new List<Consumption>(),
                 };
 
                 await _waterMeterRepository.CreateAsync(waterMeter);
+
+                var consumption = new Consumption
+                {
+                    ConsumptionDate = DateTime.UtcNow,
+                    ConsumptionValue = 0,
+                    WaterMeter = waterMeter,
+                };
+
+                await _consumptionRepository.CreateAsync(consumption);
+
+                waterMeter.Consumptions.Add(consumption);
+
+                await _waterMeterRepository.UpdateAsync(waterMeter);
+              
+
+               
 
 
                 waterMeter.WaterMeterService = waterMeterService;

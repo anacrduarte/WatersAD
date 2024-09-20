@@ -81,6 +81,7 @@ namespace WatersAD.Helpers
                 NIF = client.NIF,
                 User = client.User,
                 WaterMeters = new List<WaterMeter>(),
+                Invoices = new List<Invoice>(),
                 
             };
         }

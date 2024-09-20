@@ -1,0 +1,46 @@
+﻿@model WatersAD.Data.Entities.Tier
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+<flash dismissable="true" />
+<h4>Tier</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="TierNumber" class="control-label"></label>
+                <input asp-for="TierNumber" class="form-control" />
+                <span asp-validation-for="TierNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TierPrice" class="control-label"></label>
+                <input asp-for="TierPrice" class="form-control" />
+                <span asp-validation-for="TierPrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TierName" class="control-label"></label>
+                <input asp-for="TierName" class="form-control" />
+                <span asp-validation-for="TierName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UpperLimit" class="control-label"></label>
+                <input asp-for="UpperLimit" class="form-control" />
+                <span asp-validation-for="UpperLimit" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

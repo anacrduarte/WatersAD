@@ -1,4 +1,5 @@
-﻿using WatersAD.Data.Entities;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using WatersAD.Data.Entities;
 
 namespace WatersAD.Data.Repository
 {
@@ -11,5 +12,7 @@ namespace WatersAD.Data.Repository
         Task<Client> GetClientWithWaterMeter(int clientId);
 
         IEnumerable<Client> GetAllWithLocalitiesAndWaterMeterInactive();
+
+        IEnumerable<SelectListItem> GetComboClients();
     }
 }

@@ -23,6 +23,10 @@ namespace WatersAD.Data.Repository
 
         Task UpdateWaterServiceAsync(WaterMeterService waterMeter);
 
-       
+        IEnumerable<SelectListItem> GetComboWaterMeter();
+
+        Task<WaterMeter?> GetWaterMeterWithConsumptionsAsync(int waterMeterId);
+
+
     }
 }

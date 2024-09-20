@@ -86,6 +86,44 @@ namespace WatersAD.Helpers
         /// </summary>
         /// <param name="roleName">The name of the role </param>
         /// <returns>Users who are assigned to the specified role.</returns>
-        Task<IEnumerable<User>> GetUsersWithRole(UserType roleName);
+        Task<IEnumerable<User?>> GetUsersWithRole(UserType roleName);
+
+        /// <summary>
+        /// Generates an email confirmation token for the given user.
+        /// </summary>
+        /// <param name="user">The user for whom the confirmation token is generated.</param>
+        /// <returns>A token used to confirm the user's email address.</returns>
+        Task<string> GenerateEmailConfirmationTokenAsync(User user);
+
+        /// <summary>
+        ///  Confirms the user's email using the provided token.
+        /// </summary>
+        /// <param name="user">The user whose email is being confirmed.</param>
+        /// <param name="token">The token used to confirm the email.</param>
+        /// <returns>An IdentityResult indicating success or failure of the email confirmation.</returns>
+        Task<IdentityResult> ConfirmEmailAsync(User user, string token);
+
+        /// <summary>
+        /// Retrieves a user by their unique identifier.
+        /// </summary>
+        /// <param name="userId">The unique identifier of the user.</param>
+        /// <returns>The user associated with the specified identifier.</returns>
+        Task<User?> GetUserAsync(Guid userId);
+
+        /// <summary>
+        /// Generates a password reset token for the specified user.
+        /// </summary>
+        /// <param name="user">The user for whom the password reset token is generated.</param>
+        /// <returns>A token used to reset the user's password.</returns>
+        Task<string> GeneratePasswordResetTokenAsync(User user);
+
+        /// <summary>
+        ///  Resets the user's password using the provided token and new password.
+        /// </summary>
+        /// <param name="user">The user whose password is being reset.</param>
+        /// <param name="token">The token used to verify the password reset request.</param>
+        /// <param name="password">The new password to set for the user.</param>
+        /// <returns>An IdentityResult indicating success or failure of the password reset.</returns>
+        Task<IdentityResult> ResetPasswordAsync(User user, string token, string password);
     }
 }

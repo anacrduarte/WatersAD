@@ -16,19 +16,22 @@ namespace WatersAD.Controllers
         private readonly IFlashMessage _flashMessage;
         private readonly ICountryRepository _countryRepository;
         private readonly IConverterHelper _converterHelper;
+        private readonly IMailHelper _mailHelper;
         private readonly IUserHelper _userHelper;
 
         public EmployeesController(IEmployeeRepository employeeRepository,
             IUserHelper userHelper,
             IFlashMessage flashMessage,
             ICountryRepository countryRepository,
-            IConverterHelper converterHelper)
+            IConverterHelper converterHelper, 
+            IMailHelper mailHelper)
         {
 
             _employeeRepository = employeeRepository;
             _flashMessage = flashMessage;
             _countryRepository = countryRepository;
             _converterHelper = converterHelper;
+            _mailHelper = mailHelper;
             _userHelper = userHelper;
         }
 
@@ -95,7 +98,7 @@ namespace WatersAD.Controllers
 
                 if (associatedUser == null)
                 {
-                    //TODO enviar notificação ao funcionario ou email para activar conta
+                    
                     var newUser = new User
                     {
                         FirstName = employee.FirstName,
@@ -116,12 +119,33 @@ namespace WatersAD.Controllers
                         _flashMessage.Danger("Erro ao criar utilizador.");
                         return View(employee);
                     }
-
-
                     await _userHelper.AddUserToRoleAsync(newUser, Enum.UserType.Employee.ToString());
+                    string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(newUser);
+                    string? tokenLink = Url.Action("ConfirmEmail", "Account", new
+                    {
+                        userid = newUser.Id,
+                        token = myToken
+                    }, protocol: HttpContext.Request.Scheme);
+
+                    Response response = _mailHelper.SendMail(
+                        $"{model.FirstName} {model.LastName}",
+                        model.Email!,
+                        "Waters AD - Confirmação de Email",
+                        $"<h1>Waters AD - Confirmação de Email</h1>" +
+                            $"Clique no link para poder entrar como utilizador:, " +
+                            $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>");
+
+                    if (response.IsSuccess)
+                    {
+                        ViewBag.Message = "As instruções para poder entrar foram enviadas para o seu email.";
+                        employee.User = newUser;
+                    }
 
 
-                    employee.User = newUser;
+                    
+
+
+                    
                 }
                 else
                 {

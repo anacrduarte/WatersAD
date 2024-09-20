@@ -1,0 +1,58 @@
+﻿@model IEnumerable<WatersAD.Data.Entities.Consumption>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<a asp-action="Create">Create New</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ConsumptionDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RegistrationDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ConsumptionValue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WaterMeter.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WaterMeter.Client.FullName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ConsumptionDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RegistrationDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ConsumptionValue)
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WaterMeter.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.WaterMeter.Client.FullName)
+                </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

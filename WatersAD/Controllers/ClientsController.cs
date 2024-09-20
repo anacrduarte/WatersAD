@@ -17,6 +17,8 @@ namespace WatersAD.Controllers
         private readonly ICountryRepository _countryRepository;
         private readonly IConverterHelper _converterHelper;
         private readonly IWaterMeterRepository _waterMeterRepository;
+        private readonly IConsumptionRepository _consumptionRepository;
+        private readonly IMailHelper _mailHelper;
 
         public ClientsController(
             IClientRepository clientRepository,
@@ -24,7 +26,9 @@ namespace WatersAD.Controllers
             IFlashMessage flashMessage,
             ICountryRepository countryRepository,
             IConverterHelper converterHelper,
-            IWaterMeterRepository waterMeterRepository
+            IWaterMeterRepository waterMeterRepository,
+            IConsumptionRepository consumptionRepository,
+            IMailHelper mailHelper
             )
         {
 
@@ -34,6 +38,8 @@ namespace WatersAD.Controllers
             _countryRepository = countryRepository;
             _converterHelper = converterHelper;
             _waterMeterRepository = waterMeterRepository;
+            _consumptionRepository = consumptionRepository;
+            _mailHelper = mailHelper;
         }
 
         // GET: Clients
@@ -108,6 +114,7 @@ namespace WatersAD.Controllers
                         PhoneNumber = client.PhoneNumber,
                         
                     };
+                    
 
                     
                     var result = await _userHelper.AddUserAsync(newUser, "123456"); 
@@ -122,8 +129,28 @@ namespace WatersAD.Controllers
                    
                     await _userHelper.AddUserToRoleAsync(newUser, Enum.UserType.Customer.ToString());
 
+                    string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(newUser);
+                    string? tokenLink = Url.Action("ConfirmEmail", "Account", new
+                    {
+                        userid = newUser.Id,
+                        token = myToken
+                    }, protocol: HttpContext.Request.Scheme);
+
+                    Response response = _mailHelper.SendMail(
+                        $"{model.FirstName} {model.LastName}",
+                        model.Email!,
+                        "Waters AD- Confirmação de Email",
+                        $"<h1>Waters AD- Confirmação de Email</h1>" +
+                            $"Clique no link para poder entrar como utilizador:, " +
+                            $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>");
+
+                    if (response.IsSuccess)
+                    {
+                        ViewBag.Message = "As instruções para poder entrar foram enviadas para o seu email.";
+                        client.User = newUser;
+                    }
+
                     
-                    client.User = newUser;
                 }
                 else
                 {
@@ -334,9 +361,22 @@ namespace WatersAD.Controllers
                     InstallationDate = model.InstallationDate,
                     PostalCode = model.PostalCode,
                     RemainPostalCode = model.RemainPostalCode,
+                    Consumptions = new List<Consumption>(),
                 };
 
                 await _waterMeterRepository.CreateAsync(waterMeter);
+
+                var consumption = new Consumption
+                {
+                    ConsumptionDate = DateTime.UtcNow,
+                    RegistrationDate = DateTime.UtcNow,
+                    ConsumptionValue = 0,
+                    WaterMeter = waterMeter,
+                };
+
+                await _consumptionRepository.CreateAsync(consumption);
+
+                waterMeter.Consumptions.Add(consumption);
 
 
                 waterMeter.WaterMeterService = waterMeterService;
@@ -358,7 +398,7 @@ namespace WatersAD.Controllers
         }
 
         
-        // GET: 
+         
         public IActionResult FormerClients()
         {
             return View(_clientRepository.GetAllWithLocalitiesAndWaterMeterInactive());

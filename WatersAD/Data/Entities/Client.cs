@@ -59,6 +59,8 @@ namespace WatersAD.Data.Entities
 
         public bool IsActive { get; set; } = true;
 
+        public ICollection<Invoice>? Invoices { get; set; }
+
         [Display(Name = "Name")]
         public string? FullName
         {

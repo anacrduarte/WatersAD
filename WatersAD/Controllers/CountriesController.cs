@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Metrics;
 using Vereyon.Web;
 using WatersAD.Data.Entities;
 using WatersAD.Data.Repository;
@@ -50,8 +49,6 @@ namespace WatersAD.Controllers
         }
 
         // POST: Countries/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Country country)
@@ -92,8 +89,6 @@ namespace WatersAD.Controllers
         }
 
         // POST: Countries/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Country country)
@@ -268,7 +263,7 @@ namespace WatersAD.Controllers
                 //TODO alterar para view de erro ou para a do pais
                 return this.RedirectToAction("Details", new { id = countryId });
             }
-            
+
         }
 
 
@@ -317,7 +312,7 @@ namespace WatersAD.Controllers
                 return NotFound();
             }
 
-            var model = new LocalityViewModel { LocalityId = locality.Id, Name = locality.Name, PostalCode = locality.PostalCode, RemainPostalCode = locality.RemainPostalCode, CityId = locality.CityId };
+            var model = new LocalityViewModel { LocalityId = locality.Id, Name = locality.Name, CityId = locality.CityId };
             return View(model);
         }
 
@@ -335,8 +330,7 @@ namespace WatersAD.Controllers
                 }
 
                 locality.Name = model.Name;
-                locality.PostalCode = model.PostalCode;
-                locality.RemainPostalCode = model.RemainPostalCode;
+                
 
                 var cityId = await _countryRepository.UpdateLocalityAsync(locality);
                 if (cityId != 0)
@@ -348,7 +342,7 @@ namespace WatersAD.Controllers
             return this.View(model);
         }
 
-   
+
 
         // GET: Countries/DeleteLocality/5
         public async Task<IActionResult> DeleteLocality(int? id)

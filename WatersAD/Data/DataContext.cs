@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Metrics;
 using WatersAD.Data.Entities;
 
 namespace WatersAD.Data
 {
     public class DataContext : IdentityDbContext<User>
     {
-        public DataContext(DbContextOptions<DataContext> options): base(options) 
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
-            
+
         }
 
         public DbSet<Client> Clients { get; set; }
@@ -24,11 +23,17 @@ namespace WatersAD.Data
 
         public DbSet<WaterMeter> WaterMeters { get; set; }
 
-        public DbSet<WaterMeterService> WaterMeterServices{ get; set; }
+        public DbSet<WaterMeterService> WaterMeterServices { get; set; }
+
+        public DbSet<Tier> Tiers { get; set; }
+
+        public DbSet<Consumption> Consumptions { get; set; }
+
+        public DbSet<Invoice> Invoices { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-            //Ver se faz sentido
+
             var cascadeFKs = modelBuilder.Model
                 .GetEntityTypes()
                 .SelectMany(t => t.GetForeignKeys())
@@ -43,6 +48,7 @@ namespace WatersAD.Data
             modelBuilder.Entity<Client>().HasIndex(c => c.NIF).IsUnique();
             modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<City>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<Tier>().HasIndex(c => c.TierNumber).IsUnique();
 
             base.OnModelCreating(modelBuilder);
         }

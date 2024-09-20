@@ -72,8 +72,12 @@ namespace WatersAD.Helpers
             return roles;
 
         }
+        public async Task<User?> GetUserAsync(Guid userId)
+        {
+            return await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == userId.ToString());
+        }
 
-        public async Task<User> GetUserByEmailAsync(string email)
+        public async Task<User?> GetUserByEmailAsync(string email)
         {
             return await _userManager.FindByEmailAsync(email);
         }
@@ -89,7 +93,7 @@ namespace WatersAD.Helpers
                 model.UserName,
                 model.Password,
                 model.RememberMe,
-                false);
+                true);
         }
 
         public async Task LogoutAsync()
@@ -111,11 +115,24 @@ namespace WatersAD.Helpers
                 .OrderBy(u => u.FirstName).ToListAsync();
         }
 
-        //public IQueryable<User> GetUsersWithRole(string roleName)
-        //{
-        //    return _userManager.Users
-        //        .Where(u => u.UserType.Equals(roleName))
-        //        .OrderBy(u => u.FirstName);
-        //}
+        public async Task<string> GenerateEmailConfirmationTokenAsync(User user)
+        {
+            return await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        }
+
+        public async Task<IdentityResult> ConfirmEmailAsync(User user, string token)
+        {
+            return await _userManager.ConfirmEmailAsync(user, token);
+        }
+
+        public async Task<string> GeneratePasswordResetTokenAsync(User user)
+        {
+            return await _userManager.GeneratePasswordResetTokenAsync(user);
+        }
+
+        public async Task<IdentityResult> ResetPasswordAsync(User user, string token, string password)
+        {
+            return await _userManager.ResetPasswordAsync(user, token, password);
+        }
     }
 }

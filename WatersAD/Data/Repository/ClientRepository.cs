@@ -49,5 +49,24 @@ namespace WatersAD.Data.Repository
                 .Include(c=> c.WaterMeters)
                 .FirstOrDefaultAsync(c => c.Id == clientId);
         }
+
+        //TODO arranjar outra maneira de mostar os clientes, nao o estou a usar se nao for necessario retirar
+        public IEnumerable<SelectListItem> GetComboClients()
+        {
+            var list = _context.Clients.Select(c => new SelectListItem
+            {
+                Text = c.FirstName,
+                Value = c.Id.ToString(),
+
+            }).OrderBy(l => l.Text).ToList();
+
+            list.Insert(0, new SelectListItem
+            {
+                Text = "(Select a Customer...)",
+                Value = "0",
+            });
+
+            return list;
+        }
     }
 }

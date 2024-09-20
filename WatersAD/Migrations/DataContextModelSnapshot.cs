@@ -251,6 +251,43 @@ namespace WatersAD.Migrations
                     b.ToTable("Clients");
                 });
 
+            modelBuilder.Entity("WatersAD.Data.Entities.Consumption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ConsumptionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("ConsumptionValue")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("TierId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WaterMeterId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("TierId");
+
+                    b.HasIndex("WaterMeterId");
+
+                    b.ToTable("Consumptions");
+                });
+
             modelBuilder.Entity("WatersAD.Data.Entities.Country", b =>
                 {
                     b.Property<int>("Id")
@@ -339,6 +376,36 @@ namespace WatersAD.Migrations
                     b.ToTable("Employees");
                 });
 
+            modelBuilder.Entity("WatersAD.Data.Entities.Invoice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("InvoiceDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Issued")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Sent")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("Invoices");
+                });
+
             modelBuilder.Entity("WatersAD.Data.Entities.Locality", b =>
                 {
                     b.Property<int>("Id")
@@ -346,6 +413,9 @@ namespace WatersAD.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Available")
+                        .HasColumnType("bit");
 
                     b.Property<int>("CityId")
                         .HasColumnType("int");
@@ -355,20 +425,40 @@ namespace WatersAD.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)");
-
-                    b.Property<string>("RemainPostalCode")
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CityId");
 
                     b.ToTable("Localities");
+                });
+
+            modelBuilder.Entity("WatersAD.Data.Entities.Tier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("TierName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte>("TierNumber")
+                        .HasColumnType("tinyint");
+
+                    b.Property<double>("TierPrice")
+                        .HasColumnType("float");
+
+                    b.Property<double>("UpperLimit")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TierNumber")
+                        .IsUnique();
+
+                    b.ToTable("Tiers");
                 });
 
             modelBuilder.Entity("WatersAD.Data.Entities.User", b =>
@@ -611,6 +701,27 @@ namespace WatersAD.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WatersAD.Data.Entities.Consumption", b =>
+                {
+                    b.HasOne("WatersAD.Data.Entities.Invoice", "Invoice")
+                        .WithMany()
+                        .HasForeignKey("InvoiceId");
+
+                    b.HasOne("WatersAD.Data.Entities.Tier", "Tier")
+                        .WithMany()
+                        .HasForeignKey("TierId");
+
+                    b.HasOne("WatersAD.Data.Entities.WaterMeter", "WaterMeter")
+                        .WithMany("Consumptions")
+                        .HasForeignKey("WaterMeterId");
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("Tier");
+
+                    b.Navigation("WaterMeter");
+                });
+
             modelBuilder.Entity("WatersAD.Data.Entities.Employee", b =>
                 {
                     b.HasOne("WatersAD.Data.Entities.Locality", "Locality")
@@ -626,6 +737,17 @@ namespace WatersAD.Migrations
                     b.Navigation("Locality");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WatersAD.Data.Entities.Invoice", b =>
+                {
+                    b.HasOne("WatersAD.Data.Entities.Client", "Client")
+                        .WithMany("Invoices")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Client");
                 });
 
             modelBuilder.Entity("WatersAD.Data.Entities.Locality", b =>
@@ -673,12 +795,19 @@ namespace WatersAD.Migrations
 
             modelBuilder.Entity("WatersAD.Data.Entities.Client", b =>
                 {
+                    b.Navigation("Invoices");
+
                     b.Navigation("WaterMeters");
                 });
 
             modelBuilder.Entity("WatersAD.Data.Entities.Country", b =>
                 {
                     b.Navigation("Cities");
+                });
+
+            modelBuilder.Entity("WatersAD.Data.Entities.WaterMeter", b =>
+                {
+                    b.Navigation("Consumptions");
                 });
 #pragma warning restore 612, 618
         }
