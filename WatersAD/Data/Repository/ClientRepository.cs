@@ -50,6 +50,7 @@ namespace WatersAD.Data.Repository
                 .FirstOrDefaultAsync(c => c.Id == clientId);
         }
 
+      
         //TODO arranjar outra maneira de mostar os clientes, nao o estou a usar se nao for necessario retirar
         public IEnumerable<SelectListItem> GetComboClients()
         {

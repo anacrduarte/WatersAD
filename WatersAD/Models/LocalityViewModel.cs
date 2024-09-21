@@ -13,14 +13,5 @@ namespace WatersAD.Models
         [MaxLength(50, ErrorMessage = "The field {0} can contain {1} characters.")]
         public string Name { get; set; }
 
-        [Required]
-        [Display(Name = "Codigo-Postal")]
-        [MaxLength(50, ErrorMessage = "The field {0} can contain {1} characters.")]
-        public string PostalCode { get; set; }
-
-        [Required]
-        [Display(Name = "Codigo-Postal")]
-        [MaxLength(3, ErrorMessage = "The field {0} can contain {1} characters.")]
-        public string? RemainPostalCode { get; set; }
     }
 }

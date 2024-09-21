@@ -53,14 +53,14 @@ namespace WatersAD.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("ClientNotFound");
             }
 
             var client = await _clientRepository.GetClientAndLocalityAndCityAsync(id.Value);
 
             if (client == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("ClientNotFound");
             }
 
             var model = _converterHelper.ToClientViewModel(client);
@@ -73,14 +73,25 @@ namespace WatersAD.Controllers
         // GET: Clients/Create
         public IActionResult Create()
         {
-            var model = new ClientViewModel
+
+            try
             {
-                Countries = _countryRepository.GetComboCountries(),
-                Cities = _countryRepository.GetComboCities(0),
-                Localities = _countryRepository.GetComboLocalities(0),
-                WaterMeterServices = _waterMeterRepository.GetComboWaterMeterServices(),
-            };
-            return View(model);
+                var model = new ClientViewModel
+                {
+                    Countries = _countryRepository.GetComboCountries(),
+                    Cities = _countryRepository.GetComboCities(0),
+                    Localities = _countryRepository.GetComboLocalities(0),
+                    WaterMeterServices = _waterMeterRepository.GetComboWaterMeterServices(),
+                };
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+
+                _flashMessage.Danger("Ocorreu um erro ao carregar as localidades: " + ex.Message);
+
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         // POST: Clients/Create
@@ -91,91 +102,97 @@ namespace WatersAD.Controllers
         {
             if (ModelState.IsValid)
             {
-                var locality = await _countryRepository.GetLocalityAsync(model.LocalityId);
-
-                
-                var client = _converterHelper.ToCliente(model, locality);
-
-                client.Locality = locality;               
-
-                var associatedUser = await _userHelper.GetUserByEmailAsync(client.Email);
-
-                if (associatedUser == null)
+              
+                try
                 {
-                    //TODO enviar notificação ao cliente ou email para activar conta
-                    var newUser = new User
+                    var locality = await _countryRepository.GetLocalityAsync(model.LocalityId);
+                    if (locality == null)
                     {
-                        FirstName = client.FirstName,
-                        LastName = client.LastName,
-                        Email = client.Email,
-                        UserName = client.Email,
-                        UserType = Enum.UserType.Customer,
-                        Address = client.Address,
-                        PhoneNumber = client.PhoneNumber,
+                        _flashMessage.Danger("Localidade inválida.");
+                        return View(model);
+                    }
+
+                    var client = _converterHelper.ToCliente(model, locality);
+
+                    client.Locality = locality;
+
+                    var associatedUser = await _userHelper.GetUserByEmailAsync(client.Email);
+
+                    if (associatedUser == null)
+                    {
                         
-                    };
-                    
+                        var newUser = new User
+                        {
+                            FirstName = client.FirstName,
+                            LastName = client.LastName,
+                            Email = client.Email,
+                            UserName = client.Email,
+                            UserType = Enum.UserType.Customer,
+                            Address = client.Address,
+                            PhoneNumber = client.PhoneNumber,
 
-                    
-                    var result = await _userHelper.AddUserAsync(newUser, "123456"); 
+                        };
 
-                    if (!result.Succeeded)
-                    {
-                       
-                        _flashMessage.Danger("Erro ao criar utilizador.");
-                        return View(client);
+
+
+                        var result = await _userHelper.AddUserAsync(newUser, "123456");
+
+                        if (!result.Succeeded)
+                        {
+
+                            _flashMessage.Danger("Erro ao criar utilizador.");
+                            return View(model);
+                        }
+
+
+                        await _userHelper.AddUserToRoleAsync(newUser, Enum.UserType.Customer.ToString());
+
+                        Response response = await SendConfirmationEmailAsync(newUser, client.Email);
+
+
+                        if (!response.IsSuccess)
+                        {
+                            _flashMessage.Danger("Erro ao enviar email de confirmação.");
+                        }
+                        else
+                        {
+                            _flashMessage.Info("Instruções de confirmação de email foram enviadas para o email do cliente.");
+                            client.User = newUser;
+                        }
+
+
                     }
-
-                   
-                    await _userHelper.AddUserToRoleAsync(newUser, Enum.UserType.Customer.ToString());
-
-                    string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(newUser);
-                    string? tokenLink = Url.Action("ConfirmEmail", "Account", new
+                    else
                     {
-                        userid = newUser.Id,
-                        token = myToken
-                    }, protocol: HttpContext.Request.Scheme);
 
-                    Response response = _mailHelper.SendMail(
-                        $"{model.FirstName} {model.LastName}",
-                        model.Email!,
-                        "Waters AD- Confirmação de Email",
-                        $"<h1>Waters AD- Confirmação de Email</h1>" +
-                            $"Clique no link para poder entrar como utilizador:, " +
-                            $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>");
+                        if (associatedUser.UserType != Enum.UserType.Customer)
+                        {
+                            associatedUser.UserType = Enum.UserType.Customer;
+                            await _userHelper.UpdateUserAsync(associatedUser);
+                        }
 
-                    if (response.IsSuccess)
-                    {
-                        ViewBag.Message = "As instruções para poder entrar foram enviadas para o seu email.";
-                        client.User = newUser;
+                        client.User = associatedUser;
+
+                        if (!await _userHelper.IsUserInRoleAsync(associatedUser, Enum.UserType.Customer.ToString()))
+                        {
+                            await _userHelper.AddUserToRoleAsync(associatedUser, Enum.UserType.Customer.ToString());
+                        }
                     }
+                    await _clientRepository.CreateAsync(client);
 
-                    
+
+                    return RedirectToAction(nameof(Index));
                 }
-                else
+                catch (Exception ex)
                 {
-
-                    if (associatedUser.UserType != Enum.UserType.Customer)
-                    {
-                        associatedUser.UserType = Enum.UserType.Customer;
-                        await _userHelper.UpdateUserAsync(associatedUser);
-                    }
-
-                    client.User = associatedUser;
-
-                    if (!await _userHelper.IsUserInRoleAsync(associatedUser, Enum.UserType.Customer.ToString()))
-                    {
-                        await _userHelper.AddUserToRoleAsync(associatedUser, Enum.UserType.Customer.ToString());
-                    }
+                    _flashMessage.Danger("Ocorreu um erro ao criar o cliente: " + ex.Message);
+                    
+                    return View(model);
                 }
-                await _clientRepository.CreateAsync(client);
-                
-
-                return RedirectToAction(nameof(Index));
             }
 
+            _flashMessage.Warning("Por favor, corrija os erros no formulário.");
             return View(model);
-
            
         }
 
@@ -187,21 +204,31 @@ namespace WatersAD.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("ClientNotFound");
             }
 
             var client = await _clientRepository.GetClientAndLocalityAndCityAsync(id.Value);
 
             if (client == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("ClientNotFound");
             }
-            var model = _converterHelper.ToClientViewModel(client);
-            model.Countries = _countryRepository.GetComboCountries();
-            model.Cities = _countryRepository.GetComboCities(model.CountryId);
-            model.Localities = _countryRepository.GetComboLocalities(model.CityId);
+            try
+            {
+                var model = _converterHelper.ToClientViewModel(client);
+                model.Countries = _countryRepository.GetComboCountries();
+                model.Cities = _countryRepository.GetComboCities(model.CountryId);
+                model.Localities = _countryRepository.GetComboLocalities(model.CityId);
 
-            return View(model);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+
+                _flashMessage.Danger("Ocorreu um erro ao carregar as localidades: " + ex.Message);
+
+                return RedirectToAction(nameof(Index));
+            }
         }
 
 
@@ -214,22 +241,18 @@ namespace WatersAD.Controllers
 
             if (ModelState.IsValid)
             {
-
-               
-
                 try
                 {
                     var client = await _clientRepository.GetByIdAsync(model.ClientId);
 
                     if (client == null)
                     {
-                        return NotFound();
+                        return new NotFoundViewResult("ClientNotFound");
                     }
 
                     client.FirstName = model.FirstName;
                     client.LastName = model.LastName;
                     client.Address = model.Address;
-                    client.Email = model.Email;
                     client.PhoneNumber = model.PhoneNumber;
                     client.NIF = model.NIF;
                     client.User = model.User;
@@ -239,6 +262,8 @@ namespace WatersAD.Controllers
                     client.RemainPostalCode = model.RemainPostalCode;
 
                     await _clientRepository.UpdateAsync(client);
+                    _flashMessage.Confirmation("Cliente atualizado com sucesso!");
+
                 }
                 catch (Exception ex)
                 {
@@ -246,7 +271,8 @@ namespace WatersAD.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(model);
+            _flashMessage.Warning("Por favor, corrija os erros no formulário.");
+            return View(nameof(Index));
         }
 
         // GET: Clients/Delete/5
@@ -255,29 +281,36 @@ namespace WatersAD.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("ClientNotFound");
             }
-            var client = await _clientRepository.GetClientWithWaterMeter(id.Value);
-
-            if(client == null)
-            { 
-                return NotFound(); 
-            }
-
-            if (client.WaterMeters != null && client.WaterMeters.Any())
+            try
             {
-                _flashMessage.Warning("Tem que desativar primeiro os contadores antes de remover o cliente");
+               
+                var client = await _clientRepository.GetClientWithWaterMeter(id.Value);
+
+                if (client == null)
+                {
+                    return new NotFoundViewResult("ClientNotFound");
+                }
+
+                if (client.WaterMeters != null && client.WaterMeters.Any())
+                {
+                    _flashMessage.Warning("Tem que desativar primeiro os contadores antes de remover o cliente");
+                    return RedirectToAction(nameof(Index));
+
+                }
+                client.IsActive = false;
+                await _clientRepository.UpdateAsync(client);
                 return RedirectToAction(nameof(Index));
-
             }
-            client.IsActive = false;
-            await _clientRepository.UpdateAsync(client);
+            catch (Exception ex)
+            {
+                _flashMessage.Danger($"Erro ao desativar o cliente: {ex.Message}");
+                return RedirectToAction(nameof(Index));
+            }
 
-            return RedirectToAction(nameof(Index));
+            
         }
-
-     
-
 
 
         [Authorize(Roles = "Admin")]
@@ -286,33 +319,49 @@ namespace WatersAD.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("ClientNotFound");
             }
 
-            var client = await _clientRepository.GetClientAndLocalityAndCityAsync(id.Value);
-
-            if (client == null)
+            try
             {
-                return NotFound();
+                var client = await _clientRepository.GetClientAndLocalityAndCityAsync(id.Value);
+
+                if (client == null)
+                {
+                    return new NotFoundViewResult("ClientNotFound");
+                }
+
+                var model = new WaterMeterViewModel
+                {
+                    ClientId = client.Id,
+                    Address = client.Address,
+                    HouseNumber = client.HouseNumber,
+                    PostalCode = client.PostalCode,
+                    RemainPostalCode = client.RemainPostalCode,
+                    LocalityId = client.Locality.Id,
+                    CityId = client.Locality.City.Id,
+                    CountryId = client.Locality.City.Country.Id,
+                    Countries = _countryRepository.GetComboCountries(),
+                    Cities = _countryRepository.GetComboCities(client.Locality.City.Country.Id),
+                    Localities = _countryRepository.GetComboLocalities(client.Locality.City.Id),
+                    WaterMeterServices = _waterMeterRepository.GetComboWaterMeterServices(),
+                };
+
+                if (!model.Countries.Any() || !model.Cities.Any() || !model.Localities.Any())
+                {
+                    _flashMessage.Warning("Não foi possível carregar as listas de Países, Cidades ou Localidades.");
+                    return RedirectToAction(nameof(Index));
+                }
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _flashMessage.Danger($"Erro ao carregar os dados do cliente: {ex.Message}");
+                return RedirectToAction(nameof(Index));
             }
 
-            var model = new WaterMeterViewModel
-            {
-                ClientId = client.Id,
-                Address = client.Address,
-                HouseNumber = client.HouseNumber,
-                PostalCode = client.PostalCode,
-                RemainPostalCode = client.RemainPostalCode,
-                LocalityId = client.Locality.Id,
-                CityId = client.Locality.City.Id,
-                CountryId = client.Locality.City.Country.Id,
-                Countries = _countryRepository.GetComboCountries(),
-                Cities = _countryRepository.GetComboCities(client.Locality.City.Country.Id),
-                Localities = _countryRepository.GetComboLocalities(client.Locality.City.Id),
-                WaterMeterServices = _waterMeterRepository.GetComboWaterMeterServices(),
-            };
-
-            return View(model);
+            
         }
 
         // POST: Clients/AddWaterMeterToClient
@@ -324,76 +373,92 @@ namespace WatersAD.Controllers
         {
             if (ModelState.IsValid)
             {
-                var client = await _clientRepository.GetClientWithWaterMeter(model.ClientId);
-
-
-                if (client == null)
+                try
                 {
-                    return NotFound();
+                    var client = await _clientRepository.GetClientWithWaterMeter(model.ClientId);
+
+
+                    if (client == null)
+                    {
+                        return new NotFoundViewResult("ClientNotFound");
+                    }
+                    client.WaterMeters ??= new List<WaterMeter>();
+                  
+                    var locality = await _countryRepository.GetLocalityAsync(model.LocalityId);
+
+                    if (locality == null)
+                    {
+                        _flashMessage.Warning("Localidade não encontrada.");
+                        return View(model);
+                    }
+
+                    var waterMeterService = await _waterMeterRepository.GetWaterServiceByIdAsync(model.WaterMeterServicesId);
+
+
+                  
+                    if (waterMeterService == null)
+                    {
+                        _flashMessage.Warning("Contador não encontrado.");
+                        return View(model);
+                    }
+                    
+
+                    waterMeterService.Available = false;
+
+                    await _waterMeterRepository.UpdateWaterServiceAsync(waterMeterService);
+
+                    var waterMeter = new WaterMeter
+                    {
+                        ClientId = client.Id,
+                        LocalityId = locality.Id,
+                        WaterMeterServiceId = waterMeterService.Id,
+                        Address = model.Address,
+                        HouseNumber = model.HouseNumber,
+                        InstallationDate = model.InstallationDate,
+                        PostalCode = model.PostalCode,
+                        RemainPostalCode = model.RemainPostalCode,
+                        Consumptions = new List<Consumption>(),
+                    };
+
+                    await _waterMeterRepository.CreateAsync(waterMeter);
+
+                    var consumption = new Consumption
+                    {
+                        ConsumptionDate = DateTime.UtcNow,
+                        RegistrationDate = DateTime.UtcNow,
+                        ConsumptionValue = 0,
+                        WaterMeter = waterMeter,
+                    };
+
+                    await _consumptionRepository.CreateAsync(consumption);
+
+                    waterMeter.Consumptions.Add(consumption);
+                    waterMeter.WaterMeterService = waterMeterService;
+                    waterMeter.Locality = locality;
+                    waterMeter.Client = client;
+
+
+                    client.WaterMeters.Add(waterMeter);
+
+                    await _clientRepository.UpdateAsync(client);
+
+                    _flashMessage.Confirmation("Contador adicionado com sucesso");
+
+                    return RedirectToAction(nameof(Index));
                 }
-
-                if (client.WaterMeters == null)
+                catch (DbUpdateException dbEx)
                 {
-                    client.WaterMeters = new List<WaterMeter>();
+                    _flashMessage.Danger($"Erro ao atualizar o banco de dados: {dbEx.Message}");
+                    return RedirectToAction(nameof(Index));
                 }
-
-                var locality = await _countryRepository.GetLocalityAsync(model.LocalityId);
-
-                var waterMeterService = await _waterMeterRepository.GetWaterServiceByIdAsync(model.WaterMeterServicesId);
-
-
-                if (waterMeterService == null)
+                catch (Exception ex)
                 {
-                    return NotFound();
+                    _flashMessage.Danger($"Erro ao processar a solicitação: {ex.Message}");
+                    return RedirectToAction(nameof(Index));
                 }
-
-                waterMeterService.Available = false;
-
-                await _waterMeterRepository.UpdateWaterServiceAsync(waterMeterService);
-
-                var waterMeter = new WaterMeter
-                {
-                    ClientId = client.Id,
-                    LocalityId = locality.Id,
-                    WaterMeterServiceId = waterMeterService.Id,
-                    Address = model.Address,
-                    HouseNumber = model.HouseNumber,
-                    InstallationDate = model.InstallationDate,
-                    PostalCode = model.PostalCode,
-                    RemainPostalCode = model.RemainPostalCode,
-                    Consumptions = new List<Consumption>(),
-                };
-
-                await _waterMeterRepository.CreateAsync(waterMeter);
-
-                var consumption = new Consumption
-                {
-                    ConsumptionDate = DateTime.UtcNow,
-                    RegistrationDate = DateTime.UtcNow,
-                    ConsumptionValue = 0,
-                    WaterMeter = waterMeter,
-                };
-
-                await _consumptionRepository.CreateAsync(consumption);
-
-                waterMeter.Consumptions.Add(consumption);
-
-
-                waterMeter.WaterMeterService = waterMeterService;
-                waterMeter.Locality = locality;
-                waterMeter.Client = client;
-
-
-
-                client.WaterMeters.Add(waterMeter);
-
-                await _clientRepository.UpdateAsync(client);
-
-                _flashMessage.Confirmation("Contador adicionado com sucesso");
-
-                return RedirectToAction(nameof(Index));
             }
 
+            _flashMessage.Warning("Por favor, corrija os erros no formulário.");
             return View(model);
         }
 
@@ -408,55 +473,150 @@ namespace WatersAD.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("ClientNotFound");
+            }
+
+            try
+            {
+                var client = await _clientRepository.GetByIdAsync(id.Value);
+
+                if (client == null)
+                {
+                    return new NotFoundViewResult("ClientNotFound");
+                }
+
+                if (client.IsActive)
+                {
+                    _flashMessage.Info("O cliente já está ativo.");
+                    return RedirectToAction(nameof(FormerClients));
+                }
+                
+                
+                    client.IsActive = true;
+
+                    await _clientRepository.UpdateAsync(client);
+
+
+                _flashMessage.Confirmation("Cliente reativado com sucesso.");
+                return RedirectToAction(nameof(FormerClients));
+            }
+            catch (Exception ex)
+            {
+                _flashMessage.Danger($"Erro ao reativar o cliente: {ex.Message}");
+                return RedirectToAction(nameof(FormerClients));
+            }
+        }
+
+        public async Task<IActionResult> UpdateClientEmail(int? id)
+        {
+            if (id == null)
+            {
+                return new NotFoundViewResult("ClientNotFound");
             }
 
             var client = await _clientRepository.GetByIdAsync(id.Value);
-            if (client != null)
-            {
-                client.IsActive = true;
 
-                await _clientRepository.UpdateAsync(client);
+            if (client == null)
+            {
+                return new NotFoundViewResult("ClientNotFound");
             }
 
+            var model = new ChangeUserEmailViewModel { ClientId = id.Value, OldEmail = client.Email };
 
-            return RedirectToAction(nameof(FormerClients));
+            return View(model);
         }
-
 
 
 
         [HttpPost]
-        [Route("Clients/GetCitiesAsync")]
-        public async Task<JsonResult> GetCitiesAsync(int countryId)
+        public async Task<IActionResult> UpdateClientEmail(ChangeUserEmailViewModel model)
         {
-            var country = await _countryRepository.GetCountryWithCitiesAsync(countryId);
-
-            //return Json(country.Cities.OrderBy(c => c.Name));
-            var cities = country.Cities.Select(c => new
+            if (ModelState.IsValid)
             {
-                id = c.Id,
-                name = c.Name
-            }).OrderBy(c => c.name);
+                try
+                {
+                    var client = await _clientRepository.GetByIdAsync(model.ClientId);
 
-            return Json(cities);
+                    if (client == null)
+                    {
+                        return new NotFoundViewResult("ClientNotFound");
+                    }
+
+                    var user = await _userHelper.GetUserByEmailAsync(client.Email);
+
+                    if (user == null)
+                    {
+                        _flashMessage.Warning("Email do cliente não encontrado no sistema!");
+                        return View(model);
+                    }
+
+
+                    var associatedUser = await _userHelper.GetUserByEmailAsync(model.Email);
+
+                    if (associatedUser != null && associatedUser.Id != user.Id)
+                    {
+                        _flashMessage.Danger("O novo email já está associado a outro utilizador.");
+                        return View(model);
+                    }
+
+                    user.Email = model.Email;
+                    user.UserName = model.Email;
+                    var updateUserResult = await _userHelper.UpdateUserAsync(user);
+
+                    if (!updateUserResult.Succeeded)
+                    {
+                        _flashMessage.Danger("Erro ao atualizar o e-mail do usuário.");
+                        return View(model);
+                    }
+
+
+                    client.OldEmail = model.OldEmail;
+                    client.Email = model.Email;
+                    await _clientRepository.UpdateAsync(client);
+
+                    _flashMessage.Confirmation("E-mail do cliente atualizado com sucesso.");
+
+                    Response response = await SendConfirmationEmailAsync(user, model.Email);
+                    if (!response.IsSuccess)
+                    {
+                        _flashMessage.Danger("Erro ao enviar email de confirmação.");
+                    }
+                    else
+                    {
+                        _flashMessage.Info("Instruções de confirmação de email foram enviadas para o email do cliente.");
+
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    _flashMessage.Danger($"Erro ao processar a solicitação: {ex.Message}");
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            _flashMessage.Warning("Por favor, corrija os erros no formulário.");
+            return View(model);
         }
 
-        [HttpPost]
-        [Route("Clients/GetLocalitiesAsync")]
-        public async Task<JsonResult> GetLocalitiesAsync(int cityId)
+        private async Task<Response> SendConfirmationEmailAsync(User user, string email)
         {
-            var city = await _countryRepository.GetCitiesWithLocalitiesAsync(cityId);
+            string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
 
-            //return Json(country.Cities.OrderBy(c => c.Name));
-            var localities = city.Localities.Select(l => new
+            string? tokenLink = Url.Action("ConfirmEmail", "Account", new
             {
-                id = l.Id,
-                name = l.Name
-            }).OrderBy(l => l.name);
+                userid = user.Id,
+                token = myToken
+            }, protocol: HttpContext.Request.Scheme);
 
-            return Json(localities);
+            string subject = "Waters AD - Confirmação de Email";
+            string body = $"<h1>Waters AD - Confirmação de Email</h1>" +
+                          $"Clique no link para confirmar seu email e entrar como utilizador:" +
+                          $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>";
+
+            return _mailHelper.SendMail($"{user.FirstName} {user.LastName}", email, subject, body);
         }
+
 
 
     }

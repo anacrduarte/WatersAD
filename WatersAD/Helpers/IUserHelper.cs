@@ -86,7 +86,7 @@ namespace WatersAD.Helpers
         /// </summary>
         /// <param name="roleName">The name of the role </param>
         /// <returns>Users who are assigned to the specified role.</returns>
-        Task<IEnumerable<User?>> GetUsersWithRole(UserType roleName);
+        Task<IEnumerable<User>> GetUsersWithRole(UserType roleName);
 
         /// <summary>
         /// Generates an email confirmation token for the given user.
@@ -108,7 +108,7 @@ namespace WatersAD.Helpers
         /// </summary>
         /// <param name="userId">The unique identifier of the user.</param>
         /// <returns>The user associated with the specified identifier.</returns>
-        Task<User?> GetUserAsync(Guid userId);
+        Task<User> GetUserAsync(Guid userId);
 
         /// <summary>
         /// Generates a password reset token for the specified user.

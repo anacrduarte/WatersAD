@@ -1,16 +1,19 @@
 ﻿using MailKit.Net.Smtp;
 using MimeKit;
+using System.Security.Policy;
+using WatersAD.Data.Entities;
 
 namespace WatersAD.Helpers
 {
     public class MailHelper : IMailHelper
     {
         private readonly IConfiguration _configuration;
+        private readonly IUserHelper _userHelper;
 
-        public MailHelper(IConfiguration configuration)
+        public MailHelper(IConfiguration configuration, IUserHelper userHelper)
         {
             _configuration = configuration;
-
+           _userHelper = userHelper;
         }
 
         public Response SendMail(string toName, string toEmail, string subject, string body)
@@ -72,12 +75,9 @@ namespace WatersAD.Helpers
                     Result = ex
                 };
 
-
-
-
-
-
             }
         }
+
+
     }
 }

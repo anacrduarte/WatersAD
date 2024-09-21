@@ -20,8 +20,8 @@ namespace WatersAD.Helpers
         [MaxLength(100, ErrorMessage = "The field {0} only can contain {1} characters length.")]
         public string Address { get; set; }
 
-        [Required]
-        public string Email { get; set; }
+
+        public string? Email { get; set; }
 
         public User? User { get; set; }
 

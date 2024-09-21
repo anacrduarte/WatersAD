@@ -2,6 +2,7 @@
 using Vereyon.Web;
 using WatersAD.Data.Entities;
 using WatersAD.Data.Repository;
+using WatersAD.Helpers;
 
 namespace WatersAD.Controllers
 {
@@ -61,14 +62,14 @@ namespace WatersAD.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("TierNotFound");
             }
 
             var tier = await _tierRepository.GetByIdAsync(id.Value);
 
             if (tier == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("TierNotFound");
             }
             return View(tier);
         }
@@ -103,12 +104,23 @@ namespace WatersAD.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var tier = await _tierRepository.GetByIdAsync(id);
-            if (tier != null)
+            
+            try
             {
+                var tier = await _tierRepository.GetByIdAsync(id);
+                if (tier == null)
+                {
+                    return new NotFoundViewResult("TierNotFound");
+
+                }
+
                 await _tierRepository.DeleteAsync(tier);
             }
-
+            catch (Exception ex)
+            {
+                _flashMessage.Warning($"Erro a apagar escalão! { ex.Message}");
+                throw;
+            }
             return RedirectToAction(nameof(Index));
         }
 

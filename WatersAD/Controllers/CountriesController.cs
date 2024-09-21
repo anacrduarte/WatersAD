@@ -362,5 +362,37 @@ namespace WatersAD.Controllers
             return this.RedirectToAction("DetailsCity", new { id = cityId });
         }
 
+        [HttpPost]
+        [Route("Countries/GetCitiesAsync")]
+        public async Task<JsonResult> GetCitiesAsync(int countryId)
+        {
+            var country = await _countryRepository.GetCountryWithCitiesAsync(countryId);
+
+            //return Json(country.Cities.OrderBy(c => c.Name));
+            var cities = country.Cities.Select(c => new
+            {
+                id = c.Id,
+                name = c.Name
+            }).OrderBy(c => c.name);
+
+            return Json(cities);
+        }
+
+        [HttpPost]
+        [Route("Countries/GetLocalitiesAsync")]
+        public async Task<JsonResult> GetLocalitiesAsync(int cityId)
+        {
+            var city = await _countryRepository.GetCitiesWithLocalitiesAsync(cityId);
+
+            //return Json(country.Cities.OrderBy(c => c.Name));
+            var localities = city.Localities.Select(l => new
+            {
+                id = l.Id,
+                name = l.Name
+            }).OrderBy(l => l.name);
+
+            return Json(localities);
+        }
+
     }
 }

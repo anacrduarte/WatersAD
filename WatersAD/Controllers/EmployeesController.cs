@@ -51,18 +51,28 @@ namespace WatersAD.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("EmployeeNotFound");
             }
 
-            var employee = await _employeeRepository.GetEmployeeAndLocalityAndCityAsync(id.Value);
-            if (employee == null)
+            try
             {
-                return NotFound();
+                var employee = await _employeeRepository.GetEmployeeAndLocalityAndCityAsync(id.Value);
+                if (employee == null)
+                {
+                    return new NotFoundViewResult("EmployeeNotFound");
+                }
+
+                var model = _converterHelper.ToEmployeeViewModel(employee);
+
+                return View(model);
             }
+            catch (Exception ex)
+            {
 
-            var model = _converterHelper.ToEmployeeViewModel(employee);
+                _flashMessage.Warning($"Erro! {ex.Message}");
 
-            return View(model);
+                return RedirectToAction(nameof(Index));
+            }
           
 
            
@@ -72,13 +82,22 @@ namespace WatersAD.Controllers
         // GET: Employees/Create
         public IActionResult Create()
         {
-            var model = new EmployeeViewModel
+            try
             {
-                Countries = _countryRepository.GetComboCountries(),
-                Cities = _countryRepository.GetComboCities(0),
-                Localities = _countryRepository.GetComboLocalities(0)
-            };
-            return View(model);
+                var model = new EmployeeViewModel
+                {
+                    Countries = _countryRepository.GetComboCountries(),
+                    Cities = _countryRepository.GetComboCities(0),
+                    Localities = _countryRepository.GetComboLocalities(0)
+                };
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+
+                _flashMessage.Warning($"Erro! {ex.Message}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         // POST: Employees/Create
@@ -88,86 +107,86 @@ namespace WatersAD.Controllers
         {
             if (ModelState.IsValid)
             {
-                var locality = await _countryRepository.GetLocalityAsync(model.LocalityId);
-
-                var employee = _converterHelper.ToEmployee(model, locality);
-
-                employee.Locality = locality;
-
-                var associatedUser = await _userHelper.GetUserByEmailAsync(employee.Email);
-
-                if (associatedUser == null)
-                {
-                    
-                    var newUser = new User
-                    {
-                        FirstName = employee.FirstName,
-                        LastName = employee.LastName,
-                        Email = employee.Email,
-                        UserName = employee.Email,
-                        UserType = Enum.UserType.Employee,
-                        Address = employee.Address,
-                        PhoneNumber = employee.PhoneNumber,
-                    };
-
-
-                    var result = await _userHelper.AddUserAsync(newUser, "123456");
-
-                    if (!result.Succeeded)
-                    {
-
-                        _flashMessage.Danger("Erro ao criar utilizador.");
-                        return View(employee);
-                    }
-                    await _userHelper.AddUserToRoleAsync(newUser, Enum.UserType.Employee.ToString());
-                    string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(newUser);
-                    string? tokenLink = Url.Action("ConfirmEmail", "Account", new
-                    {
-                        userid = newUser.Id,
-                        token = myToken
-                    }, protocol: HttpContext.Request.Scheme);
-
-                    Response response = _mailHelper.SendMail(
-                        $"{model.FirstName} {model.LastName}",
-                        model.Email!,
-                        "Waters AD - Confirmação de Email",
-                        $"<h1>Waters AD - Confirmação de Email</h1>" +
-                            $"Clique no link para poder entrar como utilizador:, " +
-                            $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>");
-
-                    if (response.IsSuccess)
-                    {
-                        ViewBag.Message = "As instruções para poder entrar foram enviadas para o seu email.";
-                        employee.User = newUser;
-                    }
-
-
-                    
-
-
-                    
-                }
-                else
+                try
                 {
 
-                    if (associatedUser.UserType != Enum.UserType.Employee)
+                    var locality = await _countryRepository.GetLocalityAsync(model.LocalityId);
+
+                    var employee = _converterHelper.ToEmployee(model, locality);
+
+                    employee.Locality = locality;
+
+                    var associatedUser = await _userHelper.GetUserByEmailAsync(employee.Email);
+
+                    if (associatedUser == null)
                     {
-                        associatedUser.UserType = Enum.UserType.Employee;
-                        await _userHelper.UpdateUserAsync(associatedUser);
+
+                        var newUser = new User
+                        {
+                            FirstName = employee.FirstName,
+                            LastName = employee.LastName,
+                            Email = employee.Email,
+                            UserName = employee.Email,
+                            UserType = Enum.UserType.Employee,
+                            Address = employee.Address,
+                            PhoneNumber = employee.PhoneNumber,
+                        };
+
+
+                        var result = await _userHelper.AddUserAsync(newUser, "123456");
+
+                        if (!result.Succeeded)
+                        {
+
+                            _flashMessage.Danger("Erro ao criar utilizador.");
+                            return View(employee);
+                        }
+
+                        await _userHelper.AddUserToRoleAsync(newUser, Enum.UserType.Employee.ToString());
+
+                        Response response = await SendConfirmationEmailAsync(newUser, model.Email);
+                        if (!response.IsSuccess)
+                        {
+                            _flashMessage.Danger("Erro ao enviar email de confirmação.");
+                        }
+                        else
+                        {
+                            _flashMessage.Info("Instruções de confirmação de email foram enviadas para o email do funcionário.");
+
+                        }
+
+                   
+
+                    }
+                    else
+                    {
+
+                        if (associatedUser.UserType != Enum.UserType.Employee)
+                        {
+                            associatedUser.UserType = Enum.UserType.Employee;
+                            await _userHelper.UpdateUserAsync(associatedUser);
+                        }
+
+                        employee.User = associatedUser;
+
+                        if (!await _userHelper.IsUserInRoleAsync(associatedUser, Enum.UserType.Employee.ToString()))
+                        {
+                            await _userHelper.AddUserToRoleAsync(associatedUser, Enum.UserType.Employee.ToString());
+                        }
                     }
 
-                    employee.User = associatedUser;
-
-                    if (!await _userHelper.IsUserInRoleAsync(associatedUser, Enum.UserType.Employee.ToString()))
-                    {
-                        await _userHelper.AddUserToRoleAsync(associatedUser, Enum.UserType.Employee.ToString());
-                    }
+                    await _employeeRepository.CreateAsync(employee);
+                    return RedirectToAction(nameof(Index));
                 }
+                catch (Exception ex)
+                {
+                    _flashMessage.Danger("Ocorreu um erro ao criar o funcionário: " + ex.Message);
 
-                await _employeeRepository.CreateAsync(employee);
-                return RedirectToAction(nameof(Index));
+                    return View(model);
+                }
             }
 
+            _flashMessage.Warning("Por favor, corrija os erros no formulário.");
             return View(model);
 
 
@@ -178,21 +197,30 @@ namespace WatersAD.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("EmployeeNotFound");
             }
 
-            var employee = await _employeeRepository.GetEmployeeAndLocalityAndCityAsync(id.Value);
-            if (employee == null)
+            try
             {
-                return NotFound();
+                var employee = await _employeeRepository.GetEmployeeAndLocalityAndCityAsync(id.Value);
+                if (employee == null)
+                {
+                    return new NotFoundViewResult("EmployeeNotFound");
+                }
+
+                var model = _converterHelper.ToEmployeeViewModel(employee);
+                model.Countries = _countryRepository.GetComboCountries();
+                model.Cities = _countryRepository.GetComboCities(model.CountryId);
+                model.Localities = _countryRepository.GetComboLocalities(model.CityId);
+
+                return View(model);
             }
+            catch (Exception ex)
+            {
+                _flashMessage.Danger("Ocorreu um erro " + ex.Message);
 
-            var model = _converterHelper.ToEmployeeViewModel(employee);
-            model.Countries = _countryRepository.GetComboCountries();
-            model.Cities = _countryRepository.GetComboCities(model.CountryId);
-            model.Localities = _countryRepository.GetComboLocalities(model.CityId);
-
-            return View(model);
+                return RedirectToAction(nameof(Index));
+            }
         }
         
 
@@ -211,13 +239,12 @@ namespace WatersAD.Controllers
 
                     if (employee == null)
                     {
-                        return NotFound();
+                        return new NotFoundViewResult("EmployeeNotFound");
                     }
 
                     employee.FirstName = model.FirstName;
                     employee.LastName = model.LastName;
                     employee.Address = model.Address;
-                    employee.Email = model.Email;
                     employee.PhoneNumber = model.PhoneNumber;
                     employee.NIF = model.NIF;
                     employee.User = model.User;
@@ -227,13 +254,16 @@ namespace WatersAD.Controllers
                     employee.RemainPostalCode = model.RemainPostalCode;
 
                     await _employeeRepository.UpdateAsync(employee);
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    _flashMessage.Danger("Erro ao actualizar!");
+                    _flashMessage.Danger("Ocorreu um erro ao atualizar o funcionário: " + ex.Message);
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                
             }
+            _flashMessage.Warning("Por favor, corrija os erros no formulário.");
             return View(model);
 
         }
@@ -243,19 +273,27 @@ namespace WatersAD.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("EmployeeNotFound");
             }
 
-            var employee = await _employeeRepository.GetByIdAsync(id.Value);
-            if (employee != null)
+            try
             {
-                employee.IsActive = false;
+                var employee = await _employeeRepository.GetByIdAsync(id.Value);
+                if (employee != null)
+                {
+                    employee.IsActive = false;
 
-                await _employeeRepository.UpdateAsync(employee);
+                    await _employeeRepository.UpdateAsync(employee);
+                }
+
+
+                return RedirectToAction(nameof(Index));
             }
-
-
-            return RedirectToAction(nameof(Index));
+            catch (Exception ex)
+            {
+                _flashMessage.Danger("Ocorreu um erro ao apagar o funcionário: " + ex.Message);
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         // GET: Employees/FormerEmployees
@@ -268,19 +306,138 @@ namespace WatersAD.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("EmployeeNotFound");
+            }
+
+            try
+            {
+                var employee = await _employeeRepository.GetByIdAsync(id.Value);
+                if (employee != null)
+                {
+                    employee.IsActive = true;
+
+                    await _employeeRepository.UpdateAsync(employee);
+                }
+
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+
+                _flashMessage.Danger("Ocorreu um erro ao adicionar o funcionário: " + ex.Message);
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        public async Task<IActionResult> UpdateEmployeeEmail(int? id)
+        {
+            if (id == null)
+            {
+                return new NotFoundViewResult("EmployeeNotFound");
             }
 
             var employee = await _employeeRepository.GetByIdAsync(id.Value);
-            if (employee != null)
-            {
-                employee.IsActive = true;
 
-                await _employeeRepository.UpdateAsync(employee);
+            if (employee == null)
+            {
+                return new NotFoundViewResult("EmployeeNotFound");
             }
 
+            var model = new ChangeUserEmailViewModel { EmployeeId = id.Value, OldEmail = employee.Email };
 
-            return RedirectToAction(nameof(Index));
+            return View(model);
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateEmployeeEmail(ChangeUserEmailViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var employee = await _employeeRepository.GetByIdAsync(model.EmployeeId);
+
+                    if (employee == null)
+                    {
+                        return new NotFoundViewResult("EmployeeNotFound");
+                    }
+
+                    var user = await _userHelper.GetUserByEmailAsync(employee.Email);
+
+                    if (user == null)
+                    {
+                        _flashMessage.Warning("Email do funcionário não encontrado no sistema!");
+                        return View(model);
+                    }
+
+
+                    var associatedUser = await _userHelper.GetUserByEmailAsync(model.Email);
+
+                    if (associatedUser != null && associatedUser.Id != user.Id)
+                    {
+                        _flashMessage.Danger("O novo email já está associado a outro utilizador.");
+                        return View(model);
+                    }
+
+                    user.Email = model.Email;
+                    user.UserName = model.Email;
+                    var updateUserResult = await _userHelper.UpdateUserAsync(user);
+
+                    if (!updateUserResult.Succeeded)
+                    {
+                        _flashMessage.Danger("Erro ao atualizar o e-mail do usuário.");
+                        return View(model);
+                    }
+
+
+                    employee.OldEmail = model.OldEmail;
+                    employee.Email = model.Email;
+                    await _employeeRepository.UpdateAsync(employee);
+
+                    _flashMessage.Confirmation("E-mail do cliente atualizado com sucesso.");
+
+                    Response response = await SendConfirmationEmailAsync(user, model.Email);
+                    if (!response.IsSuccess)
+                    {
+                        _flashMessage.Danger("Erro ao enviar email de confirmação.");
+                    }
+                    else
+                    {
+                        _flashMessage.Info("Instruções de confirmação de email foram enviadas para o email do funcionário.");
+
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    _flashMessage.Danger($"Erro ao processar a solicitação: {ex.Message}");
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            _flashMessage.Warning("Por favor, corrija os erros no formulário.");
+            return View(model);
+        }
+
+        private async Task<Response> SendConfirmationEmailAsync(User user, string email)
+        {
+            string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+
+            string? tokenLink = Url.Action("ConfirmEmail", "Account", new
+            {
+                userid = user.Id,
+                token = myToken
+            }, protocol: HttpContext.Request.Scheme);
+
+            string subject = "Waters AD - Confirmação de Email";
+            string body = $"<h1>Waters AD - Confirmação de Email</h1>" +
+                          $"Clique no link para confirmar seu email e entrar como utilizador:" +
+                          $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>";
+
+            return _mailHelper.SendMail($"{user.FirstName} {user.LastName}", email, subject, body);
         }
     }
 }

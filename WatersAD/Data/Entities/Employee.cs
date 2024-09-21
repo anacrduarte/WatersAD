@@ -69,5 +69,7 @@ namespace WatersAD.Data.Entities
                 return $"{PostalCode}-{RemainPostalCode}";
             }
         }
+
+        public string? OldEmail { get; set; }
     }
 }

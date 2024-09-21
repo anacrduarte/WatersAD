@@ -36,6 +36,13 @@ namespace WatersAD.Helpers
 
         public async Task<IdentityResult> ChangePasswordAsync(User user, string odlPassword, string newPassword)
         {
+            if (user.MustChangePassword)
+            {
+                user.MustChangePassword = false;
+                await _userManager.UpdateAsync(user);
+
+            }
+            
             return await _userManager.ChangePasswordAsync(user, odlPassword, newPassword);
         }
 
@@ -72,12 +79,12 @@ namespace WatersAD.Helpers
             return roles;
 
         }
-        public async Task<User?> GetUserAsync(Guid userId)
+        public async Task<User> GetUserAsync(Guid userId)
         {
             return await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == userId.ToString());
         }
 
-        public async Task<User?> GetUserByEmailAsync(string email)
+        public async Task<User> GetUserByEmailAsync(string email)
         {
             return await _userManager.FindByEmailAsync(email);
         }
@@ -134,5 +141,8 @@ namespace WatersAD.Helpers
         {
             return await _userManager.ResetPasswordAsync(user, token, password);
         }
+
+
+      
     }
 }

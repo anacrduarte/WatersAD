@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Vereyon.Web;
 using WatersAD.Data.Entities;
 using WatersAD.Helpers;
@@ -24,6 +26,7 @@ namespace WatersAD.Controllers
             _flashMessage = flashMessage;
             _mailHelper = mailHelper;
         }
+
         /// <summary>
         /// Show the page
         /// </summary>
@@ -51,36 +54,48 @@ namespace WatersAD.Controllers
 
             if (ModelState.IsValid)
             {
-                //TODO tirar ou arranjar solução para a imagem do user
-                var user = await _userHelper.GetUserByEmailAsync(model.UserName);
-                ViewBag.ImageUser = user.ImageUrl;
 
-
-                //tirar
-                var result = await _userHelper.LoginAsync(model);
-                if (result.Succeeded)
+                try
                 {
-
-
-                    if (this.Request.Query.Keys.Contains("ReturnUrl"))
+                    var user = await _userHelper.GetUserByEmailAsync(model.UserName);
+                    if (user == null)
                     {
-                        return Redirect(this.Request.Query["ReturnUrl"].First());
+                        return new NotFoundViewResult("UserNotFound");
                     }
 
-                    return this.RedirectToAction("Index", "Home");
-                }
+                    var result = await _userHelper.LoginAsync(model);
 
-                if (result.IsLockedOut)
-                {
-                    _flashMessage.Warning(string.Empty, "Foi superado o número máximo de tentativas, a sua conta está bloqueada, tente novamente mais tarde.");
+                    if (result.Succeeded)
+                    {
+                        if (user.MustChangePassword)
+                        {
+                            return RedirectToAction("ChangePassword");
+                        }
+
+                        if (this.Request.Query.Keys.Contains("ReturnUrl"))
+                        {
+                            return Redirect(this.Request.Query["ReturnUrl"].First());
+                        }
+
+                        return this.RedirectToAction("Index", "Home");
+                    }
+
+                    if (result.IsLockedOut)
+                    {
+                        _flashMessage.Warning(string.Empty, "Foi superado o número máximo de tentativas, a sua conta está bloqueada, tente novamente mais tarde.");
+                    }
+                    else
+                    {
+                        _flashMessage.Warning(string.Empty, "Email e palavra-passe incorretos.");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    _flashMessage.Warning(string.Empty, "Email e palavra-passe incorretos.");
+                    _flashMessage.Danger($"Erro ao fazer login! {ex.Message}");
+                    return RedirectToAction(nameof(Index));
                 }
 
             }
-
           
             return View(model);
         }
@@ -88,19 +103,30 @@ namespace WatersAD.Controllers
         public async Task<IActionResult> Logout()
         {
             await _userHelper.LogoutAsync();
+
             return RedirectToAction("Index", "Home");
         }
 
         [Authorize(Roles = "Admin")]
         public IActionResult Register()
         {
-            var model = new RegisterNewUserViewModel
+            try
             {
-                Roles = _userHelper.GetComboTypeRole()
-            };
+                var model = new RegisterNewUserViewModel
+                {
+                    Roles = _userHelper.GetComboTypeRole()
+                };
 
 
-            return View(model);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+
+                _flashMessage.Danger("Ocorreu um erro ao carregar os roles: " + ex.Message);
+
+                return RedirectToAction(nameof(Index));
+            }
         }
 
 
@@ -110,67 +136,88 @@ namespace WatersAD.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userHelper.GetUserByEmailAsync(model.Username);
-
-                if (user == null)
+                try
                 {
+                    var user = await _userHelper.GetUserByEmailAsync(model.Username);
 
-
-                    var path = string.Empty;
-
-                    if (model.ImageFile != null && model.ImageFile.Length > 0)
+                    if (user == null)
                     {
-                        path = await _imageHelper.UploadImageAsync(model.ImageFile, "user");
+
+
+                        var path = string.Empty;
+
+                        if (model.ImageFile != null && model.ImageFile.Length > 0)
+                        {
+                            path = await _imageHelper.UploadImageAsync(model.ImageFile, "user");
+                        }
+
+                        user = _converterHelper.ToUser(model, path);
+
+                        var result = await _userHelper.AddUserAsync(user, model.Password);
+
+                        if (!string.IsNullOrEmpty(model.SelectedRole))
+                        {
+                            await _userHelper.AddUserToRoleAsync(user, model.SelectedRole);
+                        }
+
+
+                        string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+
+                        string? tokenLink = Url.Action("ConfirmEmail", "Account", new
+                        {
+                            userid = user.Id,
+                            token = myToken
+                        }, protocol: HttpContext.Request.Scheme);
+
+                        Response response = _mailHelper.SendMail(
+                                           $"{model.FirstName} {model.LastName}", model.Username!,
+                                           "Water AD - Confirmação de Email",
+                                           $"<h1>SalesCodeSpace 2024 - Confirmação de Email</h1>" +
+                                               $"Clique no link para poder entrar como utilizador:, " +
+                                               $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>");
+
+                        if (!response.IsSuccess)
+                        {
+                            _flashMessage.Danger("Erro ao enviar email de confirmação.");
+                        }
+                        else
+                        {
+                            _flashMessage.Info("Instruções de confirmação de email foram enviadas para o email do utilizador.");
+
+                        }
                     }
 
-                    user = _converterHelper.ToUser(model, path);
-
-                    var result = await _userHelper.AddUserAsync(user, model.Password);
-
-                    if (!string.IsNullOrEmpty(model.SelectedRole))
-                    {
-                        await _userHelper.AddUserToRoleAsync(user, model.SelectedRole);
-                    }
-
-                    string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
-                    string? tokenLink = Url.Action("ConfirmEmail", "Account", new
-                    {
-                        userid = user.Id,
-                        token = myToken
-                    }, protocol: HttpContext.Request.Scheme);
-
-                    Response response = _mailHelper.SendMail(
-                   $"{model.FirstName} {model.LastName}", model.Username!,
-                   "Water AD - Confirmação de Email",
-                   $"<h1>SalesCodeSpace 2024 - Confirmação de Email</h1>" +
-                       $"Clique no link para poder entrar como utilizador:, " +
-                       $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>");
-
-                    if (response.IsSuccess)
-                    {
-                        _flashMessage.Info("As instruções para poder entrar foram enviadas para o seu email.");
-                        return RedirectToAction("Index", "Home");
-                    }
-
-
-
+                    _flashMessage.Info("Utilizador já existe");
+                    return View(model);
                 }
-                _flashMessage.Info("Utilizador já existe");
+                catch (Exception ex)
+                {
+                    _flashMessage.Danger($"Ocorreu um erro: {ex.Message}");
+                    return View(model);
+                }
             }
-            return View(model);
 
+            _flashMessage.Warning("Por favor, corrija os erros no formulário.");
+            return View(model);
         }
+
+
         public async Task<IActionResult> ChangeUser()
         {
             var user = await _userHelper.GetUserByEmailAsync(User.Identity!.Name!);
 
             var model = new ChangeUserViewModel();
+
             if (user != null)
             {
                 model.FirstName = user.FirstName;
                 model.LastName = user.LastName;
                 model.ImageUrl = user.ImageFullPath;
 
+            }
+            else
+            {
+                return new NotFoundViewResult("UserNotFound");
             }
 
             return View(model);
@@ -182,40 +229,56 @@ namespace WatersAD.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userHelper.GetUserByEmailAsync(User.Identity!.Name!);
-                if (user != null)
+                try
                 {
+                    var user = await _userHelper.GetUserByEmailAsync(User.Identity!.Name!);
 
-                    var oldPath = user.ImageUrl;
-
-                    var path = oldPath;
-
-                    if (model.ImageFile != null && model.ImageFile.Length > 0)
-                    {
-                        path = await _imageHelper.UploadImageAsync(model.ImageFile, "user", oldPath);
-                    }
-
-                    var convertUser = _converterHelper.ToUser(model, path);
-
-                    user.FirstName = convertUser.FirstName;
-                    user.LastName = convertUser.LastName;
-                    user.ImageUrl = convertUser.ImageUrl;
-
-                    var response = await _userHelper.UpdateUserAsync(user);
-                    if (response.Succeeded)
+                    if (user != null)
                     {
 
-                        _flashMessage.Confirmation("User updated!");
-                        return RedirectToAction("ChangeUser");
+                        var oldPath = user.ImageUrl;
+
+                        var path = oldPath;
+
+                        if (model.ImageFile != null && model.ImageFile.Length > 0)
+                        {
+                            path = await _imageHelper.UploadImageAsync(model.ImageFile, "user", oldPath);
+                        }
+
+                        var convertUser = _converterHelper.ToUser(model, path);
+
+                        user.FirstName = convertUser.FirstName;
+                        user.LastName = convertUser.LastName;
+                        user.ImageUrl = convertUser.ImageUrl;
+
+                        var response = await _userHelper.UpdateUserAsync(user);
+
+                        if (response.Succeeded)
+                        {
+
+                            _flashMessage.Confirmation("User updated!");
+                            return RedirectToAction("ChangeUser");
+                        }
+                        else
+                        {
+                            _flashMessage.Warning(response.Errors.FirstOrDefault().Description);
+                        }
                     }
                     else
                     {
-                        _flashMessage.Warning(response.Errors.FirstOrDefault().Description);
+                        _flashMessage.Warning("User not found.");
                     }
+                }
+                catch (Exception ex)
+                {
+
+                    _flashMessage.Danger($"Erro ao atualizar o usuário: {ex.Message}");
+                    return View(model);
                 }
 
             }
-
+           
+            _flashMessage.Warning("Por favor, corrija os erros no formulário.");
             return View(model);
         }
 
@@ -231,31 +294,42 @@ namespace WatersAD.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (model.OldPassword == model.NewPassword)
+                try
                 {
-                    _flashMessage.Danger("Deve inserir uma palavra-passe diferente.");
-                    return View(model);
-                }
-
-                var user = await _userHelper.GetUserByEmailAsync(User.Identity!.Name!);
-                if (user != null)
-                {
-                    var result = await _userHelper.ChangePasswordAsync(user, model.OldPassword!, model.NewPassword!);
-                    if (result.Succeeded)
+                    if (model.OldPassword == model.NewPassword)
                     {
-                        return RedirectToAction("ChangeUser");
+                        _flashMessage.Danger("Deve inserir uma palavra-passe diferente.");
+                        return View(model);
+                    }
+
+                    var user = await _userHelper.GetUserByEmailAsync(User.Identity!.Name!);
+
+                    if (user != null)
+                    {
+                        var result = await _userHelper.ChangePasswordAsync(user, model.OldPassword!, model.NewPassword!);
+                        if (result.Succeeded)
+                        {
+                            _flashMessage.Confirmation("A palavra-passe foi alterada com sucesso!");
+                            return RedirectToAction("ChangeUser");
+                        }
+                        else
+                        {
+                            _flashMessage.Danger(result.Errors.FirstOrDefault()!.Description);
+                        }
                     }
                     else
                     {
-                        _flashMessage.Danger(result.Errors.FirstOrDefault()!.Description);
+                        _flashMessage.Danger("Utilizador não encontrado.");
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    _flashMessage.Danger("Utilizador não encontrado.");
+
+                    _flashMessage.Danger($"Erro ao alterar a palavra-passe: {ex.Message}");
+                    return View(model);
                 }
             }
-
+            _flashMessage.Warning("Por favor, corrija os erros no formulário.");
             return View(model);
         }
 
@@ -266,37 +340,66 @@ namespace WatersAD.Controllers
                 return BadRequest("Role not specified.");
             }
 
-            var roleType = _converterHelper.ConvertRoleToUserType(role);
-            var model = new ChangeRoleViewModel
+            try
             {
-                CurrentRole = roleType,
-                User = await _userHelper.GetUsersWithRole(roleType)
-            };
-            return View(model);
+                var roleType = _converterHelper.ConvertRoleToUserType(role);
+
+                var users = await _userHelper.GetUsersWithRole(roleType);
+
+                if (users == null || !users.Any())
+                {
+                    _flashMessage.Warning("Nenhum usuário encontrado para essa função.");
+                }
+
+                var model = new ChangeRoleViewModel
+                {
+                    CurrentRole = roleType,
+                    User = users,
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+
+                _flashMessage.Danger($"Erro ao buscar usuários: {ex.Message}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         public async Task<IActionResult> EditRole(string email)
         {
             if (string.IsNullOrEmpty(email))
             {
-                return NotFound();
+                return new NotFoundViewResult("UserNotFound");
             }
 
-            var user = await _userHelper.GetUserByEmailAsync(email);
-
-            if (user == null)
+            try
             {
-                return NotFound();
+                var user = await _userHelper.GetUserByEmailAsync(email);
+
+                if (user == null)
+                {
+
+                    return new NotFoundViewResult("UserNotFound");
+                }
+
+                var model = new ChangeRoleViewModel()
+                {
+                    UserName = user.Email,
+                    CurrentRole = user.UserType,
+                    Roles = _userHelper.GetComboTypeRole(),
+                };
+
+
+                return View(model);
             }
-            var model = new ChangeRoleViewModel()
+            catch (Exception ex)
             {
-                UserName = user.Email,
-                CurrentRole = user.UserType,
-                Roles = _userHelper.GetComboTypeRole(),
-            };
 
-
-            return View(model);
+                _flashMessage.Danger($"Erro ao editar função do usuário: {ex.Message}");
+                return RedirectToAction(nameof(Index));
+            }
 
 
         }
@@ -307,31 +410,46 @@ namespace WatersAD.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userHelper.GetUserByEmailAsync(model.UserName);
-
-                if (user != null)
+                try
                 {
-                    user.UserType = _converterHelper.ConvertRoleToUserType(model.SelectedRole);
+                    var user = await _userHelper.GetUserByEmailAsync(model.UserName);
+
+                    if (user != null)
+                    {
+                        user.UserType = _converterHelper.ConvertRoleToUserType(model.SelectedRole);
+                    
+
+                        if (!string.IsNullOrEmpty(model.SelectedRole))
+                        {
+                            await _userHelper.AddUserToRoleAsync(user, model.SelectedRole);
+                        }
+
+                        var response = await _userHelper.UpdateUserAsync(user);
+                        if (response.Succeeded)
+                        {
+
+                            _flashMessage.Confirmation("User updated!");
+                            return RedirectToAction("ChangeRole", new { role = model.CurrentRole });
+                        }
+                        else
+                        {
+                            _flashMessage.Danger(response.Errors.FirstOrDefault()!.Description);
+                        }
+                    }
+                    else
+                    {
+                        _flashMessage.Warning("Usuário não encontrado.");
+                    }
+
                 }
-
-                if (!string.IsNullOrEmpty(model.SelectedRole))
-                {
-                    await _userHelper.AddUserToRoleAsync(user, model.SelectedRole);
-                }
-
-                var response = await _userHelper.UpdateUserAsync(user);
-                if (response.Succeeded)
+                catch (Exception ex)
                 {
 
-                    _flashMessage.Confirmation("User updated!");
-                    return RedirectToAction("ChangeRole", new { role = model.CurrentRole });
-                }
-                else
-                {
-                    _flashMessage.Danger(response.Errors.FirstOrDefault()!.Description);
+                    _flashMessage.Danger($"Erro ao editar o usuário: {ex.Message}");
                 }
             }
 
+            _flashMessage.Warning("Por favor, corrija os erros no formulário.");
             return View(model);
         }
 
@@ -340,23 +458,32 @@ namespace WatersAD.Controllers
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
             {
-                return NotFound();
+                return new NotFoundViewResult("UserNotFound");
             }
 
-            User? user = await _userHelper.GetUserAsync(new Guid(userId));
-
-            if (user == null)
+            try
             {
-                return NotFound();
-            }
+                User? user = await _userHelper.GetUserAsync(new Guid(userId));
 
-            IdentityResult result = await _userHelper.ConfirmEmailAsync(user, token);
-            if (!result.Succeeded)
+                if (user == null)
+                {
+                    return new NotFoundViewResult("UserNotFound");
+                }
+
+                IdentityResult result = await _userHelper.ConfirmEmailAsync(user, token);
+                if (!result.Succeeded)
+                {
+                    return new NotFoundViewResult("UserNotFound");
+                }
+
+                return View();
+            }
+            catch (Exception ex)
             {
-                return NotFound();
-            }
 
-            return View();
+                _flashMessage.Danger($"Erro ao confirmar email: {ex.Message}");
+                return new NotFoundViewResult("UserNotFound");
+            }
         }
 
         public IActionResult RecoverPassword()
@@ -369,30 +496,53 @@ namespace WatersAD.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await _userHelper.GetUserByEmailAsync(model.Email);
-
-                if (user == null)
+                try
                 {
-                    _flashMessage.Warning("O email não corresponde ao email registado.");
-                    return View(model);
+                    User user = await _userHelper.GetUserByEmailAsync(model.Email);
+
+                    if (user == null)
+                    {
+                        _flashMessage.Warning("O email não corresponde ao email registado.");
+                        return View(model);
+                    }
+
+
+                    string myToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
+
+                    string? link = Url.Action(
+                                    "ResetPassword",
+                                    "Account",
+                                    new { token = myToken }, protocol: HttpContext.Request.Scheme);
+
+                    Response response = _mailHelper.SendMail(
+                                        $"{user.FirstName} {user.LastName}",
+                                        model.Email!,
+                                        "Water AD - Recuperação da Palavra-passe",
+                                        $"<h1>Shopping - Recuperação da Palavra-passe</h1>" +
+                                        $"Para recuperar a palavra-passe clique no link:" +
+                                        $"<p><a href = \"{link}\">Reset Password</a></p>");
+
+                    if (response.IsSuccess)
+                    {
+
+                        _flashMessage.Info("As instruções para recuperar a sua palavra-passe foram enviadas para o seu correio.");
+                        return View();
+                    }
+                    else
+                    {
+                        _flashMessage.Warning("Erro ao enviar email. Tente novamente mais tarde.");
+                    }
+                    return RedirectToAction(nameof(Index));
                 }
+                catch (Exception ex)
+                {
 
-                string myToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
-
-                string? link = Url.Action(
-                    "ResetPassword",
-                    "Account",
-                    new { token = myToken }, protocol: HttpContext.Request.Scheme);
-                _mailHelper.SendMail(
-                    $"{user.Email}",//alterar para nome
-                    model.Email!,
-                    "Water AD - Recuperação da Palavra-passe",
-                    $"<h1>Shopping - Recuperação da Palavra-passe</h1>" +
-                    $"Para recuperar a palavra-passe clique no link:" +
-                    $"<p><a href = \"{link}\">Reset Password</a></p>");
-                _flashMessage.Info("As instruções para recuperar a sua palavra-passe foram enviadas para o seu correio.");
-                return View();
+                    _flashMessage.Danger($"Erro ao tentar recuperar a palavra-passe: {ex.Message}");
+                    return new NotFoundViewResult("UserNotFound");
+                }
             }
+
+            _flashMessage.Warning("Por favor, corrija os erros no formulário.");
             return View(model);
         }
 
@@ -404,23 +554,42 @@ namespace WatersAD.Controllers
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
-            User? user = await _userHelper.GetUserByEmailAsync(model.UserName);
-
-            if (user != null)
+            try
             {
-                IdentityResult result = await _userHelper.ResetPasswordAsync(user, model.Token!, model.Password!);
-                if (result.Succeeded)
+                User? user = await _userHelper.GetUserByEmailAsync(model.UserName);
+
+                if (user != null)
                 {
-                    _flashMessage.Info("Palavra-passe alterada com êxito.");
-                    return View();
+                    IdentityResult result = await _userHelper.ResetPasswordAsync(user, model.Token!, model.Password!);
+                    if (result.Succeeded)
+                    {
+                        _flashMessage.Info("Palavra-passe alterada com sucesso.");
+                        return RedirectToAction("Login");
+                    }
+
+                    _flashMessage.Info("Erro ao alterar palavra-passe.");
+
+                    return  View(model);
+                }
+                else
+                {
+                    _flashMessage.Info("Utilizador não encontrado.");
+                    return new NotFoundViewResult("UserNotFound");
                 }
 
-                _flashMessage.Info("Erro ao trocar a palavra-passe.");
-                return View(model);
             }
-            _flashMessage.Info("Utilizador não encontrado.");
+            catch (Exception ex)
+            {
+
+                _flashMessage.Danger($"Ocorreu um erro ao tentar alterar a palavra-passe: {ex.Message}");
+            }
+
+            
             return View(model);
         }
+
+        
+
 
     }
 

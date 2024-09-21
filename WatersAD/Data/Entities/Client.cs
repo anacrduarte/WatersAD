@@ -79,5 +79,6 @@ namespace WatersAD.Data.Entities
             }
         }
 
+        public string? OldEmail { get; set; }
     }
 }

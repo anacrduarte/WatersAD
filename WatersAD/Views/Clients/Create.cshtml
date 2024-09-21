@@ -14,6 +14,12 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <partial name="_Clients" />
+
+               <div class="form-group">
+            <label asp-for="Email">E-mail</label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-warning"></span>
+            </div>
        
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -40,7 +46,7 @@
                     $("#LocalityId").empty();
 
                     $.ajax({
-                        url: '@Url.Action("GetCitiesAsync", "Clients")',
+                        url: '@Url.Action("GetCitiesAsync", "Countries")',
                         type: 'POST',
                         dataType: 'json',
                         data: { countryId: countryId },
@@ -69,7 +75,7 @@
                     $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', false);
 
                     $.ajax({
-                        url: '@Url.Action("GetLocalitiesAsync", "Clients")',
+                        url: '@Url.Action("GetLocalitiesAsync", "Countries")',
                         type: 'POST',
                         dataType: 'json',
                         data: { cityId: cityId },
@@ -90,37 +96,5 @@
             });
         });
     </script>
-   @*  <script type="text/javascript">
-        $(document).ready(function () {
-            $("#CountryId").change(function () {
-                var countryId = $(this).val();
-
-                // Verifique se o countryId não está vazio
-                if (countryId) {
-                    $("#CityId").empty();
-                    $.ajax({
-                        url: '@Url.Action("GetCitiesAsync", "Clients")',
-                        type: 'POST',
-                        dataType: 'json',
-                        data: { countryId: countryId },
-                        success: function (cities) {
-                            $("#CityId").append('<option value="0">(Select a city...)</option>');
-                            $.each(cities, function (i, city) {
-                                $("#CityId").append('<option value="' + city.id + '">' + city.name + '</option>');
-                            });
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Failed to retrieve cities: ' + error);
-                            alert('Failed to retrieve cities.');
-                        }
-                    });
-                } else {
-                  
-                    $("#CityId").empty();
-                    $("#CityId").append('<option value="0">(Select a city...)</option>');
-                }
-            });
-        });
-    </script> *@
-
+  
 }
