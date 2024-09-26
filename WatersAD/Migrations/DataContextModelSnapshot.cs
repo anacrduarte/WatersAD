@@ -438,6 +438,83 @@ namespace WatersAD.Migrations
                     b.ToTable("Localities");
                 });
 
+            modelBuilder.Entity("WatersAD.Data.Entities.RequestWaterMeter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("AddressWaterMeter")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("HouseNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("HouseNumberWaterMeter")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NIF")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("nvarchar(4)");
+
+                    b.Property<string>("PostalCodeWaterMeter")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("nvarchar(4)");
+
+                    b.Property<string>("RemainPostalCode")
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<string>("RemainPostalCodeWaterMeter")
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<int?>("WaterMeterId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WaterMeterId");
+
+                    b.ToTable("RequestWaterMeters");
+                });
+
             modelBuilder.Entity("WatersAD.Data.Entities.Tier", b =>
                 {
                     b.Property<int>("Id")
@@ -447,7 +524,6 @@ namespace WatersAD.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("TierName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<byte>("TierNumber")
@@ -770,6 +846,15 @@ namespace WatersAD.Migrations
                     b.Navigation("City");
                 });
 
+            modelBuilder.Entity("WatersAD.Data.Entities.RequestWaterMeter", b =>
+                {
+                    b.HasOne("WatersAD.Data.Entities.WaterMeter", "WaterMeter")
+                        .WithMany("RequestWaterMeter")
+                        .HasForeignKey("WaterMeterId");
+
+                    b.Navigation("WaterMeter");
+                });
+
             modelBuilder.Entity("WatersAD.Data.Entities.WaterMeter", b =>
                 {
                     b.HasOne("WatersAD.Data.Entities.Client", "Client")
@@ -817,6 +902,8 @@ namespace WatersAD.Migrations
             modelBuilder.Entity("WatersAD.Data.Entities.WaterMeter", b =>
                 {
                     b.Navigation("Consumptions");
+
+                    b.Navigation("RequestWaterMeter");
                 });
 #pragma warning restore 612, 618
         }

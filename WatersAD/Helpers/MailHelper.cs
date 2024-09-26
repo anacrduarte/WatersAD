@@ -16,7 +16,7 @@ namespace WatersAD.Helpers
            _userHelper = userHelper;
         }
 
-        public Response SendMail(string toName, string toEmail, string subject, string body)
+        public async Task<Response> SendMail(string toName, string toEmail, string subject, string body)
         {
             try
             {
@@ -56,10 +56,10 @@ namespace WatersAD.Helpers
 
                 using (SmtpClient client = new())
                 {
-                    client.Connect(smtp, int.Parse(port!), false);
-                    client.Authenticate(from, password);
-                    client.Send(message);
-                    client.Disconnect(true);
+                   await client.ConnectAsync(smtp, int.Parse(port!), false);
+                   await client.AuthenticateAsync(from, password);
+                   await client.SendAsync(message);
+                   await client.DisconnectAsync(true);
                 }
 
                 return new Response { IsSuccess = true };

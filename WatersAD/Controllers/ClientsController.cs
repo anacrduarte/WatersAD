@@ -614,7 +614,7 @@ namespace WatersAD.Controllers
                           $"Clique no link para confirmar seu email e entrar como utilizador:" +
                           $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>";
 
-            return _mailHelper.SendMail($"{user.FirstName} {user.LastName}", email, subject, body);
+            return await _mailHelper.SendMail($"{user.FirstName} {user.LastName}", email, subject, body);
         }
 
 

@@ -78,6 +78,6 @@ namespace WatersAD.Data.Repository
         /// <returns>A <see cref="Task{WaterMeter}"/> representing the asynchronous operation, returning the water meter with its associated consumptions.</returns>
         Task<WaterMeter?> GetWaterMeterWithConsumptionsAsync(int waterMeterId);
 
-
+        Task AddRequestWaterMeterAsync(RequestWaterMeter request);
     }
 }

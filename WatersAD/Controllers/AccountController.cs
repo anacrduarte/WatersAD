@@ -31,16 +31,16 @@ namespace WatersAD.Controllers
         /// Show the page
         /// </summary>
         /// <returns></returns>
-        public IActionResult Login()
-        {
-            if (User!.Identity!.IsAuthenticated)
-            {
+        //public IActionResult Login()
+        //{
+        //    if (User!.Identity!.IsAuthenticated)
+        //    {
 
-                return RedirectToAction("Index", "Home");
-            }
+        //        return RedirectToAction("Index", "Home");
+        //    }
 
-            return View();
-        }
+        //    return View();
+        //}
 
         /// <summary>
         /// To do login
@@ -169,7 +169,7 @@ namespace WatersAD.Controllers
                             token = myToken
                         }, protocol: HttpContext.Request.Scheme);
 
-                        Response response = _mailHelper.SendMail(
+                        Response response = await _mailHelper.SendMail(
                                            $"{model.FirstName} {model.LastName}", model.Username!,
                                            "Water AD - Confirmação de Email",
                                            $"<h1>SalesCodeSpace 2024 - Confirmação de Email</h1>" +
@@ -310,7 +310,7 @@ namespace WatersAD.Controllers
                         if (result.Succeeded)
                         {
                             _flashMessage.Confirmation("A palavra-passe foi alterada com sucesso!");
-                            return RedirectToAction("ChangeUser");
+                            return RedirectToAction("Index", "Home");
                         }
                         else
                         {
@@ -488,6 +488,8 @@ namespace WatersAD.Controllers
 
         public IActionResult RecoverPassword()
         {
+           
+            
             return View();
         }
 
@@ -509,12 +511,12 @@ namespace WatersAD.Controllers
 
                     string myToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
 
-                    string? link = Url.Action(
+                    string link = Url.Action(
                                     "ResetPassword",
                                     "Account",
                                     new { token = myToken }, protocol: HttpContext.Request.Scheme);
 
-                    Response response = _mailHelper.SendMail(
+                    Response response = await _mailHelper.SendMail(
                                         $"{user.FirstName} {user.LastName}",
                                         model.Email!,
                                         "Water AD - Recuperação da Palavra-passe",
@@ -556,7 +558,7 @@ namespace WatersAD.Controllers
         {
             try
             {
-                User? user = await _userHelper.GetUserByEmailAsync(model.UserName);
+                User user = await _userHelper.GetUserByEmailAsync(model.UserName);
 
                 if (user != null)
                 {

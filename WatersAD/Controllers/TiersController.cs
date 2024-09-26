@@ -24,8 +24,7 @@ namespace WatersAD.Controllers
         {
             return View(_tierRepository.GetAll().OrderBy(t => t.TierNumber));
         }
-
-
+      
         // GET: Tiers/Create
         public IActionResult Create()
         {

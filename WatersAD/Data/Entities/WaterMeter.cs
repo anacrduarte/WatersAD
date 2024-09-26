@@ -43,5 +43,7 @@ namespace WatersAD.Data.Entities
         public WaterMeterService? WaterMeterService { get; set; }
 
         public ICollection<Consumption>? Consumptions { get; set; }
+
+        public ICollection<RequestWaterMeter> RequestWaterMeter { get; set; }
     }
 }

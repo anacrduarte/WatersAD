@@ -22,6 +22,14 @@ namespace WatersAD.Data.Repository
 
         }
 
+        public async Task AddRequestWaterMeterAsync(RequestWaterMeter request)
+        {
+            await _context.Set<RequestWaterMeter>().AddAsync(request);
+
+            await _context.SaveChangesAsync();
+
+
+        }
         public IQueryable GetWaterMeterServices()
         {
             return _context.Set<WaterMeterService>().Where(wm=> wm.Available).AsNoTracking();

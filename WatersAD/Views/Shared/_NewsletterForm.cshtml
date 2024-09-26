@@ -1,0 +1,11 @@
+﻿@model WatersAD.Models.NewsletterViewModel
+
+<form asp-controller="Contact" asp-action="SendNewsletter" method="post" class="custom-form mt-lg-4 mt-2" role="form">
+    <div class="input-group input-group-lg">
+        <span class="input-group-text bi-envelope" id="basic-addon1"></span>
+
+        <input type="email" asp-for="Email" class="form-control" placeholder="Endereço Email" required aria-describedby="basic-addon1">
+
+        <button type="submit" class="btn btn-primary">Subscrever</button>
+    </div>
+</form>

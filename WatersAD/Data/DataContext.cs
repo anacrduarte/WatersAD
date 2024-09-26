@@ -30,6 +30,8 @@ namespace WatersAD.Data
         public DbSet<Consumption> Consumptions { get; set; }
 
         public DbSet<Invoice> Invoices { get; set; }
+
+        public DbSet<RequestWaterMeter> RequestWaterMeters { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
