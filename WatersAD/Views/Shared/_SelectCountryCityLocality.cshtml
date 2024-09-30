@@ -1,0 +1,123 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Quando o país for alterado
+        $("#CountryId").change(function () {
+            var countryId = $(this).val();
+
+            if (countryId) {
+                $("#CityId").empty();
+                $("#LocalityId").empty();
+
+                $.ajax({
+                    url: '@Url.Action("GetCitiesAsync", "Countries")',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { countryId: countryId },
+                    success: function (cities) {
+                        $("#CityId").append('<option value="">(Select a city...)</option>');
+                        $.each(cities, function (i, city) {
+                            $("#CityId").append('<option value="' + city.id + '">' + city.name + '</option>');
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Failed to retrieve cities: ' + error);
+                        alert('Failed to retrieve cities.');
+                    }
+                });
+            } else {
+                $("#CityId").empty().append('<option value="">(Select a city...)</option>');
+                $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', true);
+            }
+        });
+
+        // Quando a cidade for alterada
+        $("#CityId").change(function () {
+            var cityId = $(this).val();
+
+            if (cityId) {
+                $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', false);
+
+                $.ajax({
+                    url: '@Url.Action("GetLocalitiesAsync", "Countries")',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { cityId: cityId },
+                    success: function (localities) {
+                        $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>');
+                        $.each(localities, function (i, locality) {
+                            $("#LocalityId").append('<option value="' + locality.id + '">' + locality.name + '</option>');
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Failed to retrieve localities: ' + error);
+                        alert('Failed to retrieve localities.');
+                    }
+                });
+            } else {
+                $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', true);
+            }
+        });
+
+        $("#MeterCountryId").change(function () {
+            var countryId = $(this).val();
+
+            if (countryId) {
+                $("#MeterCityId").empty();
+                $("#MeterLocalityId").empty();
+
+                $.ajax({
+                    url: '@Url.Action("GetCitiesAsync", "Countries")',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { countryId: countryId },
+                    success: function (cities) {
+                        $("#MeterCityId").append('<option value="">(Select a city...)</option>');
+                        $.each(cities, function (i, city) {
+                            $("#MeterCityId").append('<option value="' + city.id + '">' + city.name + '</option>');
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Failed to retrieve cities: ' + error);
+                        alert('Failed to retrieve cities.');
+                    }
+                });
+            } else {
+                $("#MeterCityId").empty().append('<option value="">(Select a city...)</option>');
+                $("#MeterLocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', true);
+            }
+        });
+
+        // Quando a cidade for alterada
+        $("#MeterCityId").change(function () {
+            var cityId = $(this).val();
+
+            if (cityId) {
+                $("#MeterLocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', false);
+
+                $.ajax({
+                    url: '@Url.Action("GetLocalitiesAsync", "Countries")',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { cityId: cityId },
+                    success: function (localities) {
+                        $("#MeterLocalityId").empty().append('<option value="">(Select a locality...)</option>');
+                        $.each(localities, function (i, locality) {
+                            $("#MeterLocalityId").append('<option value="' + locality.id + '">' + locality.name + '</option>');
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Failed to retrieve localities: ' + error);
+                        alert('Failed to retrieve localities.');
+                    }
+                });
+            } else {
+                $("#MeterLocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', true);
+            }
+        });
+    });
+</script>

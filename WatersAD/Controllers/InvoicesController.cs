@@ -6,6 +6,7 @@ using WatersAD.Data;
 using WatersAD.Data.Entities;
 using WatersAD.Data.Repository;
 using WatersAD.Helpers;
+using WatersAD.Models;
 
 namespace WatersAD.Controllers
 {
@@ -14,12 +15,21 @@ namespace WatersAD.Controllers
        
         private readonly IInvoiceRepository _invoiceRepository;
         private readonly IFlashMessage _flashMessage;
+        private readonly IUserHelper _userHelper;
+        private readonly IClientRepository _clientRepository;
+        private readonly IWaterMeterRepository _waterMeterRepository;
+        private readonly IConsumptionRepository _consumptionRepository;
 
-        public InvoicesController(IInvoiceRepository invoiceRepository, IFlashMessage flashMessage)
+        public InvoicesController(IInvoiceRepository invoiceRepository, IFlashMessage flashMessage, IUserHelper userHelper, 
+            IClientRepository clientRepository, IWaterMeterRepository waterMeterRepository, IConsumptionRepository consumptionRepository)
         {
             
             _invoiceRepository = invoiceRepository;
             _flashMessage = flashMessage;
+            _userHelper = userHelper;
+            _clientRepository = clientRepository;
+            _waterMeterRepository = waterMeterRepository;
+            _consumptionRepository = consumptionRepository;
         }
 
         // GET: Invoices
@@ -28,6 +38,40 @@ namespace WatersAD.Controllers
             return View( _invoiceRepository.GetAll());
         }
 
+        public async Task<IActionResult> GetInvoiceClient()
+        {
+            try
+            {
+                var user = await _userHelper.GetUserByEmailAsync(User.Identity!.Name!);
+                if(user == null)
+                {
+                    return NotFound();
+                }
+                var client = await _clientRepository.GetClientByUserEmailAsync(user.Email);
+
+                if(client == null)
+                {
+                    return NotFound();
+                }
+               var consumption = await _consumptionRepository.GetAllInvoicesForClientAsync(client.Id);
+                
+
+                var model = new InvoicesClientViewModel
+                {
+                    ClientId = client.Id,
+                    WaterMeters = consumption.Select(c => c.WaterMeter).Distinct().ToList(),
+                    Consumptions = consumption,
+                    Invoices = consumption.Select(c => c.Invoice).Distinct().ToList(),
+                };
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
+                return this.RedirectToAction("Invoice", "GetInvoiceClient");
+            }
+            
+        }
         // GET: Invoices/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -191,6 +235,38 @@ namespace WatersAD.Controllers
             }
         }
 
-      
+        public async Task<IActionResult> InvoiceHistory(int clientId, int waterMeterId)
+        {
+            try
+            {
+               
+                var client = await _clientRepository.GetByIdAsync(clientId);
+
+                if (client == null)
+                {
+                    return NotFound();
+                }
+
+                var consumption = await _consumptionRepository.GetAllInvoicesForClientAsync(client.Id);
+
+                var invoices = consumption.Where(c=> c.WaterMeterId == waterMeterId).Select(c=> c.Invoice).ToList();
+
+                var waterMeter = await _waterMeterRepository.GetByIdAsync(waterMeterId);
+
+                var model = new InvoicesClientViewModel
+                {
+                    Invoices = invoices,
+                    WaterMeter = waterMeter,
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
+                return this.RedirectToAction("Invoice", "GetInvoiceClient");
+            }
+
+        }
     }
 }

@@ -27,7 +27,16 @@
                 <div class="custom-btn-group">
                     <a asp-area="" asp-controller="Home" asp-action="About" class="btn custom-btn smoothscroll me-3">Sobre nós</a>
 
-                    <a asp-area="" asp-controller="WaterMeters" asp-action="RequestWaterMeter" class="link smoothscroll">Pedir contador</a>
+                          
+                         @if (this.User.Identity.IsAuthenticated)
+                        {
+                                  <a asp-area="" asp-controller="WaterMeters" asp-action="RequestWaterMeterClient" class="link smoothscroll">Pedir contador</a>
+                        }
+                        else
+                        {
+                            <a asp-area="" asp-controller="WaterMeters" asp-action="RequestWaterMeter" class="link smoothscroll">Pedir contador</a>
+                        }
+                    
                 </div>
             </div>
 

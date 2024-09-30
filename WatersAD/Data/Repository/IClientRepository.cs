@@ -36,5 +36,9 @@ namespace WatersAD.Data.Repository
         /// </summary>
         /// <returns>An IEnumerable of SelectListItem objects representing clients.</returns>
         IEnumerable<SelectListItem> GetComboClients();
+
+        Task<Client> GetClientByUserEmailAsync(string email);
+
+
     }
 }

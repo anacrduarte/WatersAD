@@ -50,7 +50,7 @@ namespace WatersAD.Data.Repository
                 .FirstOrDefaultAsync(c => c.Id == clientId);
         }
 
-      
+
         //TODO arranjar outra maneira de mostar os clientes, nao o estou a usar se nao for necessario retirar
         public IEnumerable<SelectListItem> GetComboClients()
         {
@@ -69,5 +69,14 @@ namespace WatersAD.Data.Repository
 
             return list;
         }
+
+        public async Task<Client> GetClientByUserEmailAsync(string email)
+        {
+            return await _context.Clients
+                .Include(c=> c.User)
+                .FirstOrDefaultAsync (c => c.Email == email);
+        }
+
+       
     }
 }

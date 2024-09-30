@@ -1,4 +1,7 @@
-﻿using WatersAD.Data.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Syncfusion.EJ2.Charts;
+using System.Collections;
+using WatersAD.Data.Entities;
 
 namespace WatersAD.Data.Repository
 {
@@ -11,6 +14,7 @@ namespace WatersAD.Data.Repository
             _context = context;
         }
 
-
+     
+      
     }
 }

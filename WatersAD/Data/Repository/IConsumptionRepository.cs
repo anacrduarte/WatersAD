@@ -28,5 +28,8 @@ namespace WatersAD.Data.Repository
         /// <returns>The previous <see cref="Consumption"/> record, or null if no prior consumption exists.</returns>
         Consumption? GetPreviousConsumption(WaterMeter waterMeter);
 
+        Task<ICollection<Consumption>> GetAllInvoicesForClientAsync(int id);
+
+
     }
 }

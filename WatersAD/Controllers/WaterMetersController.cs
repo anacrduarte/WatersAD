@@ -16,9 +16,10 @@ namespace WatersAD.Controllers
         private readonly IClientRepository _clientRepository;
         private readonly IConsumptionRepository _consumptionRepository;
         private readonly IUserHelper _userHelper;
+        private readonly INotificationRepository _notificationRepository;
 
         public WaterMetersController(IWaterMeterRepository waterMeterRepository, IFlashMessage flashMessage, ICountryRepository countryRepository, IClientRepository clientRepository,
-            IConsumptionRepository consumptionRepository, IUserHelper userHelper)
+            IConsumptionRepository consumptionRepository, IUserHelper userHelper, INotificationRepository notificationRepository)
         {
 
             _waterMeterRepository = waterMeterRepository;
@@ -27,6 +28,7 @@ namespace WatersAD.Controllers
             _clientRepository = clientRepository;
             _consumptionRepository = consumptionRepository;
             _userHelper = userHelper;
+            _notificationRepository = notificationRepository;
         }
 
         // GET: WaterMeters
@@ -417,8 +419,14 @@ namespace WatersAD.Controllers
 
         public IActionResult RequestWaterMeter()
         {
+            var model = new RequestWaterMeterViewModel
+            {
+                Countries = _countryRepository.GetComboCountries(),
+                Cities = _countryRepository.GetComboCities(0),
+                Localities = _countryRepository.GetComboLocalities(0),
+            };
             
-            return View();
+            return View(model);
         }
 
         [HttpPost]
@@ -432,6 +440,18 @@ namespace WatersAD.Controllers
                     if (user != null)
                     {
                         _flashMessage.Warning("Esse e-mail já existe! Se já é cliente dirija-se a sua àrea de cliente fazer o pedido!");
+                        return View(model);
+                    }
+                    var locality = await _countryRepository.GetLocalityAsync(model.LocalityId);
+                    if (locality == null)
+                    {
+                        _flashMessage.Danger("Localidade inválida.");
+                        return View(model);
+                    }
+                    var waterMeterLocality = await _countryRepository.GetLocalityAsync(model.LocalityWaterMeterId);
+                    if (waterMeterLocality == null)
+                    {
+                        _flashMessage.Danger("Localidade inválida.");
                         return View(model);
                     }
 
@@ -450,10 +470,25 @@ namespace WatersAD.Controllers
                         PostalCodeWaterMeter = model.PostalCodeWaterMeter,
                         HouseNumberWaterMeter = model.HouseNumberWaterMeter,
                         RemainPostalCodeWaterMeter = model.RemainPostalCodeWaterMeter,
+                        //TODO quando actualizar a base de dados ir a classe tambem
+                        //LocalityId = model.LocalityId,
+                        //LocalityWaterMeterId = model.LocalityWaterMeterId,
                     };
+
+                    //request.Locality = locality;
+                    //request.WaterMeterLocality = waterMeterLocality;
 
                     await _waterMeterRepository.AddRequestWaterMeterAsync(request);
 
+                    var notification = new Notification
+                    {
+                        Message = $"Novo pedido de {model.FirstName} {model.LastName}",
+                        CreatedAt = DateTime.UtcNow,
+                        IsRead = false,  
+                        RequestWaterMeter = request,
+                    };
+
+                    await _notificationRepository.CreateAsync(notification);
                     _flashMessage.Info("O seu pedido foi encaminhado, seremos o mais breves possível!");
                     return RedirectToAction("Index", "Home");
 
@@ -466,6 +501,67 @@ namespace WatersAD.Controllers
                 }
             }
            return NoContent();
+        }
+
+        public async Task<IActionResult> RequestWaterMeterClient(int? id)
+        {
+          
+            try
+            {
+                Client client;
+                if (id == null)
+                {
+                    var user = await _userHelper.GetUserByEmailAsync(User.Identity!.Name!);
+                    if (user == null)
+                    { 
+                        return NotFound();
+                    }
+                    else
+                    {
+                        client = await _clientRepository.GetClientByUserEmailAsync(user.Email);
+                    }
+
+                }
+                else
+                {
+                    client = await _clientRepository.GetByIdAsync(id.Value);
+                  
+                }
+
+                if (client == null)
+                {
+                    return NotFound();
+                }
+
+
+                var model = new RequestWaterMeterViewModel
+                {
+                    ClientId = client.Id,
+                    Address = client.Address,
+                    HouseNumber = client.HouseNumber,
+                    NIF = client.NIF,
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                    Email = client.Email,
+                    PhoneNumber = client.PhoneNumber,
+                    PostalCode = client.PostalCode,
+                    RemainPostalCode = client.RemainPostalCode,
+                    Countries = _countryRepository.GetComboCountries(),
+                    Cities = _countryRepository.GetComboCities(0),
+                    Localities = _countryRepository.GetComboLocalities(0),
+
+                };
+                return View(model);
+
+            }
+            catch (Exception ex)
+            {
+
+                _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
+                return RedirectToAction(nameof(RequestWaterMeterClient));
+            }
+        
+         
         }
     }
 }

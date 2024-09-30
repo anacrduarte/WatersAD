@@ -1,9 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
+using WatersAD.Data.Entities;
 
 namespace WatersAD.Models
 {
     public class RequestWaterMeterViewModel
     {
+        public int ClientId { get; set; }
 
         [Required]
         [MaxLength(50, ErrorMessage = "The field {0} only can contain {1} characters length.")]
@@ -60,5 +63,35 @@ namespace WatersAD.Models
         [Display(Name = "Codigo-Postal")]
         [MaxLength(3, ErrorMessage = "The field {0} can contain {1} characters.")]
         public string? RemainPostalCodeWaterMeter { get; set; }
+
+        [Display(Name = "Locality")]
+        [Range(1, int.MaxValue, ErrorMessage = "You must select a Locality.")]
+        public int LocalityId { get; set; }
+
+        public IEnumerable<SelectListItem> Localities { get; set; }
+        [Display(Name = "Locality")]
+        [Range(1, int.MaxValue, ErrorMessage = "You must select a Locality.")]
+        public int LocalityWaterMeterId { get; set; }
+
+        [Display(Name = "City")]
+        [Range(1, int.MaxValue, ErrorMessage = "You must select a city.")]
+        public int CityId { get; set; }
+
+        [Display(Name = "City")]
+        [Range(1, int.MaxValue, ErrorMessage = "You must select a city.")]
+        public int CityWaterMeterId { get; set; }
+
+        public IEnumerable<SelectListItem> Cities { get; set; }
+
+
+        [Display(Name = "Country")]
+        [Range(1, int.MaxValue, ErrorMessage = "You must select a country.")]
+        public int CountryId { get; set; }
+
+        public IEnumerable<SelectListItem> Countries { get; set; }
+
+        [Display(Name = "Country")]
+        [Range(1, int.MaxValue, ErrorMessage = "You must select a country.")]
+        public int CountryWaterMeterId { get; set; }
     }
 }

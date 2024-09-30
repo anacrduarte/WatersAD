@@ -32,6 +32,7 @@ namespace WatersAD.Data.Repository
                            .ToList();
         }
 
+   
 
         public Consumption? GetPreviousConsumption(WaterMeter waterMeter)
         {
@@ -54,6 +55,7 @@ namespace WatersAD.Data.Repository
                 ConsumptionDate = model.ConsumptionDate,
                 ConsumptionValue = model.ConsumptionValue,
                 RegistrationDate = model.RegistrationDate,
+                WaterMeterId = model.WaterMeterId,
             };
 
 
@@ -102,6 +104,14 @@ namespace WatersAD.Data.Repository
             await _context.SaveChangesAsync();
         }
 
+        public async Task<ICollection<Consumption>> GetAllInvoicesForClientAsync(int id)
+        {
+            return await _context.Consumptions
+                 .Include(c => c.WaterMeter) 
+                 .Include(c => c.Invoice)    
+                 .Where(c => c.Invoice.ClientId == id)
+                 .ToListAsync();
+        }
 
     }
 }

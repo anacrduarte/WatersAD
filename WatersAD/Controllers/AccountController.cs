@@ -67,6 +67,8 @@ namespace WatersAD.Controllers
 
                     if (result.Succeeded)
                     {
+                       
+
                         if (user.MustChangePassword)
                         {
                             return RedirectToAction("ChangePassword");

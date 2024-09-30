@@ -1,4 +1,5 @@
-﻿@*
+﻿@using WatersAD.Data.Extensions
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
@@ -21,6 +22,10 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
    
     <link href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet" asp-append-version="true" />
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.7/css/dataTables.dataTables.css" />
+
+    @* <script src="https://cdn.datatables.net/2.1.7/js/dataTables.js"></script> *@
 
     <!-- Arquivos de estilos personalizados devem vir depois do Bootstrap -->
     <link href="~/css/templatemo-tiya-golf-club.css" rel="stylesheet" asp-append-version="true" />
@@ -86,9 +91,12 @@
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarLightDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">Cliente</a>
 
                                 <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarLightDropdownMenuLink">
-                                    <li><a class="dropdown-item" href="event-listing.html">Consumos</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Consumptions" asp-action="ShowConsumptions">Consumos</a></li>
 
-                                    <li><a class="dropdown-item" href="event-detail.html">Faturas</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Invoices" asp-action="GetInvoiceClient">Faturas</a></li>
+
+
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="WaterMeters" asp-action="RequestWaterMeterClient">Pedir contador</a></li>
                                 </ul>
                             </li>
                         }
@@ -104,8 +112,9 @@
                     <div class="d-none d-lg-block ms-lg-3">
                         @if (this.User.Identity.IsAuthenticated)
                         {
+
                             <a>
-                                <span class="e-avatar  e-avatar-circle blue custom-border-btn">SR</span>
+                                <span class="e-avatar  e-avatar-circle blue custom-border-btn">@this.User.GetInitials()</span>
                                 <span class=" btn custom-btn custom-border-btn ">@this.User.Identity.Name</span>
                                 </a>
 
@@ -143,7 +152,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                  </div>
                 <div class="offcanvas-body">
-                @await Html.PartialAsync("_Login")
+                @await Html.PartialAsync("_Login", new LoginViewModel())
             </div>
                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#3D405B" fill-opacity="1" d="M0,224L34.3,192C68.6,160,137,96,206,90.7C274.3,85,343,139,411,144C480,149,549,107,617,122.7C685.7,139,754,213,823,240C891.4,267,960,245,1029,224C1097.1,203,1166,181,1234,160C1302.9,139,1371,117,1406,106.7L1440,96L1440,320L1405.7,320C1371.4,320,1303,320,1234,320C1165.7,320,1097,320,1029,320C960,320,891,320,823,320C754.3,320,686,320,617,320C548.6,320,480,320,411,320C342.9,320,274,320,206,320C137.1,320,69,320,34,320L0,320Z"></path></svg>
             </div>
@@ -226,6 +235,7 @@
     <!-- Syncfusion ASP.NET Core Script Manager -->
     <ejs-scripts></ejs-scripts>
 
+    <script src="https://cdn.datatables.net/2.1.7/js/dataTables.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

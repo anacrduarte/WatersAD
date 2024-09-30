@@ -21,8 +21,11 @@ namespace WatersAD.Data.Entities
 
         public double ConsumptionValue {  get; set; }
 
+        public int WaterMeterId { get; set; }
         public WaterMeter? WaterMeter { get; set; }
 
         public Invoice? Invoice { get; set; }
+
+        public bool Edit { get; set; } = true;
     }
 }

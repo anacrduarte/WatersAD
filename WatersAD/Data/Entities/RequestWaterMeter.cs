@@ -63,5 +63,13 @@ namespace WatersAD.Data.Entities
         public string RemainPostalCodeWaterMeter { get; set; }
 
         public WaterMeter WaterMeter { get; set; }
+
+        public ICollection<Notification> Notifications { get; set; }
+
+        //public int LocalityId { get; set; }
+        //public Locality Locality { get; set; }
+
+        //public Locality WaterMeterLocality { get; set; }
+        //public int LocalityWaterMeterId { get; set; }
     }
 }

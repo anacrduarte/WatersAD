@@ -81,10 +81,29 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input type="text" asp-for="RemainPostalCode"  class="form-control" placeholder="">
+                                            <input type="text" asp-for="RemainPostalCode" class="form-control" placeholder="">
                                             <label asp-for="RemainPostalCode">Codigo-Postal</label>
                                         </div>
                                     </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select asp-for="CountryId" asp-items="Model.Countries" class="form-control" id="CountryId"></select>
+                                            <label asp-for="CountryId">País</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select asp-for="CityId" asp-items="Model.Cities" class="form-control" id="CityId"></select>
+                                            <label asp-for="CityId">Cidade</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select asp-for="LocalityId" asp-items="Model.Localities" class="form-control" id="LocalityId"></select>
+                                            <label asp-for="LocalityId">Localidade</label>
+                                        </div>
+                                    </div>
+                                  
                                 
                                 </div>
                              
@@ -105,17 +124,42 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <input type="text" asp-for="PostalCodeWaterMeter" class="form-control" placeholder="Codigo-Postal">
-                                        <label asp-for="PostalCodeWaterMeter">Codigo-Postal</label>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" asp-for="PostalCodeWaterMeter" class="form-control" placeholder="Codigo-Postal">
+                                            <label asp-for="PostalCodeWaterMeter">Codigo-Postal</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" asp-for="RemainPostalCodeWaterMeter" class="form-control" placeholder="">
+                                            <label asp-for="RemainPostalCodeWaterMeter">Codigo-Postal</label>
+                                        </div>
                                     </div>
                                 </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select asp-for="CountryId" asp-items="Model.Countries" class="form-control" id="MeterCountryId"></select>
+                                            <label asp-for="CountryWaterMeterId">País</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select asp-for="CityId" asp-items="Model.Cities" class="form-control" id="MeterCityId"></select>
+                                            <label asp-for="CityWaterMeterId">Cidade</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            
+                             
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <input type="text" asp-for="RemainPostalCodeWaterMeter" class="form-control" placeholder="">
-                                        <label asp-for="RemainPostalCodeWaterMeter">Codigo-Postal</label>
+                                        <select asp-for="LocalityId" asp-items="Model.Localities" class="form-control" id="MeterLocalityId"></select>
+                                        <label asp-for="LocalityWaterMeterId">Localidade</label>
                                     </div>
                                 </div>
 
@@ -157,3 +201,15 @@
         </div>
     </div>
 </section>
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    @{
+        await Html.RenderPartialAsync("_SelectCountryCityLocality");
+    }
+ 
+}

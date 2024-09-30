@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace WatersAD.Data.Entities
 {
@@ -51,6 +52,7 @@ namespace WatersAD.Data.Entities
         [MaxLength(3, ErrorMessage = "The field {0} can contain {1} characters.")]
         public string? RemainPostalCode { get; set; }
 
+       
         public ICollection<WaterMeter>? WaterMeters { get; set; }
 
 

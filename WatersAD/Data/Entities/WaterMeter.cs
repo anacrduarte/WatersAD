@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Syncfusion.EJ2.TreeGrid;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace WatersAD.Data.Entities
 {
@@ -36,14 +38,20 @@ namespace WatersAD.Data.Entities
 
         public int ClientId { get; set; }
 
+        
         public Client? Client { get; set; }
 
         public int WaterMeterServiceId { get; set; }
 
+      
         public WaterMeterService? WaterMeterService { get; set; }
 
+       
         public ICollection<Consumption>? Consumptions { get; set; }
 
+      
         public ICollection<RequestWaterMeter> RequestWaterMeter { get; set; }
+
+       
     }
 }

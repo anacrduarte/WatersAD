@@ -163,15 +163,36 @@ strong {
   background-color: var(--primary-color);
   color: var(--white-color);
 }
+/*---------------------------------------
+ TABLE              
+-----------------------------------------*/
+.tablePading {
+    margin-bottom: 50px;
+}
 
+.large-icon {
+    font-size: x-large;
+}
 
+.table-containerInvoice {
+    margin: 20px; /* Margem ao redor da tabela */
+    width: 90%; /* Largura da tabela */
+    margin-left: auto; /* Centraliza à esquerda */
+    margin-right: auto; /* Centraliza à direita */
+}
+.table-containerInvoice table {
+    width: 100%; /* Largura da tabela */
+    border-collapse: separate; /* Para permitir o border-radius */
+    border-radius: 10px 10px 0px 0px; /* Arredonda todas as bordas */
+    overflow: hidden; /* Para ocultar os cantos arredondados */
+}
 /*---------------------------------------
   ANIMATED HEADLINE               
 -----------------------------------------*/
 .cd-words-wrapper {
-  display: inline-block;
-  position: relative;
-  text-align: left;
+    display: inline-block;
+    position: relative;
+    text-align: left;
 }
 
 .cd-words-wrapper b {
@@ -667,6 +688,14 @@ strong {
     height: 210vh;
     min-height: 670px;
     
+}
+.hero-section3 {
+    height: 160vh;
+    min-height: 670px;
+}
+.hero-section4 {
+    height: 250vh;
+    min-height: 670px;
 }
 .hero-sectionRecover {
     background-image: url('../image/layout/water2.jpg');

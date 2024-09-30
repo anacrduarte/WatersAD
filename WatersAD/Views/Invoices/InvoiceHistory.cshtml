@@ -1,0 +1,111 @@
+﻿@model WatersAD.Models.InvoicesClientViewModel
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<section class="hero-section d-flex justify-content-center align-items-center" id="section_1">
+
+    <div class="section-overlay"></div>
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#3D405B" fill-opacity="1" d="M0,224L34.3,192C68.6,160,137,96,206,90.7C274.3,85,343,139,411,144C480,149,549,107,617,122.7C685.7,139,754,213,823,240C891.4,267,960,245,1029,224C1097.1,203,1166,181,1234,160C1302.9,139,1371,117,1406,106.7L1440,96L1440,0L1405.7,0C1371.4,0,1303,0,1234,0C1165.7,0,1097,0,1029,0C960,0,891,0,823,0C754.3,0,686,0,617,0C548.6,0,480,0,411,0C342.9,0,274,0,206,0C137.1,0,69,0,34,0L0,0Z"></path></svg>
+
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-6 col-12 mb-5 mb-lg-0">
+                <h2 class="text-white">Bem-vindo</h2>
+
+                <h1 class="cd-headline rotate-1 text-white mb-4 pb-2">
+                    <span>A. Duarte é</span>
+                    <span class="cd-words-wrapper">
+                        <b class="is-visible">Fonte de Vida</b>
+                        <b>Inovação</b>
+                        <b>Progresso</b>
+                    </span>
+                </h1>
+
+                <div class="custom-btn-group">
+                    <a asp-area="" asp-controller="Home" asp-action="About" class="btn custom-btn smoothscroll me-3">Sobre nós</a>
+
+                    <a asp-area="" asp-controller="WaterMeters" asp-action="RequestWaterMeterClient" class="link smoothscroll">Pedir contador</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#ffffff" fill-opacity="1" d="M0,224L34.3,192C68.6,160,137,96,206,90.7C274.3,85,343,139,411,144C480,149,549,107,617,122.7C685.7,139,754,213,823,240C891.4,267,960,245,1029,224C1097.1,203,1166,181,1234,160C1302.9,139,1371,117,1406,106.7L1440,96L1440,320L1405.7,320C1371.4,320,1303,320,1234,320C1165.7,320,1097,320,1029,320C960,320,891,320,823,320C754.3,320,686,320,617,320C548.6,320,480,320,411,320C342.9,320,274,320,206,320C137.1,320,69,320,34,320L0,320Z"></path></svg>
+</section>
+
+
+
+<section class="about-section section-padding ">
+
+    <div class="col-lg-12 col-12">
+        <h2 class="text-center">Faturas</h2>
+        <p class="text-center">Morada contador: @Model.WaterMeter.Address</p>
+    </div>
+    <div class="table-responsive table-containerInvoice">
+    <table class="display " id="MyTable" >
+                    <thead>
+                    <tr>
+                <th class="text-center">
+                        @Html.DisplayNameFor(model => model.Invoices.First().InvoiceDate)
+                        </th>
+                <th class="text-center">
+                             @Html.DisplayNameFor(model => model.Invoices.First().TotalAmount)
+                         </th>
+                <th>
+                    
+                </th>
+                    </tr>
+
+      
+                    
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model.Invoices)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.InvoiceDate)
+                                        </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TotalAmount)
+                    </td>
+                                        <td>
+
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn custom-btn smoothscroll me-3">Detalhes</a>
+                                       
+                                        </td>
+                                    </tr>
+                                }
+                     </tbody>
+    </table>
+
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#MyTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Portuguese.json"
+                },
+                columnDefs: [
+                    {
+                        targets: -1,
+                        className: 'dt-body-right'
+                    }
+                   
+                ]
+            });
+        });
+    </script>
+}

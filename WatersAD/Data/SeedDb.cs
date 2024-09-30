@@ -25,9 +25,29 @@ namespace WatersAD.Data
             await _context.Database.EnsureCreatedAsync();
             await CheckRolesAsync();
             await CheckUserAsync("Ana", "Duarte", "ana@mail.com", "987654321", "Rua das Flores", UserType.Admin, "~/image/user/Account.png");
+            await CheckUserAsync("João", "Silva", "joao.silva@example.com", "912345678", "Rua das Flores, 123, Lisboa", UserType.Employee, null);
+            await CheckUserAsync("Maria", "Santos", "maria.santos@example.com", "923456789", "Avenida da Liberdade, 456, Porto", UserType.Customer, null);
+            await CheckUserAsync("Pedro", "Oliveira", "pedro.oliveira@example.com", "934567890", "Praça do Comércio, 789, Coimbra", UserType.Customer, null);
+            await CheckUserAsync("Ana", "Pereira", "ana.pereira@example.com", "945678901", "Rua da Baixa, 159, Braga", UserType.Customer, null);
+            await CheckUserAsync("Luís", "Ferreira", "luis.ferreira@example.com", "956789012", "Avenida da República, 987, Faro", UserType.Employee, null);
+            await CheckUserAsync("Tiago", "Costa", "tiago.costa@example.com", "961234567", "Rua das Amoreiras, 1, Lisboa", UserType.Customer, null);
+            await CheckUserAsync("Rita", "Gomes", "rita.gomes@example.com", "962345678", "Avenida das Nações, 2, Porto", UserType.Customer, null);
+            await CheckUserAsync("Filipe", "Almeida", "filipe.almeida@example.com", "963456789", "Praça do Rossio, 3, Coimbra", UserType.Customer, null);
+            await CheckUserAsync("Beatriz", "Silva", "beatriz.silva@example.com", "964567890", "Rua do Comércio, 4, Braga", UserType.Customer, null);
+            await CheckUserAsync("Gustavo", "Pereira", "gustavo.pereira@example.com", "965678901", "Avenida de Roma, 5, Faro", UserType.Customer, null);
+            await CheckUserAsync("Laura", "Martins", "laura.martins@example.com", "966789012", "Rua das Laranjeiras, 6, Évora", UserType.Customer, null);
+            await CheckUserAsync("Hugo", "Mendes", "hugo.mendes@example.com", "967890123", "Praça do Marquês, 7, Setúbal", UserType.Customer, null);
+            await CheckUserAsync("Inês", "Ramos", "ines.ramos@example.com", "968901234", "Avenida da Liberdade, 8, Lisboa", UserType.Customer, null);
+            await CheckUserAsync("Nuno", "Figueiredo", "nuno.figueiredo@example.com", "969012345", "Rua do Pôr do Sol, 9, Porto", UserType.Customer, null);
+            await CheckUserAsync("Sofia", "Teixeira", "sofia.teixeira@example.com", "970123456", "Praça de Camões, 10, Coimbra", UserType.Customer, null);
+            await CheckUserAsync("André", "Cunha", "andre.cunha@example.com", "971234567", "Rua dos Três Castelos, 11, Braga", UserType.Customer, null);
+            await CheckUserAsync("Clara", "Vasconcelos", "clara.vasconcelos@example.com", "972345678", "Avenida de França, 12, Faro", UserType.Customer, null);
+            await CheckUserAsync("Ricardo", "Pinto", "ricardo.pinto@example.com", "973456789", "Rua de São Bento, 13, Évora", UserType.Customer, null);
+            await CheckUserAsync("Patrícia", "Barbosa", "patricia.barbosa@example.com", "974567890", "Praça da Alegria, 14, Setúbal", UserType.Customer, null);
+            await CheckUserAsync("Samuel", "Alves", "sa@mail.com", "975678901", "Rua Nova, 15, Lisboa", UserType.Employee, null);
 
-       
-           await AddWaterMeterServiceAsync();
+
+            await AddWaterMeterServiceAsync();
 
 
            
@@ -50,6 +70,7 @@ namespace WatersAD.Data
                     UserType = userType,
                     ImageUrl = image,
                     EmailConfirmed = true,
+                    MustChangePassword = false,
                 };
                 var result = await _userHelper.AddUserAsync(user, "123456");
 
@@ -93,7 +114,7 @@ namespace WatersAD.Data
            
 
         }
-
+   
 
         private async Task CheckRolesAsync()
         {

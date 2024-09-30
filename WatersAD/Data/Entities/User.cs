@@ -40,9 +40,10 @@ namespace WatersAD.Data.Entities
             }
         }
 
-        public bool MustChangePassword { get; set; } = true;
+       public bool MustChangePassword { get; set; } = true;
 
-       
+        
+    
       
     }
 }

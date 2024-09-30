@@ -132,6 +132,14 @@ namespace WatersAD.Data.Repository
             return list;
         }
 
+        public async Task<IEnumerable<WaterMeter>> GetWaterMetersWithConsumptionsByClientAsync(int id)
+        {
+            return await _context.WaterMeters
+                .Include(wm => wm.Consumptions)
+                .Where(wm => wm.Client.Id == id) 
+                .ToListAsync();
+        }
 
+  
     }
 }

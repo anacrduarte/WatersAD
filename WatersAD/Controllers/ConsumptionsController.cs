@@ -11,7 +11,7 @@ using WatersAD.Models;
 
 namespace WatersAD.Controllers
 {
-    [Authorize(Roles = "Employee")]
+    //[Authorize(Roles = "Employee")]
     public class ConsumptionsController : Controller
     {
 
@@ -19,21 +19,62 @@ namespace WatersAD.Controllers
         private readonly IWaterMeterRepository _waterMeterRepository;
         private readonly ITierRepository _tierRepository;
         private readonly IFlashMessage _flashMessage;
+        private readonly IUserHelper _userHelper;
+        private readonly IClientRepository _clientRepository;
 
         public ConsumptionsController(IConsumptionRepository consumptionRepository, IWaterMeterRepository waterMeterRepository,
-            ITierRepository tierRepository, IFlashMessage flashMessage)
+            ITierRepository tierRepository, IFlashMessage flashMessage, IUserHelper userHelper, IClientRepository clientRepository)
         {
 
             _consumptionRepository = consumptionRepository;
             _waterMeterRepository = waterMeterRepository;
             _tierRepository = tierRepository;
             _flashMessage = flashMessage;
+            _userHelper = userHelper;
+            _clientRepository = clientRepository;
         }
 
         // GET: Consumptions
         public IActionResult Index()
         {
             return View(_consumptionRepository.GetAllWaterMeterAndClient());
+        }
+
+        public async Task<IActionResult> ShowConsumptions()
+        {
+            var user = await _userHelper.GetUserByEmailAsync(User.Identity!.Name!);
+
+            if(user == null)
+            {
+                return new NotFoundViewResult("ConsumptionNotFound");
+            }
+           var client = await _clientRepository.GetClientByUserEmailAsync(user.Email);
+
+            
+         
+            try
+            {
+                var waterMeter = await _waterMeterRepository.GetWaterMetersWithConsumptionsByClientAsync(client.Id);
+              
+
+                var model = new ShowConsumptionsViewModel
+                {
+                    ClientId = client.Id,
+                    WaterMeters = waterMeter,
+                    Consumptions = waterMeter.SelectMany(wm => wm.Consumptions).OrderByDescending(c => c.ConsumptionDate).ToList(),
+                   
+                };
+
+
+
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
+                return this.RedirectToAction("Consumptions", "ShowConsumptions");
+            }
         }
 
 
@@ -62,14 +103,34 @@ namespace WatersAD.Controllers
             }
         }
 
-        // GET: Consumptions/Create
-        public IActionResult Create()
+        //TODO ver se quero que fique o que esta em baixo ou se vou alterar
+        //GET: Consumptions/Create
+        //public IActionResult Create()
+        //{
+        //    try
+        //    {
+        //        var model = new ConsumptionViewModel
+        //        {
+        //            WaterMeters = _waterMeterRepository.GetComboWaterMeter(),
+        //        };
+        //        return View(model);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //}
+
+        public IActionResult Create(int? clientId, int? waterMeterId)
         {
             try
             {
                 var model = new ConsumptionViewModel
                 {
                     WaterMeters = _waterMeterRepository.GetComboWaterMeter(),
+                    ClientId = clientId.Value,
+                    WaterMeterId = waterMeterId.Value
                 };
                 return View(model);
             }
@@ -79,7 +140,6 @@ namespace WatersAD.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
-
         // POST: Consumptions/Create
 
         [HttpPost]

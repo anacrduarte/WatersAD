@@ -79,5 +79,9 @@ namespace WatersAD.Data.Repository
         Task<WaterMeter?> GetWaterMeterWithConsumptionsAsync(int waterMeterId);
 
         Task AddRequestWaterMeterAsync(RequestWaterMeter request);
+
+        Task<IEnumerable<WaterMeter>> GetWaterMetersWithConsumptionsByClientAsync(int id);
+
+  
     }
 }
