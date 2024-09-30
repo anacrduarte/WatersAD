@@ -6,7 +6,7 @@ namespace WatersAD.Data.Entities
     {
         public int Id { get; set; }
 
-      
+        public int TierId { get; set; }
         public Tier? Tier { get; set; }
 
         [Required]
@@ -26,6 +26,6 @@ namespace WatersAD.Data.Entities
 
         public Invoice? Invoice { get; set; }
 
-        public bool Edit { get; set; } = true;
+      
     }
 }

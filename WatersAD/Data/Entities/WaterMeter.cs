@@ -52,6 +52,20 @@ namespace WatersAD.Data.Entities
       
         public ICollection<RequestWaterMeter> RequestWaterMeter { get; set; }
 
-       
+        public string FullPostalCode
+        {
+            get
+            {
+                return $"{PostalCode}-{RemainPostalCode}";
+            }
+        }
+
+        public string FullAdress
+        {
+            get
+            {
+                return $"{Address}, {HouseNumber}";
+            }
+        }
     }
 }

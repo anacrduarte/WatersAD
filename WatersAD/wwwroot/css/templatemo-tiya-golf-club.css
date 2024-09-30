@@ -482,7 +482,7 @@ strong {
   font-weight: var(--font-weight-bold);
   display: block;
   color: var(--dark-color);
-  max-width: 120px;
+  max-width: 100px;
 }
 
 .navbar .navbar-brand,

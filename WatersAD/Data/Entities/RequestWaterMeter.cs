@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WatersAD.Data.Entities
 {
@@ -66,10 +67,13 @@ namespace WatersAD.Data.Entities
 
         public ICollection<Notification> Notifications { get; set; }
 
-        //public int LocalityId { get; set; }
-        //public Locality Locality { get; set; }
+        public int LocalityId { get; set; }
 
-        //public Locality WaterMeterLocality { get; set; }
-        //public int LocalityWaterMeterId { get; set; }
+        [ForeignKey("LocalityId")]
+        public Locality Locality { get; set; }
+
+        [ForeignKey("WaterMeterLocalityId")]
+        public Locality WaterMeterLocality { get; set; }
+        public int LocalityWaterMeterId { get; set; }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Vereyon.Web;
 using WatersAD.Data.Entities;
 using WatersAD.Models;
+
 
 namespace WatersAD.Data.Repository
 {
@@ -32,7 +31,7 @@ namespace WatersAD.Data.Repository
                            .ToList();
         }
 
-   
+
 
         public Consumption? GetPreviousConsumption(WaterMeter waterMeter)
         {
@@ -46,7 +45,7 @@ namespace WatersAD.Data.Repository
             return Convert.ToDecimal(tierPrice * (currentValue - previousValue) / 1000);
         }
 
-     
+
         public async Task CreateConsumptionAndInvoiceAsync(ConsumptionViewModel model, WaterMeter waterMeter, Tier matchingTier, Consumption previousConsumption)
         {
 
@@ -102,16 +101,19 @@ namespace WatersAD.Data.Repository
 
 
             await _context.SaveChangesAsync();
+
+
         }
 
         public async Task<ICollection<Consumption>> GetAllInvoicesForClientAsync(int id)
         {
             return await _context.Consumptions
-                 .Include(c => c.WaterMeter) 
-                 .Include(c => c.Invoice)    
+                 .Include(c => c.WaterMeter)
+                 .Include(c => c.Invoice)
                  .Where(c => c.Invoice.ClientId == id)
                  .ToListAsync();
         }
+
 
     }
 }

@@ -73,7 +73,7 @@
                                             <td>@waterMeter.Address</td>
                                             <td>@consumption.Invoice.InvoiceDate.ToString("dd/MM/yyyy")</td>
                                             <td> @consumption.Invoice.TotalAmount </td>
-                                        <td> <a class="bi bi-file-earmark-pdf large-icon"> </a> </td>
+                                        <td> <a class="bi bi-file-earmark-pdf large-icon" asp-controller="Invoices" asp-action="Pdf" asp-route-clientId="@Model.ClientId" asp-route-invoiceId=" @consumption.Invoice.Id" asp-route-waterMeterId=" @waterMeter.Id" asp-route-consumptionId=" @consumption.Id"> </a> </td>
 
                                        
                                         </tr>

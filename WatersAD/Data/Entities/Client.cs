@@ -81,6 +81,16 @@ namespace WatersAD.Data.Entities
             }
         }
 
+        public string FullAdress
+        {
+            get
+            {
+                return $"{Address}, {HouseNumber}";
+            }
+        }
+
         public string? OldEmail { get; set; }
+
+
     }
 }

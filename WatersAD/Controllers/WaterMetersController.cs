@@ -470,13 +470,12 @@ namespace WatersAD.Controllers
                         PostalCodeWaterMeter = model.PostalCodeWaterMeter,
                         HouseNumberWaterMeter = model.HouseNumberWaterMeter,
                         RemainPostalCodeWaterMeter = model.RemainPostalCodeWaterMeter,
-                        //TODO quando actualizar a base de dados ir a classe tambem
-                        //LocalityId = model.LocalityId,
-                        //LocalityWaterMeterId = model.LocalityWaterMeterId,
+                        LocalityId = model.LocalityId,
+                        LocalityWaterMeterId = model.LocalityWaterMeterId,
                     };
 
-                    //request.Locality = locality;
-                    //request.WaterMeterLocality = waterMeterLocality;
+                    request.Locality = locality;
+                    request.WaterMeterLocality = waterMeterLocality;
 
                     await _waterMeterRepository.AddRequestWaterMeterAsync(request);
 

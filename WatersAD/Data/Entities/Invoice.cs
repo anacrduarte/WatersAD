@@ -17,5 +17,7 @@
         public bool Sent { get; set; } = false;
 
         public decimal TotalAmount { get; set; }
+
+        public DateTime LimitDate { get; set; }
     }
 }

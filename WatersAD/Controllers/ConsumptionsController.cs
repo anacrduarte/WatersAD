@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Syncfusion.Pdf.Graphics;
+using Syncfusion.Pdf;
 using System.Drawing;
 using System.Runtime.ConstrainedExecution;
 using Vereyon.Web;
@@ -304,6 +306,8 @@ namespace WatersAD.Controllers
             }
         }
 
+    
 
+   
     }
 }
