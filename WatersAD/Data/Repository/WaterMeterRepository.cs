@@ -40,7 +40,9 @@ namespace WatersAD.Data.Repository
         {
             return await _context.WaterMeters
                 .Include(c => c.Client)
+                .Include(c=> c.WaterMeterService)
                 .Include(l=> l.Locality)
+                .ThenInclude(c => c.City)
                 .ToListAsync();
 
         }
@@ -67,6 +69,17 @@ namespace WatersAD.Data.Repository
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<WaterMeter>> GetWaterMeterClientAsync(int clientId)
+        {
+            return await _context.WaterMeters
+                .Include(s => s.WaterMeterService)
+                .Include(c => c.Client)
+                .Include(l => l.Locality)
+                 .ThenInclude(ci => ci.City)
+                 .ThenInclude(co => co.Country)
+                .Where(wm => wm.ClientId == clientId)
+                .ToListAsync();
+        }
         public async Task<WaterMeterService> GetWaterServiceByIdAsync(int id)
         {
             return await _context.Set<WaterMeterService>().AsNoTracking().FirstOrDefaultAsync(e => e.Id == id);
@@ -99,7 +112,7 @@ namespace WatersAD.Data.Repository
             list.Insert(0, new SelectListItem
             {
                 Text = "(Select a Water Meter...)",
-                Value = "0",
+                Value = "",
             });
 
             return list;

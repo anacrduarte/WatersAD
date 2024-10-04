@@ -2,31 +2,53 @@
 @{
     ViewData["Title"] = "AddCity";
 }
+<section class="about-section section-padding sectionDashboard">
+    <flash dismissable="true" />
+    <div class="container">
+        <div class="row">
+            <section>
+                <div class="container">
+                    <div class="row">
 
-<h4>Adicionar Cidade</h4>
-<flash dismissable="true" />
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="AddCity">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="CountryId" />
+                        <div class="col-lg-12 col-12 text-center mx-auto mb-lg-5 mb-4">
+                            <h2 class="">Adicionar cidade</h2>
+                        
 
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-                <a asp-action="Details" asp-route-id="@Model.CountryId" class="btn btn-success">Back to List</a>
-            </div>
-        </form>
+                        </div>
+                        <div class="col-lg-6 col-12 mx-auto">
+
+                            <form class="custom-form membership-form shadow-lg" role="form" asp-action="AddCity" method="post">
+                                <input type="hidden" asp-for="CountryId" />
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="text-white mb-4">País: @Model.CountryName</h4>
+                                    <a asp-action="Details" asp-route-id="@Model.CountryId" class="btn custom-btn smoothscroll mb-4">Voltar</a>
+                                </div>
+                                <div class="row g-3">
+
+
+                                    <div class="col-md-12">
+                                        <div class="form-floating">
+                                            <input type="text" asp-for="Name" class="form-control" placeholder="Nome" required>
+                                            <label asp-for="Name">Nome</label>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="form-control mt-4">Submeter</button>
+
+
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+
+        </div>
     </div>
-</div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+
+</section>
+
+

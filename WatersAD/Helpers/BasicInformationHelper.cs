@@ -30,7 +30,7 @@ namespace WatersAD.Helpers
         public string? NIF { get; set; }
 
         [Required]
-        [Display(Name = "Phone Number")]
+        [Display(Name = "Nº telefone")]
         public string? PhoneNumber { get; set; }
 
         [Required]

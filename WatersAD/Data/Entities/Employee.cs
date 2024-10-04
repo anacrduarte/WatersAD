@@ -34,17 +34,17 @@ namespace WatersAD.Data.Entities
         public string? NIF { get; set; }
 
         [Required]
-        [Display(Name = "Phone Number")]
+        [Display(Name = "Nº telefone")]
         public string? PhoneNumber { get; set; }
 
         public bool IsActive { get; set; } = true;
 
-        [Display(Name = "Codigo-Postal")]
+        [Display(Name = "Código-Postal")]
         [Required]
         [MaxLength(4, ErrorMessage = "The field {0} can contain {1} characters.")]
         public string? PostalCode { get; set; }
 
-        [Display(Name = "Codigo-Postal")]
+        [Display(Name = "Código-Postal")]
         [MaxLength(3, ErrorMessage = "The field {0} can contain {1} characters.")]
         public string? RemainPostalCode { get; set; }
 
@@ -52,7 +52,7 @@ namespace WatersAD.Data.Entities
 
         public Locality? Locality { get; set; }
 
-        [Display(Name = "Name")]
+        [Display(Name = "Nome")]
         public string? FullName
         {
             get
@@ -61,12 +61,20 @@ namespace WatersAD.Data.Entities
                 return $"{FirstName} {LastName}";
             }
         }
-
+        [Display(Name = "Código-Postal")]
         public string FullPostalCode
         {
             get
             {
                 return $"{PostalCode}-{RemainPostalCode}";
+            }
+        }
+        [Display(Name = "Morada")]
+        public string FullAdress
+        {
+            get
+            {
+                return $"{Address}, nº {HouseNumber}";
             }
         }
 

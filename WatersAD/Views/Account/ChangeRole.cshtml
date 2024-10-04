@@ -3,47 +3,61 @@
     ViewData["Title"] = "ChangeRole";
 }
 
-<h1>ChangeRole - @Model.CurrentRole</h1>
-<flash dismissable="true" />
+<section class="about-section section-padding sectionDashboard">
+    <flash dismissable="true" />
+    <div class="col-lg-12 col-12">
 
-<table class="table">
-    <thead>
-        <tr>
+        <h2 class="text-center">Roles</h2>
+        <p class="text-center">Tipo - @Model.CurrentRole</p>
+    </div>
+    <div class="col-lg-8 col-12 mx-auto">
+            <div class="table-responsive table-containerInvoice ">
+                <table class="display " id="MyTable">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.UserName)
+                            </th>
 
-            <th>
-                @Html.DisplayNameFor(model => model.UserName)
-            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.CurrentRole)
+                            </th>
 
-            <th>
-                @Html.DisplayNameFor(model => model.CurrentRole)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.User)
-        {
-            <tr>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.User)
+                        {
 
-                <td>
-                    @Html.DisplayFor(modelItem => item.Email)
-                </td>
+                            <tr>
 
-                <td>
-                    @Html.DisplayFor(modelItem => item.UserType)
-                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Email)
+                                </td>
 
-                <td>
-                    <a asp-action="EditRole" asp-route-email="@item.Email" asp-route-currentRole="@item.UserType" class="btn btn-warning">Edit</a>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.UserType)
+                                </td>
 
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                                <td>
+                                    <a asp-action="EditRole" asp-route-email="@item.Email" asp-route-currentRole="@item.UserType" class="bi bi-pencil-square btn custom-btn  smoothscroll "> Alterar</a>
+                         
+                                </td>
+
+                            </tr>
+
+                        }
+                    </tbody>
+                </table>
+            </div>
+    </div>
+
+</section>
 
 @section Scripts {
+
     @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("_DataTableJQuery");
     }
 }

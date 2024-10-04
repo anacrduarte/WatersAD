@@ -2,48 +2,91 @@
 @{
     ViewData["Title"] = "ChangeUser";
 }
+<section class="hero-section hero-sectionRecover d-flex justify-content-center align-items-center" id="section_1">
+    <flash dismissable="true" />
+    <div class="section-overlay"></div>
 
-<h2>ChangeUser</h2>
-<flash dismissable="true" />
-<div class="row">
-    <div class="col-md-4 offset-md-4">
-        <form method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly"></div>
-            <input type="hidden" asp-for="ImageUrl" />
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#3D405B" fill-opacity="1" d="M0,224L34.3,192C68.6,160,137,96,206,90.7C274.3,85,343,139,411,144C480,149,549,107,617,122.7C685.7,139,754,213,823,240C891.4,267,960,245,1029,224C1097.1,203,1166,181,1234,160C1302.9,139,1371,117,1406,106.7L1440,96L1440,0L1405.7,0C1371.4,0,1303,0,1234,0C1165.7,0,1097,0,1029,0C960,0,891,0,823,0C754.3,0,686,0,617,0C548.6,0,480,0,411,0C342.9,0,274,0,206,0C137.1,0,69,0,34,0L0,0Z"></path></svg>
 
-            <div class="form-group">
-                <label asp-for="FirstName">First Name</label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-warning"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="LastName">Last Name</label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-warning"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ImageFile" class="control-label"></label>
-                <input asp-for="ImageFile" class="form-control" type="file" />
-                <span asp-validation-for="ImageFile" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Update" class="btn btn-primary" />
-                <a asp-action="ChangePassword" class="btn btn-success">Change Password</a>
-            </div>
+  
+    <div class="container">
+        <br />
+        <br />
+        <h2 class="mb-lg-3">Alterar dados</h2>
+        <div class="row">
           
-        </form>
-    </div>
-    <div class="col-md-4">
-        @if (!string.IsNullOrEmpty(Model.ImageUrl))
-        {
-            <img src="@Url.Content(Model.ImageUrl)" alt="Image" style="width:300px; height:450px; max-width:100%; height:auto" />
-        }
-    </div>
-</div>
+            <div class="col-md-4 d-flex justify-content-center align-items-center">
+                <div class="member-block-image-wrap">
+                  
+                        <img src="@Url.Content(Model.ImageUrl)" alt="Image" style="width:300px; height:auto; max-width:100%;" />
+                 
+                </div>
+            </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+            <div class="col-md-6">
+
+                    <form class="custom-form membership-form shadow-lg" role="form" asp-action="ChangeUser" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="ImageUrl" />
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="text-white mb-4">Dados do utilizador</h4>
+                              @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
+                                {
+                                    <a asp-controller="Dashboard" asp-action="Index" class="btn custom-btn smoothscroll mb-4">Voltar</a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Home" asp-action="Index" class="btn custom-btn smoothscroll mb-4">Voltar</a>
+                                }
+                                    </div>
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <div class="form-floating">
+                                    <input type="text" asp-for="FirstName" id="first-name" class="form-control" placeholder="Nome próprio" required="">
+                                    <label asp-for="FirstName">Nome próprio</label>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 ">
+                                <div class="form-floating">
+                                    <input type="text" asp-for="LastName" id="last-name" class="form-control" placeholder="Apelido" required="">
+                                    <label asp-for="LastName">Apelido</label>
+
+                                </div>
+                            </div>
+
+                                 
+
+                             <div class="col-md-12 ">
+
+                                <div class="form-floating">
+
+                                    <input type="file" asp-for="ImageFile" class="form-control">
+                                    <label asp-for="ImageFile">Imagem</label>
+
+
+                                </div>
+                            </div>
+
+                                
+                        </div>
+                        <button type="submit" value="ChangeUser" class="form-control mt-4">Submeter</button>
+
+
+                    </form>
+
+            </div>
+                        
+
+        </div>
+    </div>
+              
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#ffffff" fill-opacity="1" d="M0,224L34.3,192C68.6,160,137,96,206,90.7C274.3,85,343,139,411,144C480,149,549,107,617,122.7C685.7,139,754,213,823,240C891.4,267,960,245,1029,224C1097.1,203,1166,181,1234,160C1302.9,139,1371,117,1406,106.7L1440,96L1440,320L1405.7,320C1371.4,320,1303,320,1234,320C1165.7,320,1097,320,1029,320C960,320,891,320,823,320C754.3,320,686,320,617,320C548.6,320,480,320,411,320C342.9,320,274,320,206,320C137.1,320,69,320,34,320L0,320Z"></path></svg>
+</section>
+<br />
+<br />
+<br />
+<br />
+
+

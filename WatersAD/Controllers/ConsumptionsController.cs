@@ -130,7 +130,7 @@ namespace WatersAD.Controllers
             {
                 var model = new ConsumptionViewModel
                 {
-                    WaterMeters = _waterMeterRepository.GetComboWaterMeter(),
+                    
                     ClientId = clientId.Value,
                     WaterMeterId = waterMeterId.Value
                 };

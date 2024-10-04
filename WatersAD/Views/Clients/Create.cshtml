@@ -3,98 +3,59 @@
 @{
     ViewData["Title"] = "Create";
 }
+<section class="about-section section-padding sectionDashboard">
+<div class="container">
+    <div class="row">
+        <section>
+            <div class="container">
+                <div class="row">
+                        <flash dismissable="true" />
+                    <div class="col-lg-12 col-12 text-center mx-auto mb-lg-5 mb-4">
+                        <h2 class="">Adicionar Cliente</h2>
+                            <p class="text-center">Novo cliente</p>
+                       
 
-<h1>Create</h1>
+                    </div>
+                     <div class="col-lg-8 col-12 mx-auto">
 
-<h4>Client</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <form class="custom-form membership-form shadow-lg" role="form" asp-action="Create" method="post">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="text-white mb-4">Dados pessoais</h4>
+                                    <a asp-action="Index" class="btn custom-btn smoothscroll mb-4">Voltar</a>
+                                </div>
+                                <div class="row g-3">
+                                    <partial name="_Clients" />
 
-            <partial name="_Clients" />
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="email" asp-for="Email" class="form-control" placeholder="Email" required>
+                                            <label asp-for="Email" >Email</label>
+                                               
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="form-control mt-4">Submeter</button>
+                                
 
-               <div class="form-group">
-            <label asp-for="Email">E-mail</label>
-            <input asp-for="Email" class="form-control" />
-            <span asp-validation-for="Email" class="text-warning"></span>
+                            </form>
+                    </div>
+
+                </div>
             </div>
-       
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-                
-            </div>
-        </form>
+        </section>
+
+
     </div>
 </div>
+</section>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            // Quando o país for alterado
-            $("#CountryId").change(function () {
-                var countryId = $(this).val();
-
-                if (countryId) {
-                    $("#CityId").empty();
-                    $("#LocalityId").empty();
-
-                    $.ajax({
-                        url: '@Url.Action("GetCitiesAsync", "Countries")',
-                        type: 'POST',
-                        dataType: 'json',
-                        data: { countryId: countryId },
-                        success: function (cities) {
-                            $("#CityId").append('<option value="">(Select a city...)</option>');
-                            $.each(cities, function (i, city) {
-                                $("#CityId").append('<option value="' + city.id + '">' + city.name + '</option>');
-                            });
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Failed to retrieve cities: ' + error);
-                            alert('Failed to retrieve cities.');
-                        }
-                    });
-                } else {
-                    $("#CityId").empty().append('<option value="">(Select a city...)</option>');
-                    $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', true);
-                }
-            });
-
-            // Quando a cidade for alterada
-            $("#CityId").change(function () {
-                var cityId = $(this).val();
-
-                if (cityId) {
-                    $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', false);
-
-                    $.ajax({
-                        url: '@Url.Action("GetLocalitiesAsync", "Countries")',
-                        type: 'POST',
-                        dataType: 'json',
-                        data: { cityId: cityId },
-                        success: function (localities) {
-                            $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>');
-                            $.each(localities, function (i, locality) {
-                                $("#LocalityId").append('<option value="' + locality.id + '">' + locality.name + '</option>');
-                            });
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Failed to retrieve localities: ' + error);
-                            alert('Failed to retrieve localities.');
-                        }
-                    });
-                } else {
-                    $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', true);
-                }
-            });
-        });
-    </script>
   
+    @{
+        await Html.RenderPartialAsync("_SelectCountryCityLocality");
+    }
+ 
 }

@@ -1,62 +1,90 @@
 ﻿@model WatersAD.Models.ClientViewModel
 
-        <div class="form-group">
-            <label asp-for="FirstName" class="control-label"></label>
-            <input asp-for="FirstName" class="form-control" />
-            <span asp-validation-for="FirstName" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="LastName" class="control-label"></label>
-            <input asp-for="LastName" class="form-control" />
-            <span asp-validation-for="LastName" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Address" class="control-label"></label>
-            <input asp-for="Address" class="form-control" />
-            <span asp-validation-for="Address" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="HouseNumber" class="control-label"></label>
-            <input asp-for="HouseNumber" class="form-control" />
-            <span asp-validation-for="HouseNumber" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="CountryId" class="control-label"></label>
-            <select asp-for="CountryId" asp-items="Model.Countries" class="form-control" id="CountryId"></select>
-            <span asp-validation-for="CountryId" class="text-danger"></span>
-        </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="text" asp-for="FirstName" id="first-name" class="form-control" placeholder="Nome próprio" required="">
+                        <label asp-for="FirstName">Nome próprio</label>
+                         
+                    </div>
+                </div>
 
-        <div class="form-group">
-            <label asp-for="CityId" class="control-label"></label>
-            <select asp-for="CityId" asp-items="Model.Cities" class="form-control" id="CityId"></select>
-            <span asp-validation-for="CityId" class="text-danger"></span>
-        </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="text" asp-for="LastName" id="last-name" class="form-control" placeholder="Apelido" required="">
+                        <label asp-for="LastName">Apelido</label>
+                          
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="text" asp-for="PhoneNumber" id="phone" class="form-control" placeholder="Nº Telefone" required>
+                        <label asp-for="PhoneNumber">Nº Telefone</label>
+                     
+        
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="text" asp-for="NIF" id="NIF" class="form-control" placeholder="NIF" required="">
+                        <label asp-for="NIF">NIF</label>
+                       
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="text" asp-for="Address" class="form-control" placeholder="Rua" required>
+                        <label asp-for="Address">Rua</label>
 
-        <div class="form-group">
-            <label asp-for="LocalityId" class="control-label"></label>
-            <select asp-for="LocalityId" asp-items="Model.Localities" class="form-control" id="LocalityId"></select>
-            <span asp-validation-for="LocalityId" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="PostalCode" class="control-label"></label>
-            <input asp-for="PostalCode" class="form-control" />
-            <span asp-validation-for="PostalCode" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="RemainPostalCode" class="control-label"></label>
-            <input asp-for="RemainPostalCode" class="form-control" />
-            <span asp-validation-for="RemainPostalCode" class="text-danger"></span>
-        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                            <input type="text" asp-for="HouseNumber" class="form-control" placeholder="Nº" required>
+                        <label asp-for="HouseNumber">Nº</label>
 
-        <div class="form-group">
-            <label asp-for="NIF" class="control-label"></label>
-            <input asp-for="NIF" class="form-control" />
-            <span asp-validation-for="NIF" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="PhoneNumber" class="control-label"></label>
-            <input asp-for="PhoneNumber" class="form-control" />
-            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-        </div>
-     
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="text" asp-for="PostalCode" class="form-control" placeholder="Codigo-Postal" required>
+                        <label asp-for="PostalCode">Codigo-Postal</label>
 
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                            <input type="text" asp-for="RemainPostalCode" class="form-control" placeholder="" required>
+                        <label asp-for="RemainPostalCode">Codigo-Postal</label>
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                            <select asp-for="CountryId" asp-items="Model.Countries" class="form-control" id="CountryId" required></select>
+                        <label asp-for="CountryId">País</label>
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                            <select asp-for="CityId" asp-items="Model.Cities" class="form-control" id="CityId" required></select>
+                        <label asp-for="CityId">Cidade</label>
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <select asp-for="LocalityId" asp-items="Model.Localities" class="form-control" id="LocalityId" required></select>
+                        <label asp-for="LocalityId">Localidade</label>
+
+                    </div>
+                </div>
+                              
+                             
+
+                               
+
+
+                      
+
+    

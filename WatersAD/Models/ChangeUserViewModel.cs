@@ -12,9 +12,10 @@ namespace WatersAD.Models
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
-        public string? ImageUrl { get; set; }
+        public string ImageUrl { get; set; }
 
-        public IFormFile? ImageFile { get; set; }
+        public IFormFile ImageFile { get; set; }
+
 
 
     }

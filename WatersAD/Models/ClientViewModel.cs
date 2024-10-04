@@ -16,7 +16,9 @@ namespace WatersAD.Models
         public IEnumerable<SelectListItem>? WaterMeterServices { get; set; }
 
         [Display(Name = "Data de Instalação")]
-        public DateTime? InstallationDate { get; set; }
+        public DateTime InstallationDate { get; set; }
+
+        
 
        
     }

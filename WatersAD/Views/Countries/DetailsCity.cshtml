@@ -2,108 +2,67 @@
 @{
     ViewData["Title"] = "DetailsCity";
 }
+<section class="about-section section-padding sectionDashboard">
+    <flash dismissable="true" />
+    <div class="col-lg-12 col-12">
+
+        <h2 class="text-center">Localidades</h2>
+        <p class="text-center">Cidade: @Html.DisplayFor(model => model.Name)</p>
+        <p class="text-center">  <a asp-action="AddLocality" asp-route-id="@Model.Id" class="btn custom-btn  smoothscroll">Adicionar localidade</a></p>
+    </div>
+    <div class="col-lg-6 col-12 mx-auto">
+        <div class="table-responsive table-containerInvoice">
+            <table class="display " id="MyTable">
+                <thead>
+                    <tr>
+
+                        <th>
+                            <a asp-action="Details" asp-route-id="@Model.CountryId" class="btn custom-btn  smoothscroll">Voltar</a>
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Localities.FirstOrDefault().Name)
+                        </th>
+
+                        <th></th>
 
 
 
-<h2>Detalhes Cidade</h2>
-<flash dismissable="true" />
-<div>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-    </dl>
-</div>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Localities.OrderBy(c => c.Name))
+                    {
+
+                        <tr>
+
+                            <td></td>
+                            <td>
+                                @Html.DisplayFor(model => item.Name)
+                            </td>
+                            <td>
+                               
+                                <a asp-action="EditLocality" asp-route-id="@item.Id" class="bi bi-pencil-square btn custom-btn  smoothscroll">Editar</a>
+                            </td>
 
 
-<div>
-    <a asp-action="EditCity" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-    <a asp-action="AddLocality" asp-route-id="@Model.Id" class="btn btn-info">Add locality</a>
-    <a asp-action="Details" asp-route-id="@Model.CountryId" class="btn btn-success">Back to List</a>
-</div>
 
-<h4>Cities</h4>
-@if (Model.Localities == null || Model.Localities.Count == 0)
-{
-    <h5>No localities added yet</h5>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Localities.FirstOrDefault().Name)
-                </th>
-            </tr>
-        </thead>
 
-        <tbody>
-            @foreach (var item in Model.Localities.OrderBy(c => c.Name))
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(model => item.Name)
-                    </td>
-                    <td id="@item.Id">
-                        <a asp-action="EditLocality" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
-                        <a data-id="@item.Id" asp-route-id="@item.Id" class="btn btn-danger" id="btnDelete">Delete</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+                        </tr>
 
-<div id="deleteDialog" class="modal fade">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Delete</h4>
-                <button type="button" class="close" data-dismiss="modal"><i class="fa fa-window-close"></i></button>
-
-            </div>
-            <div class="modal-body">
-                <p>Do you want to delete the country?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="btnYesDelete">Delete</button>
-                <button type="button" class="btn btn-success" id="btnNoDelete">No</button>
-            </div>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
-</div>
+
+</section>
 
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("_DataTableJQuery");
     }
 
-    <script type="text/javascript">
-        $(document).ready(function () {
 
-            var id = 0;
-
-            $('a[id*=btnDelete]').click(function () {
-                debugger;
-                id = $(this).data("id"); 
-                $("#deleteDialog").modal('show');
-                return false;
-            });
-
-            $("#btnNoDelete").click(function () {
-                $("#deleteDialog").modal('hide');
-                return false;
-            });
-
-            $("#btnYesDelete").click(function () {
-                window.location.href = '/Countries/DeleteLocality/' + id;
-            });
-
-        });
-    </script>
+ 
 }

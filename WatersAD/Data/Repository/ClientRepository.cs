@@ -18,6 +18,7 @@ namespace WatersAD.Data.Repository
         {
             return _context.Clients
                            .Include(c => c.Locality)
+                           .ThenInclude(c=> c.City)
                            .Include(c => c.WaterMeters)
                            .Where(c => c.IsActive)
                            .OrderBy(c => c.FirstName)
@@ -27,6 +28,8 @@ namespace WatersAD.Data.Repository
         public IEnumerable<Client> GetAllWithLocalitiesAndWaterMeterInactive()
         {
             return _context.Clients
+                            .Include(c => c.Locality)
+                           .ThenInclude(c => c.City)
                            .Include(c => c.Locality)
                            .Include(c => c.WaterMeters)
                            .Where(c => !c.IsActive)

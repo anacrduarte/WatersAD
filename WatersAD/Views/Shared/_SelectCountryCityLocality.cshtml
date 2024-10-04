@@ -19,7 +19,7 @@
                     dataType: 'json',
                     data: { countryId: countryId },
                     success: function (cities) {
-                        $("#CityId").append('<option value="">(Select a city...)</option>');
+                        $("#CityId").append('<option value="">(Selecione a cidade...)</option>');
                         $.each(cities, function (i, city) {
                             $("#CityId").append('<option value="' + city.id + '">' + city.name + '</option>');
                         });
@@ -30,8 +30,8 @@
                     }
                 });
             } else {
-                $("#CityId").empty().append('<option value="">(Select a city...)</option>');
-                $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', true);
+                $("#CityId").empty().append('<option value="">(Selecione a cidade...)</option>');
+                $("#LocalityId").empty().append('<option value="">(Selecione a localidade...)</option>').prop('disabled', true);
             }
         });
 
@@ -40,7 +40,7 @@
             var cityId = $(this).val();
 
             if (cityId) {
-                $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', false);
+                $("#LocalityId").empty().append('<option value="">(Selecione a localidade...)</option>').prop('disabled', false);
 
                 $.ajax({
                     url: '@Url.Action("GetLocalitiesAsync", "Countries")',
@@ -48,7 +48,7 @@
                     dataType: 'json',
                     data: { cityId: cityId },
                     success: function (localities) {
-                        $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>');
+                        $("#LocalityId").empty().append('<option value="">(Selecione a localidade...)</option>');
                         $.each(localities, function (i, locality) {
                             $("#LocalityId").append('<option value="' + locality.id + '">' + locality.name + '</option>');
                         });
@@ -59,7 +59,7 @@
                     }
                 });
             } else {
-                $("#LocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', true);
+                $("#LocalityId").empty().append('<option value="">(Selecione a localidade...)</option>').prop('disabled', true);
             }
         });
 
@@ -76,7 +76,7 @@
                     dataType: 'json',
                     data: { countryId: countryId },
                     success: function (cities) {
-                        $("#MeterCityId").append('<option value="">(Select a city...)</option>');
+                        $("#MeterCityId").append('<option value="">(Selecione a cidade...)</option>');
                         $.each(cities, function (i, city) {
                             $("#MeterCityId").append('<option value="' + city.id + '">' + city.name + '</option>');
                         });
@@ -87,8 +87,8 @@
                     }
                 });
             } else {
-                $("#MeterCityId").empty().append('<option value="">(Select a city...)</option>');
-                $("#MeterLocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', true);
+                $("#MeterCityId").empty().append('<option value="">(Selecione a cidade...)</option>');
+                $("#MeterLocalityId").empty().append('<option value="">(Selecione a localidade...)</option>').prop('disabled', true);
             }
         });
 
@@ -97,7 +97,7 @@
             var cityId = $(this).val();
 
             if (cityId) {
-                $("#MeterLocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', false);
+                $("#MeterLocalityId").empty().append('<option value="">(Selecione a localidade...)</option>').prop('disabled', false);
 
                 $.ajax({
                     url: '@Url.Action("GetLocalitiesAsync", "Countries")',
@@ -105,7 +105,7 @@
                     dataType: 'json',
                     data: { cityId: cityId },
                     success: function (localities) {
-                        $("#MeterLocalityId").empty().append('<option value="">(Select a locality...)</option>');
+                        $("#MeterLocalityId").empty().append('<option value="">(Selecione a localidade...)</option>');
                         $.each(localities, function (i, locality) {
                             $("#MeterLocalityId").append('<option value="' + locality.id + '">' + locality.name + '</option>');
                         });
@@ -116,7 +116,7 @@
                     }
                 });
             } else {
-                $("#MeterLocalityId").empty().append('<option value="">(Select a locality...)</option>').prop('disabled', true);
+                $("#MeterLocalityId").empty().append('<option value="">(Selecione a localidade...)</option>').prop('disabled', true);
             }
         });
     });

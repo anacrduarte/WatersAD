@@ -169,7 +169,7 @@ namespace WatersAD.Data.Repository
 
                 list.Insert(0, new SelectListItem
                 {
-                    Text = "(Select a City...)",
+                    Text = "(Selecione a cidade...)",
                     Value = "0",
                 });
 
@@ -190,7 +190,7 @@ namespace WatersAD.Data.Repository
 
             list.Insert(0, new SelectListItem
             {
-                Text = "(Select a Country...)",
+                Text = "(Selecione o país...)",
                 Value = "0",
             });
 
@@ -215,7 +215,7 @@ namespace WatersAD.Data.Repository
 
                 list.Insert(0, new SelectListItem
                 {
-                    Text = "(Select a locality...)",
+                    Text = "(Selecione a localidade...)",
                     Value = "0",
                 });
             }

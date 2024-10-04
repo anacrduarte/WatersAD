@@ -21,9 +21,13 @@ namespace WatersAD.Data.Repository
                 .FirstOrDefaultAsync(e => e.Id == employeeId);
         }
 
+   
+
         public IEnumerable<Employee> GetAllActive()
         {
             return _context.Employees
+                            .Include(l => l.Locality)
+                             .ThenInclude(ci => ci.City)
                            .Where(e => e.IsActive)
                            .OrderBy(c => c.FirstName)
                            .ToList();
@@ -32,6 +36,8 @@ namespace WatersAD.Data.Repository
         public IEnumerable<Employee> GetAllInactive()
         {
             return _context.Employees
+                 .Include(l => l.Locality)
+                             .ThenInclude(ci => ci.City)
                            .Where(e => !e.IsActive )
                            .OrderBy(c => c.FirstName)
                            .ToList();

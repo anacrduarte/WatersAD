@@ -9,8 +9,10 @@ namespace WatersAD.Models
     {
         public int? UserId { get; set; }
 
+        [Display(Name = "Email")]
         public string? UserName { get; set; }
 
+        [Display(Name = "Role actual")]
         public UserType? CurrentRole { get; set; }
 
         public string SelectedRole { get; set; }

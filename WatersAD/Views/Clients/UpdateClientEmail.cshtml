@@ -2,37 +2,57 @@
 @{
     ViewData["Title"] = "UpdateClientEmail";
 }
+<section class="about-section section-padding sectionDashboard">
+    <div class="container">
+        <div class="row">
+            <section>
+                <div class="container">
+                    <div class="row">
+                        <flash dismissable="true" />
+                        <div class="col-lg-12 col-12 text-center mx-auto mb-lg-5 mb-4">
+                            <h2 class="">Alterar email cliente</h2>
+                            <p class="text-center">@Model.FullName</p>
 
-<h1>UpdateClientEmail</h1>
+
+                        </div>
+                        <div class="col-lg-6 col-12 mx-auto">
+
+                            <form class="custom-form membership-form shadow-lg" role="form" asp-action="UpdateClientEmail" method="post">
+                                <input type="hidden" asp-for="ClientId" />
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="text-white mb-4">Dados pessoais</h4>
+                                    <a asp-action="Index" class="btn custom-btn smoothscroll mb-4">Voltar</a>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="email" asp-for="OldEmail" class="form-control" placeholder="Email" required>
+                                            <label asp-for="OldEmail"></label>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="email" asp-for="Email" class="form-control" placeholder="Email" required>
+                                            <label asp-for="Email"></label>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="form-control mt-4">Submeter</button>
 
 
-<h4>Client</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="UpdateClientEmail" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ClientId" />
-            <div class="form-group">
-                <label asp-for="OldEmail">E-mail</label>
-                <input asp-for="OldEmail" class="form-control" />
-                <span asp-validation-for="OldEmail" class="text-warning"></span>
-            </div>
+                            </form>
+                        </div>
 
-            <div class="form-group">
-                <label asp-for="Email">E-mail</label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-warning"></span>
-            </div>
+                    </div>
+                </div>
+            </section>
 
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
 
-            </div>
-        </form>
+        </div>
     </div>
-</div>
+</section>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+

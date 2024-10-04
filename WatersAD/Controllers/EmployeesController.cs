@@ -41,10 +41,6 @@ namespace WatersAD.Controllers
             return View(_employeeRepository.GetAllActive());
         }
 
-        public IActionResult GetAllEmployees()
-        {
-            return View(_employeeRepository.GetAll());
-        }
 
         // GET: Employees/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -57,11 +53,14 @@ namespace WatersAD.Controllers
             try
             {
                 var employee = await _employeeRepository.GetEmployeeAndLocalityAndCityAsync(id.Value);
+
                 if (employee == null)
                 {
                     return new NotFoundViewResult("EmployeeNotFound");
                 }
 
+                var user = await _userHelper.GetUserByEmailAsync(employee.Email);
+                employee.User = user;
                 var model = _converterHelper.ToEmployeeViewModel(employee);
 
                 return View(model);
@@ -344,7 +343,7 @@ namespace WatersAD.Controllers
                 return new NotFoundViewResult("EmployeeNotFound");
             }
 
-            var model = new ChangeUserEmailViewModel { EmployeeId = id.Value, OldEmail = employee.Email };
+            var model = new ChangeUserEmailViewModel { EmployeeId = id.Value, OldEmail = employee.Email, FullName = employee.FullName };
 
             return View(model);
         }

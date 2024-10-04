@@ -36,7 +36,7 @@ namespace WatersAD.Data.Entities
         public string? NIF { get; set; }
 
         [Required]
-        [Display(Name = "Phone Number")]
+        [Display(Name = "Nº Telefone")]
         public string? PhoneNumber { get; set; }
 
         public int LocalityId { get; set; }
@@ -56,14 +56,14 @@ namespace WatersAD.Data.Entities
         public ICollection<WaterMeter>? WaterMeters { get; set; }
 
 
-        [Display(Name = "Water Meters")]
+        [Display(Name = "Contador")]
         public int NumberWaterMeters => WaterMeters == null ? 0 : WaterMeters.Count();
 
         public bool IsActive { get; set; } = true;
 
         public ICollection<Invoice>? Invoices { get; set; }
 
-        [Display(Name = "Name")]
+        [Display(Name = "Nome")]
         public string? FullName
         {
             get
@@ -72,7 +72,7 @@ namespace WatersAD.Data.Entities
                 return $"{FirstName} {LastName}";
             }
         }
-
+        [Display(Name = "Código Postal")]
         public string FullPostalCode
         {
             get
@@ -81,11 +81,12 @@ namespace WatersAD.Data.Entities
             }
         }
 
+        [Display(Name = "Morada")]
         public string FullAdress
         {
             get
             {
-                return $"{Address}, {HouseNumber}";
+                return $"{Address}, nº {HouseNumber}";
             }
         }
 

@@ -2,5 +2,376 @@
 @{
     ViewData["Title"] = "Index";
 }
+<section class="hero-section d-flex justify-content-center align-items-center" id="section_1">
 
-<h1>Index</h1>
+    <div class="section-overlay"></div>
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#3D405B" fill-opacity="1" d="M0,224L34.3,192C68.6,160,137,96,206,90.7C274.3,85,343,139,411,144C480,149,549,107,617,122.7C685.7,139,754,213,823,240C891.4,267,960,245,1029,224C1097.1,203,1166,181,1234,160C1302.9,139,1371,117,1406,106.7L1440,96L1440,0L1405.7,0C1371.4,0,1303,0,1234,0C1165.7,0,1097,0,1029,0C960,0,891,0,823,0C754.3,0,686,0,617,0C548.6,0,480,0,411,0C342.9,0,274,0,206,0C137.1,0,69,0,34,0L0,0Z"></path></svg>
+
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-6 col-12 mb-5 mb-lg-0">
+                <h2 class="text-white">Bem-vindo</h2>
+
+                <h1 class="cd-headline rotate-1 text-white mb-4 pb-2">
+                    <span>A. Duarte é</span>
+                    <span class="cd-words-wrapper">
+                        <b class="is-visible">Fonte de Vida</b>
+                        <b>Inovação</b>
+                        <b>Progresso</b>
+                    </span>
+                </h1>
+
+                <div class="custom-btn-group">
+                    <a asp-area="" asp-controller="Home" asp-action="About" class="btn custom-btn smoothscroll me-3">Sobre nós</a>
+
+
+                    @if (this.User.Identity.IsAuthenticated)
+                    {
+                        <a asp-area="" asp-controller="WaterMeters" asp-action="RequestWaterMeterClient" class="link smoothscroll">Pedir contador</a>
+                    }
+                    else
+                    {
+                        <a asp-area="" asp-controller="WaterMeters" asp-action="RequestWaterMeter" class="link smoothscroll">Pedir contador</a>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#ffffff" fill-opacity="1" d="M0,224L34.3,192C68.6,160,137,96,206,90.7C274.3,85,343,139,411,144C480,149,549,107,617,122.7C685.7,139,754,213,823,240C891.4,267,960,245,1029,224C1097.1,203,1166,181,1234,160C1302.9,139,1371,117,1406,106.7L1440,96L1440,320L1405.7,320C1371.4,320,1303,320,1234,320C1165.7,320,1097,320,1029,320C960,320,891,320,823,320C754.3,320,686,320,617,320C548.6,320,480,320,411,320C342.9,320,274,320,206,320C137.1,320,69,320,34,320L0,320Z"></path></svg>
+</section>
+
+<section class="about-section section-padding">
+    <div class="col-lg-12 col-12 text-center">
+        <h2 class="mb-lg-5 mb-4">Distribuição de água</h2>
+    </div>
+    <div id="carouselExampleDark" class="carousel carousel-dark slide custom-carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active" data-bs-interval="10000">
+                <img src="~/image/layout/1.jpg" class="d-block w-100" alt="...">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>First slide label</h5>
+                    <p>Some representative placeholder content for the first slide.</p>
+                </div>
+            </div>
+            <div class="carousel-item" data-bs-interval="2000">
+                <img src="~/image/layout/2.jpg" class="d-block w-100" alt="...">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Second slide label</h5>
+                    <p>Some representative placeholder content for the second slide.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="~/image/layout/water4.jpg" class="d-block w-100" alt="...">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Third slide label</h5>
+                    <p>Some representative placeholder content for the third slide.</p>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+
+</section>
+
+
+<section class="section-bg-image">
+    <svg viewBox="0 0 1265 144" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path fill="rgba(255, 255, 255, 1)" d="M 0 40 C 164 40 164 20 328 20 L 328 20 L 328 0 L 0 0 Z" stroke-width="0"></path> <path fill="rgba(255, 255, 255, 1)" d="M 327 20 C 445.5 20 445.5 89 564 89 L 564 89 L 564 0 L 327 0 Z" stroke-width="0"></path> <path fill="rgba(255, 255, 255, 1)" d="M 563 89 C 724.5 89 724.5 48 886 48 L 886 48 L 886 0 L 563 0 Z" stroke-width="0"></path><path fill="rgba(255, 255, 255, 1)" d="M 885 48 C 1006.5 48 1006.5 67 1128 67 L 1128 67 L 1128 0 L 885 0 Z" stroke-width="0"></path><path fill="rgba(255, 255, 255, 1)" d="M 1127 67 C 1196 67 1196 0 1265 0 L 1265 0 L 1265 0 L 1127 0 Z" stroke-width="0"></path></svg>
+
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-6 col-12">
+                <div class="section-bg-image-block">
+                    <h2 class="mb-lg-3">Receba a nossa newsletter</h2>
+
+                    <p>A nossa newsletter oferece atualizações exclusivas sobre os serviços, dicas de sustentabilidade e notícias sobre a importância da água potável. </p>
+                    @await Html.PartialAsync("_NewsletterForm")
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <svg viewBox="0 0 1265 144" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path fill="rgba(255, 255, 255, 1)" d="M 0 40 C 164 40 164 20 328 20 L 328 20 L 328 0 L 0 0 Z" stroke-width="0"></path> <path fill="rgba(255, 255, 255, 1)" d="M 327 20 C 445.5 20 445.5 89 564 89 L 564 89 L 564 0 L 327 0 Z" stroke-width="0"></path> <path fill="rgba(255, 255, 255, 1)" d="M 563 89 C 724.5 89 724.5 48 886 48 L 886 48 L 886 0 L 563 0 Z" stroke-width="0"></path><path fill="rgba(255, 255, 255, 1)" d="M 885 48 C 1006.5 48 1006.5 67 1128 67 L 1128 67 L 1128 0 L 885 0 Z" stroke-width="0"></path><path fill="rgba(255, 255, 255, 1)" d="M 1127 67 C 1196 67 1196 0 1265 0 L 1265 0 L 1265 0 L 1127 0 Z" stroke-width="0"></path></svg>
+</section>
+
+
+<section class="membership-section section-padding" id="section_3">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-12 col-12 text-center mx-auto mb-lg-5 mb-4">
+                <h2>Informações</h2>
+            </div>
+
+            <div class="col-lg-6 col-12 mb-3 mb-lg-0">
+                <h4 class="mb-4 pb-lg-2">Tabela de preços</h4>
+
+                <div class="table-responsive">
+                    <table class="table text-center">
+                        <thead>
+                            <tr>
+                                <th style="width: 34%;">Escalão</th>
+
+                                <th style="width: 22%;">Valor unitário</th>
+
+                                <th style="width: 22%;">Limite</th>
+
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <th scope="row" class="text-start">1º Escalão</th>
+
+                                <td>
+
+                                    0.30€
+                                </td>
+
+                                <td>
+                                    5 m<sup>3</sup>
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <th scope="row" class="text-start">2º Escalão</th>
+
+                                <td>
+                                    0.80€
+                                </td>
+
+                                <td>
+                                    15 m<sup>3</sup>
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <th scope="row" class="text-start">3º Escalão</th>
+
+                                <td>
+                                    1.20€
+                                </td>
+
+                                <td>
+                                    25 m<sup>3</sup>
+                                </td>
+
+
+                            </tr>
+
+                            <tr>
+                                <th scope="row" class="text-start">4º Escalão</th>
+
+                                <td>
+                                    1.60€
+                                </td>
+
+                                <td>
+                                    > 25 m<sup>3</sup>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-lg-5 col-12 mx-auto">
+                <h4 class="mb-4 pb-lg-2">Sistema de distribuição</h4>
+
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/yBd8UF3vwDs?si=rWzDV_6Su3BT9PAM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<section class="events-section section-bg section-padding" id="section_4">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-12 col-12">
+                <h2 class="mb-lg-3">Eventos</h2>
+            </div>
+
+            <div class="row custom-block mb-3">
+                <div class="col-lg-2 col-md-4 col-12 order-2 order-md-0 order-lg-0">
+                    <div class="custom-block-date-wrap d-flex d-lg-block d-md-block align-items-center mt-3 mt-lg-0 mt-md-0">
+                        <h6 class="custom-block-date mb-lg-1 mb-0 me-3 me-lg-0 me-md-0">24</h6>
+
+                        <strong class="text-white">Out 27</strong>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-8 col-12 order-1 order-lg-0">
+                    <div class="custom-block-image-wrap">
+                        <a href="https://www.worldwatercommunity.com/eventscal/water-talk/" target="_blank">
+                            <img src="~/image/layout/evento1.png" class="custom-block-image img-fluid" alt="">
+
+                            <i class="custom-block-icon bi-link"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-12 order-3 order-lg-0">
+                    <div class="custom-block-info mt-2 mt-lg-0">
+                        <a href="https://www.worldwatercommunity.com/eventscal/water-talk/" target="_blank" class="events-title mb-3">Palestra</a>
+
+                        <p class="mb-0">Aqui abre-se um espaço de conversas sinceras, com expressões autênticas. Com Água como Água para Água. Este é um espaço de inspiração e confluência.</p>
+
+                        <div class="d-flex flex-wrap border-top mt-4 pt-3">
+
+                            <div class="mb-4 mb-lg-0">
+                                <div class="d-flex flex-wrap align-items-center mb-1">
+                                    <span class="custom-block-span">Horário:</span>
+
+                                    <p class="mb-0">10:00 am - 11:00 am</p>
+                                </div>
+
+                                <div class="d-flex flex-wrap align-items-center">
+                                    <span class="custom-block-span">Tipo:</span>
+
+                                    <p class="mb-0">Virtual</p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center ms-lg-auto">
+                                <a href="https://www.worldwatercommunity.com/eventscal/water-talk/" target="_blank" class="btn custom-btn">Mais informações</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row custom-block custom-block-bg">
+                <div class="col-lg-2 col-md-4 col-12 order-2 order-md-0 order-lg-0">
+                    <div class="custom-block-date-wrap d-flex d-lg-block d-md-block align-items-center mt-3 mt-lg-0 mt-md-0">
+                        <h6 class="custom-block-date mb-lg-1 mb-0 me-3 me-lg-0 me-md-0">28</h6>
+
+                        <strong class="text-white">Maio 2025</strong>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-8 col-12 order-1 order-lg-0">
+                    <div class="custom-block-image-wrap">
+                        <a href="https://www.watermeetsmoney.com/" target="_blank">
+                            <img src="~/image/layout/water4.jpg" class="custom-block-image img-fluid" alt="">
+
+                            <i class="custom-block-icon bi-link"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-12 order-3 order-lg-0">
+                    <div class="custom-block-info mt-2 mt-lg-0">
+                        <a href="https://www.watermeetsmoney.com/" target="_blank" class="events-title mb-3">Global Water Summit 2025</a>
+
+                        <p class="mb-0">
+                            É um dos principais eventos internacionais focados na gestão da água, reunindo líderes de serviços públicos, governos, indústrias e instituições financeiras para abordar os desafios mais urgentes relacionados à água.
+                        </p>
+
+                        <div class="d-flex flex-wrap border-top mt-4 pt-3">
+
+                            <div class="mb-4 mb-lg-0">
+                                <div class="d-flex flex-wrap align-items-center mb-1">
+                                    <span class="custom-block-span">Localização:</span>
+
+                                    <p class="mb-0">Paris, França</p>
+                                </div>
+
+                                <div class="d-flex flex-wrap align-items-center">
+                                    <span class="custom-block-span">Tipo:</span>
+
+                                    <p class="mb-0">Presencial</p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center ms-lg-auto">
+                                <a href="https://www.watermeetsmoney.com/" target="_blank" class="btn custom-btn">Mais informações</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<section class="contact-section section-padding" id="section_5">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-5 col-12">
+
+                @await Html.PartialAsync("_ContactForm")
+
+            </div>
+
+            <div class="col-lg-6 col-12">
+                <div class="contact-info mt-5">
+                    <div class="contact-info-item">
+                        <div class="contact-info-body">
+                            <strong>Braga, Portugal</strong>
+
+                            <p class="mt-2 mb-1">
+                                <a href="tel: 912 345 678" class="contact-link">
+                                    (+351)
+                                    912 345 678
+                                </a>
+                            </p>
+
+                            <p class="mb-0">
+                                <a href="mailto:A.Duarte@company.com" class="contact-link">
+                                    A.Duarte@company.com
+                                </a>
+                            </p>
+                        </div>
+
+                        <div class="contact-info-footer">
+                            <a href="https://maps.app.goo.gl/Ppkv2YLqVmC9PSBZ7" target="_blank">Direcções</a>
+                        </div>
+                    </div>
+
+                    <img src="~/image/layout/WorldMap.svg" class="img-fluid" alt="">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+
+    <script>
+        const carousel = new bootstrap.Carousel('#myCarousel')
+    </script>
+
+}

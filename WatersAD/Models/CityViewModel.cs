@@ -6,6 +6,7 @@ namespace WatersAD.Models
     {
         public int CountryId { get; set; }
 
+        public string CountryName { get; set; }
         public int CityId { get; set; }
 
         [Required]

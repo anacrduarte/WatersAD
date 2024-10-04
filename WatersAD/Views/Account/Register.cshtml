@@ -2,69 +2,104 @@
 @{
     ViewData["Title"] = "Register";
 }
+<section class="about-section section-padding sectionDashboard">
+    <div class="container">
+        <div class="row">
+              <flash dismissable="true" />
+            <section>
+                <div class="container">
+                    <div class="row">
+                      
+                        <div class="col-lg-12 col-12 text-center mx-auto mb-lg-5 mb-4">
+                            <h2 class="">Adicionar Utilizador</h2>
+                            <p class="text-center">Novo utilizador</p>
 
-<h2>Register</h2>
-<flash dismissable="true" />
-<div class="row">
-    <div class="col-md-4 offset-md-4">
-        <form method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" ></div>
 
-            <div class="form-group">
-                <label asp-for="FirstName">First Name</label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-warning"></span>
-            </div>
+                        </div>
+                        <div class="col-lg-8 col-12 mx-auto">
 
-            <div class="form-group">
-                <label asp-for="LastName">Last Name</label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-warning"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Address">Address</label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-warning"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ImageFile" class="control-label"></label>
-                <input asp-for="ImageFile" class="form-control" type="file" />
-                <span asp-validation-for="ImageFile" class="text-danger"></span>
-            </div>
+                            <form class="custom-form membership-form shadow-lg" role="form" asp-action="Register" method="post" enctype="multipart/form-data">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="text-white mb-4">Dados do utilizador</h4>
+                                    <a asp-action="Index" asp-controller="Dashboard" class="btn custom-btn smoothscroll mb-4">Voltar</a>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" asp-for="FirstName" id="first-name" class="form-control" placeholder="Nome próprio" required="">
+                                            <label asp-for="FirstName">Nome próprio</label>
+                                          
+                                        </div>
+                                    </div>
 
-            <div class="form-group">
-                <label asp-for="Username">User Name</label>
-                <input asp-for="Username" class="form-control" />
-                <span asp-validation-for="Username" class="text-warning"></span>
-            </div>
-           
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" asp-for="LastName" id="last-name" class="form-control" placeholder="Apelido" required="">
+                                            <label asp-for="LastName">Apelido</label>
+                                         
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" asp-for="Address" id="phone" class="form-control" placeholder="Morada" required>
+                                            <label asp-for="Address">Morada</label>
+                                           
 
-            <div class="form-group">
-                <label asp-for="Password">Password</label>
-                <input asp-for="Password" type="password" class="form-control" />
-                <span asp-validation-for="Password" class="text-warning"></span>
-            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <select asp-for="SelectedRole" asp-items="Model.Roles" class="form-control" required></select>
+                                            <label asp-for="SelectedRole">Role</label>
 
-            <div class="form-group">
-                <label asp-for="Confirm">Confirm</label>
-                <input asp-for="Confirm" type="password" class="form-control" />
-                <span asp-validation-for="Confirm" class="text-warning"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SelectedRole" class="control-label"></label>
-                <select asp-for="SelectedRole" asp-items="Model.Roles" class="form-control"></select>
-                <span asp-validation-for="SelectedRole" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Register New User" class="btn btn-primary" />
-            </div>
-        </form>
+
+                                        </div>
+                                    </div>
+                               
+                                    <div class="col-md-12 ">
+                                     
+                                        <div class="form-floating">
+                                            
+                                            <input  type="file" asp-for="ImageFile" class="form-control" >
+                                            <label asp-for="ImageFile">Imagem</label>
+                                  
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-floating">
+                                            <input type="email" asp-for="Username" class="form-control" placeholder="Email" required>
+                                            <label asp-for="Username">Email</label>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="password" asp-for="Password" class="form-control" placeholder="Palavra-passe" required>
+                                            <label asp-for="Password">Palavra-passe</label>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="password" asp-for="Confirm" class="form-control" placeholder="Confirmar palavra-passe" required>
+                                            <label asp-for="Confirm">Confirmar palavra-passe</label>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" value="Register New User" class="form-control mt-4">Submeter</button>
+
+
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+
+        </div>
     </div>
-</div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+</section>
 

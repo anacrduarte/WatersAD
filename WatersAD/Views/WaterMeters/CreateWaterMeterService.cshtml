@@ -2,33 +2,58 @@
 @{
     ViewData["Title"] = "CreateWaterMeterService";
 }
+<section class="about-section section-padding sectionDashboard">
+    <flash dismissable="true" />
+    <div class="container">
+        <div class="row">
+            <section>
+                <div class="container">
+                    <div class="row">
 
-<h1>CreateWaterMeterService</h1>
+                        <div class="col-lg-12 col-12 text-center mx-auto mb-lg-5 mb-4">
+                            <h2 class="">Adicionar contador</h2>
+                            <p>Insira a quantidade de contadores</p>
 
 
-<h4>WaterMeter</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="CreateWaterMeterService">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        </div>
+                        <div class="col-lg-6 col-12 mx-auto">
 
-            <div class="form-group">
-                <label asp-for="Quantity" class="control-label"></label>
-                <input asp-for="Quantity" class="form-control" type="number" />
-                <span asp-validation-for="Quantity" class="text-danger"></span>
-            </div>
+                            <form class="custom-form membership-form shadow-lg" role="form" asp-action="CreateWaterMeterService" method="post">
 
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="text-white mb-4">Novo contador</h4>
+                                    <a asp-action="DetailsWaterServices" class="btn custom-btn smoothscroll mb-4">Voltar</a>
+                                </div>
+                                <div class="row g-3">
+
+
+                                    <div class="col-md-12">
+                                        <div class="form-floating">
+                                            <input type="text" asp-for="Quantity" class="form-control" placeholder="Quantidade" required>
+                                            <label asp-for="Quantity">Quantidade</label>
+
+                                        </div>
+                                    </div>
+                                  
+                                 
+                                </div>
+                                <button type="submit" class="form-control mt-4">Submeter</button>
+
+
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+</section>
+
 
 
 

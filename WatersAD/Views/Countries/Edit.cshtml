@@ -4,30 +4,96 @@
     ViewData["Title"] = "Edit";
 }
 
-<h2>Editar</h2>
-<flash dismissable="true" />
-<h4>País</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-success">Back to List</a>
-            </div>
-        </form>
+<section class="about-section section-padding sectionDashboard">
+    <flash dismissable="true" />
+    <div class="container">
+        <div class="row">
+            <section>
+                <div class="container">
+                    <div class="row">
+                        
+                        <div class="col-lg-12 col-12 text-center mx-auto mb-lg-5 mb-4">
+                            <h2 class="">Editar país</h2>
+                            <p> <a data-id="@Model.Id" asp-route-id="@Model.Id"  id="btnDelete">Apagar país</a></p>
+
+                        </div>
+                        <div class="col-lg-6 col-12 mx-auto">
+
+                            <form class="custom-form membership-form shadow-lg" role="form" asp-action="Edit" method="post">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="text-white mb-4">@Model.Name</h4>
+                                    <a asp-action="Index" class="btn custom-btn smoothscroll mb-4">Voltar</a>
+                                </div>
+                                <div class="row g-3">
+                                  
+
+                                    <div class="col-md-12">
+                                        <div class="form-floating">
+                                            <input type="text" asp-for="Name" class="form-control" placeholder="Nome" required>
+                                            <label asp-for="Name">Nome</label>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="form-control mt-4">Submeter</button>
+                               
+
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+
+        </div>
     </div>
-</div>
+
+    <div id="deleteDialog" class="modal fade ">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Remover</h4>
+                    <button type="button" class=" btn custom-btn bi bi-x-lg " data-dismiss="modal" id="btnNoDelete"></button>
+
+                </div>
+                <div class="modal-body">
+                    <p>Quer remover este país?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="btnYesDelete">Remover</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("_DataTableJQuery");
     }
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var id = 0;
+
+            $('a[id*=btnDelete]').click(function () {
+                debugger;
+                id = $(this).data("id");
+                $("#deleteDialog").modal('show');
+                return false;
+            });
+
+            $("#btnNoDelete").click(function () {
+                $("#deleteDialog").modal('hide');
+                return false;
+            });
+
+            $("#btnYesDelete").click(function () {
+                window.location.href = '/Countries/Delete/' + id;
+            });
+
+        });
+    </script>
 }

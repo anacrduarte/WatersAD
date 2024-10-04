@@ -37,6 +37,18 @@ namespace WatersAD.Controllers
             return View(await _waterMeterRepository.GetWaterMeterWithClients());
         }
 
+        public async Task<IActionResult> GetWaterMetersClient(int? id)
+        {
+            var waterMeters = await _waterMeterRepository.GetWaterMeterClientAsync(id.Value);
+            if(waterMeters == null) { return NotFound(); }
+
+
+            //waterMeters.WaterMeterServices = waterMeters.Select(wm => wm.WaterMeterService).ToList();
+
+           
+            return View(waterMeters);
+        }
+
         // GET: WaterMetersServices
         public IActionResult DetailsWaterServices()
         {
@@ -84,43 +96,61 @@ namespace WatersAD.Controllers
         }
 
         // GET: WaterMeters/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create(int? id)
         {
+            if (id == null)
+            {
+                return new NotFoundViewResult("ClientNotFound");
+            }
 
             try
             {
+                var client = await _clientRepository.GetClientAndLocalityAndCityAsync(id.Value);
+
+                if (client == null)
+                {
+                    return new NotFoundViewResult("ClientNotFound");
+                }
+
                 var model = new WaterMeterViewModel
                 {
-                    Clients = _clientRepository.GetAll().Select(c => new SelectListItem
-                    {
-                        Text = c.FullName,
-                        Value = c.Id.ToString(),
-                    }),
+                    ClientId = client.Id,
+            
                     Countries = _countryRepository.GetComboCountries(),
-                    Cities = _countryRepository.GetComboCities(0),
-                    Localities = _countryRepository.GetComboLocalities(0),
+                    Cities = _countryRepository.GetComboCities(client.Locality.City.Country.Id),
+                    Localities = _countryRepository.GetComboLocalities(client.Locality.City.Id),
+                    WaterMeterServices = _waterMeterRepository.GetComboWaterMeterServices(),
 
+                    Client = client,
                 };
+
+                if (!model.Countries.Any() || !model.Cities.Any() || !model.Localities.Any())
+                {
+                    _flashMessage.Warning("Não foi possível carregar as listas de Países, Cidades ou Localidades.");
+                    return RedirectToAction("Index", "Clients");
+                }
+
                 return View(model);
             }
             catch (Exception ex)
             {
-                _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
+                _flashMessage.Danger($"Erro ao carregar os dados do cliente: {ex.Message}");
                 return RedirectToAction(nameof(Index));
             }
+
         }
 
         // POST: WaterMeters/Create
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(WaterMeterViewModel model, int id)
+        public async Task<IActionResult> Create(WaterMeterViewModel model)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var client = await _clientRepository.GetByIdAsync(model.SelectedClientId);
+                    var client = await _clientRepository.GetByIdAsync(model.ClientId);
 
                     if (client == null)
                     {
@@ -138,7 +168,7 @@ namespace WatersAD.Controllers
                         return View(model);
                     }
 
-                    var waterMeterService = await _waterMeterRepository.GetWaterServiceByIdAsync(id);
+                    var waterMeterService = await _waterMeterRepository.GetWaterServiceByIdAsync(model.WaterMeterServicesId);
 
 
                     if (waterMeterService == null)
@@ -171,6 +201,7 @@ namespace WatersAD.Controllers
                         ConsumptionDate = DateTime.UtcNow,
                         ConsumptionValue = 0,
                         WaterMeter = waterMeter,
+                        TierId = 1,
                     };
 
                     await _consumptionRepository.CreateAsync(consumption);
@@ -187,7 +218,7 @@ namespace WatersAD.Controllers
 
                     await _clientRepository.UpdateAsync(client);
 
-                    return RedirectToAction(nameof(DetailsWaterServices));
+                    return RedirectToAction("Index", "Clients");
                 }
                 catch (Exception ex)
                 {
@@ -208,7 +239,7 @@ namespace WatersAD.Controllers
             }
             try
             {
-                var waterMeter = await _waterMeterRepository.GetWaterMeterWithCityAndCountryAsync(id.Value);
+                var waterMeter = await _waterMeterRepository.GetClientAndLocalityWaterMeterAsync(id.Value);
 
                 if (waterMeter == null)
                 {
@@ -227,6 +258,7 @@ namespace WatersAD.Controllers
                     Localities = _countryRepository.GetComboLocalities(waterMeter.Locality.City.Id),
                     PostalCode = waterMeter.PostalCode,
                     RemainPostalCode = waterMeter.RemainPostalCode,
+                    Client = waterMeter.Client,
                 };
 
                 return View(model);
@@ -284,35 +316,35 @@ namespace WatersAD.Controllers
             return View(model);
         }
 
-        // GET: WaterMeters/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new NotFoundViewResult("WaterMeterNotFound");
-            }
+        //// GET: WaterMeters/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new NotFoundViewResult("WaterMeterNotFound");
+        //    }
 
-            try
-            {
-                var waterMeter = await _waterMeterRepository.GetByIdAsync(id.Value);
+        //    try
+        //    {
+        //        var waterMeter = await _waterMeterRepository.GetByIdAsync(id.Value);
 
-                if (waterMeter == null)
-                {
-                    return new NotFoundViewResult("WaterMeterNotFound");
-                }
+        //        if (waterMeter == null)
+        //        {
+        //            return new NotFoundViewResult("WaterMeterNotFound");
+        //        }
 
-                return View(waterMeter);
-            }
-            catch (Exception ex)
-            {
-                _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
-                return RedirectToAction(nameof(Index));
-            }
-        }
+        //        return View(waterMeter);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //}
 
         // POST: WaterMeters/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+     
+     
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try

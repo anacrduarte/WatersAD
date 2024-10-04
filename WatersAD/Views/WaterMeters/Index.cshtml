@@ -4,61 +4,132 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Contadores</h1>
+
+<section class="about-section section-padding sectionDashboard">
+    <flash dismissable="true" />
+    <div class="col-lg-12 col-12">
+
+        <h2 class="text-center">Contadores</h2>
+       
+    </div>
+    <div class="col-lg-11 col-12 mx-auto">
+    <div class="table-responsive table-containerInvoice">
+        <table class="display " id="MyTable">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.WaterMeterService.SerialNumber)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FullAdress)
+                    </th>
+
+                    <th>
+                        @Html.DisplayNameFor(model => model.Locality.Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IsActive)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.InstallationDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Client.FullName) do Cliente
+                    </th>
+
+                    <th></th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.WaterMeterService.SerialNumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FullAdress)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Locality.Name),  @Html.DisplayFor(modelItem => item.Locality.City.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IsActive)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.InstallationDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Client.FullName)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="bi bi-pencil-square btn custom-btn  smoothscroll"> Editar</a>
+                                @if (item.IsActive)
+                                {
+                                    <a asp-route-id="@item.Id" data-id="@item.Id" id="btnDelete" class="bi bi-file-minus">Remover</a>
+                                }
+                               
+                        </td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+
+    </div>
+    <div id="deleteDialog" class="modal fade ">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Remover</h4>
+                    <button type="button" class=" btn custom-btn bi bi-x-lg " data-dismiss="modal" id="btnNoDelete"></button>
+
+                </div>
+                <div class="modal-body">
+                    <p>Quer remover este contador?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="btnYesDelete">Remover</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HouseNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Locality.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsActive)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InstallationDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Client.FullName)
-            </th>
-            
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HouseNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Locality.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsActive)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InstallationDate)
-            </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Client.FullName)
-                </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Remover</a>
-            </td>
-        </tr>
+
+
+</section>
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_DataTableJQuery");
+    }
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var id = 0;
+
+            $('a[id*=btnDelete]').click(function () {
+                debugger;
+                id = $(this).data("id");
+                $("#deleteDialog").modal('show');
+                return false;
+            });
+
+            $("#btnNoDelete").click(function () {
+                $("#deleteDialog").modal('hide');
+                return false;
+            });
+
+            $("#btnYesDelete").click(function () {
+                window.location.href = '/WaterMeters/DeleteConfirmed/' + id;
+            });
+
+        });
+    </script>
+
 }
-    </tbody>
-</table>

@@ -22,5 +22,7 @@ namespace WatersAD.Data.Repository
         /// </summary>
         /// <returns>An <see cref="IEnumerable{Employee}"/> of inactive employees.</returns>
         IEnumerable<Employee> GetAllInactive();
+
+        
     }
 }

@@ -42,6 +42,10 @@ namespace WatersAD.Data.Repository
 
         private decimal CalculateTotalAmount(double tierPrice, double currentValue, double previousValue)
         {
+            if(previousValue == null)
+            {
+                previousValue = 0;
+            }
             return Convert.ToDecimal(tierPrice * (currentValue - previousValue) / 1000);
         }
 
@@ -55,6 +59,7 @@ namespace WatersAD.Data.Repository
                 ConsumptionValue = model.ConsumptionValue,
                 RegistrationDate = model.RegistrationDate,
                 WaterMeterId = model.WaterMeterId,
+                TierId = matchingTier.Id,
             };
 
 

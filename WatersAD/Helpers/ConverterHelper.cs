@@ -83,6 +83,7 @@ namespace WatersAD.Helpers
                 WaterMeters = new List<WaterMeter>(),
                 Invoices = new List<Invoice>(),
                 
+                
             };
         }
 
@@ -122,6 +123,7 @@ namespace WatersAD.Helpers
                 CityId = client.Locality.CityId,
                 City = client.Locality.City,
                 Email = client.Email,
+                User = client.User,
 
             };
         
@@ -171,7 +173,7 @@ namespace WatersAD.Helpers
                 CityId = employee.Locality.CityId,
                 City = employee.Locality.City,
                 Email = employee.Email,
-
+                User = employee.User,
             };
 
 

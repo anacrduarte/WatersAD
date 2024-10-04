@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Policy;
 using WatersAD.Enum;
 
 namespace WatersAD.Data.Entities
@@ -33,7 +34,7 @@ namespace WatersAD.Data.Entities
             {
                 if (string.IsNullOrEmpty(ImageUrl))
                 {
-                    return null;
+                    return "https://localhost:44334/image/noimage.jpg"; 
                 }
 
                 return $"https://localhost:44334{ImageUrl.Substring(1)}";

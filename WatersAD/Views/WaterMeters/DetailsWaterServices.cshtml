@@ -2,65 +2,75 @@
 @{
     ViewData["Title"] = "WaterServices";
 }
+<section class="about-section section-padding sectionDashboard">
+    <flash dismissable="true" />
+    <div class="col-lg-12 col-12">
 
-<h1>Contadores Disponíveis</h1>
-<p>
-    <a asp-action="CreateWaterMeterService">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            
-            <th>
-                @Html.DisplayNameFor(model => model.SerialNumber)
-            </th>
-           
+        <h2 class="text-center">Contadores disponíveis</h2>
+        <p class="text-center"><a asp-action="CreateWaterMeterService" class="btn custom-btn  smoothscroll">Adicionar contador</a></p>
+    </div>
+    <div class="col-lg-8 col-12 mx-auto">
+    <div class="table-responsive table-containerInvoice">
+        <table class="display " id="MyTable">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.SerialNumber)
+                    </th>
 
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-              
-                <td>
-                    @Html.DisplayFor(modelItem => item.SerialNumber)
-                </td>
 
-                <td>
-                    <a asp-action="Create" asp-route-id="@item.Id">Add Client</a>
-                    <a data-id="@item.Id" asp-route-id="@item.Id" id="btnDelete">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                    <th></th>
 
-<div id="deleteDialog" class="modal fade">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Delete</h4>
-                <button type="button" class="close" data-dismiss="modal"><i class="fa fa-window-close" ></i></button>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
 
-            </div>
-            <div class="modal-body">
-                <p>Do you want to delete the country?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="btnYesDelete">Delete</button>
-                <button type="button" class="btn btn-success" id="btnNoDelete">No</button>
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SerialNumber)
+                        </td>
+                        <td>
+                          
+
+                            <a asp-route-id="@item.Id" data-id="@item.Id" id="btnDelete" class="bi-trash3">Apagar</a>
+                        </td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+
+    </div>
+    <div id="deleteDialog" class="modal fade ">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Remover</h4>
+                    <button type="button" class=" btn custom-btn bi bi-x-lg " data-dismiss="modal" id="btnNoDelete"></button>
+
+                </div>
+                <div class="modal-body">
+                    <p>Quer remover este contador?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="btnYesDelete">Remover</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+</section>
+
+
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
 
+    @{
+        await Html.RenderPartialAsync("_DataTableJQuery");
+    }
     <script type="text/javascript">
         $(document).ready(function () {
 
@@ -84,4 +94,5 @@
 
         });
     </script>
+
 }

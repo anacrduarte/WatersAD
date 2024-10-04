@@ -163,7 +163,7 @@ namespace WatersAD.Controllers
                 return NotFound();
             }
 
-            var model = new CityViewModel { CountryId = country.Id };
+            var model = new CityViewModel { CountryId = country.Id, CountryName = country.Name };
             return View(model);
         }
 
@@ -224,7 +224,7 @@ namespace WatersAD.Controllers
                 var countryId = await _countryRepository.UpdateCityAsync(city);
                 if (countryId != 0)
                 {
-                    return this.RedirectToAction("Details", new { id = countryId });
+                    return this.RedirectToAction("Details", new { id = model.CountryId });
                 }
             }
 
@@ -280,7 +280,7 @@ namespace WatersAD.Controllers
                 return NotFound();
             }
 
-            var model = new LocalityViewModel { CityId = city.Id };
+            var model = new LocalityViewModel { CityId = city.Id, CityName = city.Name };
             return View(model);
         }
 

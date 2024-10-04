@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Razor.Language.Intermediate;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using System.IO;
 using Vereyon.Web;
 using WatersAD.Data.Entities;
+using WatersAD.Enum;
 using WatersAD.Helpers;
 using WatersAD.Models;
 
@@ -33,9 +36,13 @@ namespace WatersAD.Controllers
         /// <returns></returns>
         //public IActionResult Login()
         //{
-        //    if (User!.Identity!.IsAuthenticated)
+        //    if (User!.Identity!.IsAuthenticated && this.User.IsInRole("Admin"))
         //    {
 
+        //        return RedirectToAction("Index", "Dashboard");
+        //    }
+        //    else if(User!.Identity!.IsAuthenticated && this.User.IsInRole("Customer"))
+        //    {
         //        return RedirectToAction("Index", "Home");
         //    }
 
@@ -79,7 +86,16 @@ namespace WatersAD.Controllers
                             return Redirect(this.Request.Query["ReturnUrl"].First());
                         }
 
-                        return this.RedirectToAction("Index", "Home");
+                        if (this.User.IsInRole("Admin") || this.User.IsInRole("Employee"))
+                        {
+
+                            return RedirectToAction("Index", "Dashboard");
+                        }
+                        else 
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
+                     
                     }
 
                     if (result.IsLockedOut)
@@ -89,17 +105,18 @@ namespace WatersAD.Controllers
                     else
                     {
                         _flashMessage.Warning(string.Empty, "Email e palavra-passe incorretos.");
+                        
                     }
                 }
                 catch (Exception ex)
                 {
                     _flashMessage.Danger($"Erro ao fazer login! {ex.Message}");
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Index", "Home");
                 }
 
             }
-          
-            return View(model);
+            _flashMessage.Danger("Erro ao fazer login!");
+            return RedirectToAction("Index", "Home");
         }
 
         public async Task<IActionResult> Logout()
@@ -126,8 +143,7 @@ namespace WatersAD.Controllers
             {
 
                 _flashMessage.Danger("Ocorreu um erro ao carregar os roles: " + ex.Message);
-
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Dashboard");
             }
         }
 
@@ -174,36 +190,53 @@ namespace WatersAD.Controllers
                         Response response = await _mailHelper.SendMail(
                                            $"{model.FirstName} {model.LastName}", model.Username!,
                                            "Water AD - Confirmação de Email",
-                                           $"<h1>SalesCodeSpace 2024 - Confirmação de Email</h1>" +
-                                               $"Clique no link para poder entrar como utilizador:, " +
+                                           $"<h1>Águas Duarte - Confirmação de Email</h1>" +
+                                               $"Clique no link para poder entrar como utilizador, a sua palavra-passe é {model.Password}, tem que alterar assim que fizer login. " +
                                                $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>");
 
                         if (!response.IsSuccess)
                         {
                             _flashMessage.Danger("Erro ao enviar email de confirmação.");
+                           
+                            return View(FillInModel(model));
                         }
                         else
                         {
                             _flashMessage.Info("Instruções de confirmação de email foram enviadas para o email do utilizador.");
-
+                            return RedirectToAction("Register", "Account");
                         }
-                    }
+                        
 
+                      
+                    }
                     _flashMessage.Info("Utilizador já existe");
-                    return View(model);
+                    return View(FillInModel(model));
+
                 }
                 catch (Exception ex)
                 {
                     _flashMessage.Danger($"Ocorreu um erro: {ex.Message}");
-                    return View(model);
+                    return View(FillInModel(model));
                 }
             }
 
             _flashMessage.Warning("Por favor, corrija os erros no formulário.");
-            return View(model);
+            return View(FillInModel(model));
         }
 
-
+        public RegisterNewUserViewModel FillInModel(RegisterNewUserViewModel model)
+        {
+            var newModel = new RegisterNewUserViewModel
+            {
+                FirstName = model.FirstName,
+               LastName = model.LastName,
+                Username = model.Username,
+                Address = model.Address,
+                Roles = _userHelper.GetComboTypeRole(),
+            };
+         
+            return newModel;
+        }
         public async Task<IActionResult> ChangeUser()
         {
             var user = await _userHelper.GetUserByEmailAsync(User.Identity!.Name!);
@@ -258,7 +291,7 @@ namespace WatersAD.Controllers
                         if (response.Succeeded)
                         {
 
-                            _flashMessage.Confirmation("User updated!");
+                            _flashMessage.Confirmation("Actualização realizada com sucesso!");
                             return RedirectToAction("ChangeUser");
                         }
                         else
@@ -274,7 +307,7 @@ namespace WatersAD.Controllers
                 catch (Exception ex)
                 {
 
-                    _flashMessage.Danger($"Erro ao atualizar o usuário: {ex.Message}");
+                    _flashMessage.Danger($"Erro ao atualizar o utilizador: {ex.Message}");
                     return View(model);
                 }
 
@@ -335,11 +368,12 @@ namespace WatersAD.Controllers
             return View(model);
         }
 
+   
         public async Task<IActionResult> ChangeRole(string role)
         {
             if (string.IsNullOrEmpty(role))
             {
-                return BadRequest("Role not specified.");
+                return NotFound();
             }
 
             try
@@ -350,7 +384,7 @@ namespace WatersAD.Controllers
 
                 if (users == null || !users.Any())
                 {
-                    _flashMessage.Warning("Nenhum usuário encontrado para essa função.");
+                    _flashMessage.Warning("Nenhum utilizador encontrado para essa função.");
                 }
 
                 var model = new ChangeRoleViewModel
@@ -364,11 +398,11 @@ namespace WatersAD.Controllers
             catch (Exception ex)
             {
 
-                _flashMessage.Danger($"Erro ao buscar usuários: {ex.Message}");
-                return RedirectToAction(nameof(Index));
+                _flashMessage.Danger($"Erro na procura de utilizadores: {ex.Message}");
+                return RedirectToAction("Index", "Dashboard");
             }
         }
-
+    
         public async Task<IActionResult> EditRole(string email)
         {
             if (string.IsNullOrEmpty(email))
@@ -400,7 +434,7 @@ namespace WatersAD.Controllers
             {
 
                 _flashMessage.Danger($"Erro ao editar função do usuário: {ex.Message}");
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Dashboard");
             }
 
 
@@ -430,8 +464,8 @@ namespace WatersAD.Controllers
                         if (response.Succeeded)
                         {
 
-                            _flashMessage.Confirmation("User updated!");
-                            return RedirectToAction("ChangeRole", new { role = model.CurrentRole });
+                            _flashMessage.Confirmation("Utilizador actualizado!");
+                            return RedirectToAction("ChangeRole", new { role = currentRole });
                         }
                         else
                         {
@@ -440,14 +474,14 @@ namespace WatersAD.Controllers
                     }
                     else
                     {
-                        _flashMessage.Warning("Usuário não encontrado.");
+                        _flashMessage.Warning("Utilizador não encontrado.");
                     }
 
                 }
                 catch (Exception ex)
                 {
 
-                    _flashMessage.Danger($"Erro ao editar o usuário: {ex.Message}");
+                    _flashMessage.Danger($"Erro ao editar o utilizador: {ex.Message}");
                 }
             }
 
@@ -522,7 +556,7 @@ namespace WatersAD.Controllers
                                         $"{user.FirstName} {user.LastName}",
                                         model.Email!,
                                         "Water AD - Recuperação da Palavra-passe",
-                                        $"<h1>Shopping - Recuperação da Palavra-passe</h1>" +
+                                        $"<h1>Águas Duarte - Recuperação da Palavra-passe</h1>" +
                                         $"Para recuperar a palavra-passe clique no link:" +
                                         $"<p><a href = \"{link}\">Reset Password</a></p>");
 
@@ -536,7 +570,7 @@ namespace WatersAD.Controllers
                     {
                         _flashMessage.Warning("Erro ao enviar email. Tente novamente mais tarde.");
                     }
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Index", "Home");
                 }
                 catch (Exception ex)
                 {
@@ -568,7 +602,7 @@ namespace WatersAD.Controllers
                     if (result.Succeeded)
                     {
                         _flashMessage.Info("Palavra-passe alterada com sucesso.");
-                        return RedirectToAction("Login");
+                        return RedirectToAction("Index", "Home");
                     }
 
                     _flashMessage.Info("Erro ao alterar palavra-passe.");

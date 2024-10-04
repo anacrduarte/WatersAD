@@ -62,7 +62,8 @@ namespace WatersAD.Controllers
             {
                 return new NotFoundViewResult("ClientNotFound");
             }
-
+            var user = await _userHelper.GetUserByEmailAsync(client.Email);
+            client.User = user;
             var model = _converterHelper.ToClientViewModel(client);
           
 
@@ -292,8 +293,10 @@ namespace WatersAD.Controllers
                 {
                     return new NotFoundViewResult("ClientNotFound");
                 }
+               
+          
 
-                if (client.WaterMeters != null && client.WaterMeters.Any())
+                if (client.WaterMeters != null && client.WaterMeters.Any(wm => wm.IsActive))
                 {
                     _flashMessage.Warning("Tem que desativar primeiro os contadores antes de remover o cliente");
                     return RedirectToAction(nameof(Index));
@@ -311,158 +314,6 @@ namespace WatersAD.Controllers
 
             
         }
-
-
-        [Authorize(Roles = "Admin")]
-        // GET: Clients/AddWaterMeterToClient
-        public async Task<IActionResult> AddWaterMeterToClient(int? id)
-        {
-            if (id == null)
-            {
-                return new NotFoundViewResult("ClientNotFound");
-            }
-
-            try
-            {
-                var client = await _clientRepository.GetClientAndLocalityAndCityAsync(id.Value);
-
-                if (client == null)
-                {
-                    return new NotFoundViewResult("ClientNotFound");
-                }
-
-                var model = new WaterMeterViewModel
-                {
-                    ClientId = client.Id,
-                    Address = client.Address,
-                    HouseNumber = client.HouseNumber,
-                    PostalCode = client.PostalCode,
-                    RemainPostalCode = client.RemainPostalCode,
-                    LocalityId = client.Locality.Id,
-                    CityId = client.Locality.City.Id,
-                    CountryId = client.Locality.City.Country.Id,
-                    Countries = _countryRepository.GetComboCountries(),
-                    Cities = _countryRepository.GetComboCities(client.Locality.City.Country.Id),
-                    Localities = _countryRepository.GetComboLocalities(client.Locality.City.Id),
-                    WaterMeterServices = _waterMeterRepository.GetComboWaterMeterServices(),
-                };
-
-                if (!model.Countries.Any() || !model.Cities.Any() || !model.Localities.Any())
-                {
-                    _flashMessage.Warning("Não foi possível carregar as listas de Países, Cidades ou Localidades.");
-                    return RedirectToAction(nameof(Index));
-                }
-
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                _flashMessage.Danger($"Erro ao carregar os dados do cliente: {ex.Message}");
-                return RedirectToAction(nameof(Index));
-            }
-
-            
-        }
-
-        // POST: Clients/AddWaterMeterToClient
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-
-        public async Task<IActionResult> AddWaterMeterToClient(WaterMeterViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var client = await _clientRepository.GetClientWithWaterMeter(model.ClientId);
-
-
-                    if (client == null)
-                    {
-                        return new NotFoundViewResult("ClientNotFound");
-                    }
-                    client.WaterMeters ??= new List<WaterMeter>();
-                  
-                    var locality = await _countryRepository.GetLocalityAsync(model.LocalityId);
-
-                    if (locality == null)
-                    {
-                        _flashMessage.Warning("Localidade não encontrada.");
-                        return View(model);
-                    }
-
-                    var waterMeterService = await _waterMeterRepository.GetWaterServiceByIdAsync(model.WaterMeterServicesId);
-
-
-                  
-                    if (waterMeterService == null)
-                    {
-                        _flashMessage.Warning("Contador não encontrado.");
-                        return View(model);
-                    }
-                    
-
-                    waterMeterService.Available = false;
-
-                    await _waterMeterRepository.UpdateWaterServiceAsync(waterMeterService);
-
-                    var waterMeter = new WaterMeter
-                    {
-                        ClientId = client.Id,
-                        LocalityId = locality.Id,
-                        WaterMeterServiceId = waterMeterService.Id,
-                        Address = model.Address,
-                        HouseNumber = model.HouseNumber,
-                        InstallationDate = model.InstallationDate,
-                        PostalCode = model.PostalCode,
-                        RemainPostalCode = model.RemainPostalCode,
-                        Consumptions = new List<Consumption>(),
-                    };
-
-                    await _waterMeterRepository.CreateAsync(waterMeter);
-
-                    var consumption = new Consumption
-                    {
-                        ConsumptionDate = DateTime.UtcNow,
-                        RegistrationDate = DateTime.UtcNow,
-                        ConsumptionValue = 0,
-                        WaterMeter = waterMeter,
-                    };
-
-                    await _consumptionRepository.CreateAsync(consumption);
-
-                    waterMeter.Consumptions.Add(consumption);
-                    waterMeter.WaterMeterService = waterMeterService;
-                    waterMeter.Locality = locality;
-                    waterMeter.Client = client;
-
-
-                    client.WaterMeters.Add(waterMeter);
-
-                    await _clientRepository.UpdateAsync(client);
-
-                    _flashMessage.Confirmation("Contador adicionado com sucesso");
-
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateException dbEx)
-                {
-                    _flashMessage.Danger($"Erro ao atualizar o banco de dados: {dbEx.Message}");
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    _flashMessage.Danger($"Erro ao processar a solicitação: {ex.Message}");
-                    return RedirectToAction(nameof(Index));
-                }
-            }
-
-            _flashMessage.Warning("Por favor, corrija os erros no formulário.");
-            return View(model);
-        }
-
-        
          
         public IActionResult FormerClients()
         {
@@ -521,7 +372,7 @@ namespace WatersAD.Controllers
                 return new NotFoundViewResult("ClientNotFound");
             }
 
-            var model = new ChangeUserEmailViewModel { ClientId = id.Value, OldEmail = client.Email };
+            var model = new ChangeUserEmailViewModel { ClientId = id.Value, OldEmail = client.Email, FullName = client.FullName};
 
             return View(model);
         }

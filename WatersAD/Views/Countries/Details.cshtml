@@ -4,106 +4,72 @@
     ViewData["Title"] = "Details";
 }
 
-<h2>Detalhes</h2>
-<flash dismissable="true" />
-<div>
-    <h4>País</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-    </dl>
-</div>
+<section class="about-section section-padding sectionDashboard">
+    <flash dismissable="true" />
+    <div class="col-lg-12 col-12">
+
+        <h2 class="text-center">Cidades</h2>
+        <p class="text-center"> @Html.DisplayFor(model => model.Name)</p>
+        <p class="text-center"> <a asp-action="AddCity" asp-route-id="@Model.Id" class="btn custom-btn  smoothscroll">Adicionar cidade</a></p>
+    </div>
+    <div class="col-lg-6 col-12 mx-auto">
+        <div class="table-responsive table-containerInvoice">
+            <table class="display " id="MyTable">
+                <thead>
+                    <tr>
+
+                        <th>
+                            <a asp-action="Index" class="btn custom-btn  smoothscroll">Voltar</a>
+                        </th>
+                        <th>
+                           @Html.DisplayNameFor(model => model.Cities.FirstOrDefault().Name)
+                        </th>
+
+                       <th></th>
+                        
+                     
 
 
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-    <a asp-action="AddCity" asp-route-id="@Model.Id" class="btn btn-info">Add City</a>
-    <a asp-action="Index" class="btn btn-success">Back to List</a>
-</div>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Cities.OrderBy(c => c.Name))
+                    {
 
-<h4>Cidades</h4>
-@if (Model.Cities == null || Model.Cities.Count == 0)
-{
-    <h5>No cities added yet</h5>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Cities.FirstOrDefault().Name)
-                </th>
-            </tr>
-        </thead>
+                        <tr>
 
-        <tbody>
-            @foreach (var item in Model.Cities.OrderBy(c => c.Name))
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(model => item.Name)
-                    </td>
-                    <td id="@item.Id">
-                        <a asp-action="EditCity" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
-                        <a asp-action="DetailsCity" asp-route-id="@item.Id" class="btn btn-info">Details</a>
-                        <a asp-route-id="@item.Id" data-id="@item.Id" class="btn btn-danger" id="btnDelete">Delete</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-<div id="deleteDialog" class="modal fade">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Delete</h4>
-                <button type="button" class="close" data-dismiss="modal"><i class="fa fa-window-close"></i></button>
+                            <td></td>
+                            <td>
+                                <a asp-action="DetailsCity" asp-route-id="@item.Id">@Html.DisplayFor(model => item.Name)</a>
+                            </td>
+                            <td>
+                                <a asp-action="AddLocality" asp-route-id="@item.Id" class="btn custom-btn  smoothscroll">Adicionar localidade</a>
+                                <a asp-action="EditCity" asp-route-id="@item.Id" class="bi bi-pencil-square btn custom-btn  smoothscroll">Editar</a>
+                            </td>
 
-            </div>
-            <div class="modal-body">
-                <p>Do you want to delete the country?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="btnYesDelete">Delete</button>
-                <button type="button" class="btn btn-success" id="btnNoDelete">No</button>
-            </div>
+                          
+
+
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
-</div>
+
+
+
+
+
+
+</section>
+
+
 
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("_DataTableJQuery");
     }
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            var id = 0;
-
-            $('a[id*=btnDelete]').click(function () {
-                debugger;
-                id = $(this).data("id"); 
-                $("#deleteDialog").modal('show');
-                return false;
-            });
-
-            $("#btnNoDelete").click(function () {
-                $("#deleteDialog").modal('hide');
-                return false;
-            });
-
-            $("#btnYesDelete").click(function () {
-                window.location.href = '/Countries/DeleteCity/' + id;
-            });
-
-        });
-    </script>
+    
 }
