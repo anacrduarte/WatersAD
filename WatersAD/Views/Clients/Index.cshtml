@@ -79,14 +79,13 @@
                 </td>
                 <td>@if(item.NumberWaterMeters > 0)
                     {
-                                <a asp-action="GetWaterMetersClient" asp-controller="WaterMeters" asp-route-id="@item.Id">
-                            @item.NumberWaterMeters
+                                <a asp-action="GetWaterMetersClient" asp-controller="WaterMeters" asp-route-id="@item.Id" class="btn custom-btn smoothscroll me-3">@item.NumberWaterMeters
                         </a>
                     }
                     else
                     {
-                        @Html.DisplayFor(modelItem => item.NumberWaterMeters)
-                    }
+                                <p class="btn custom-btn smoothscroll me-3">@Html.DisplayFor(modelItem => item.NumberWaterMeters)</p>
+                            }
  
                 </td>
                         @if (this.User.IsInRole("Admin"))

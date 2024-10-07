@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Text;
 using Syncfusion.Drawing;
 using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
@@ -9,7 +8,6 @@ using WatersAD.Data.Entities;
 using WatersAD.Data.Repository;
 using WatersAD.Helpers;
 using WatersAD.Models;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace WatersAD.Controllers
 {
@@ -24,10 +22,11 @@ namespace WatersAD.Controllers
         private readonly IConsumptionRepository _consumptionRepository;
         private readonly ICountryRepository _countryRepository;
         private readonly ITierRepository _tierRepository;
+        private readonly IMailHelper _mailHelper;
 
         public InvoicesController(IInvoiceRepository invoiceRepository, IFlashMessage flashMessage, IUserHelper userHelper,
             IClientRepository clientRepository, IWaterMeterRepository waterMeterRepository, IConsumptionRepository consumptionRepository, ICountryRepository countryRepository,
-            ITierRepository tierRepository)
+            ITierRepository tierRepository, IMailHelper mailHelper)
         {
 
             _invoiceRepository = invoiceRepository;
@@ -38,12 +37,13 @@ namespace WatersAD.Controllers
             _consumptionRepository = consumptionRepository;
             _countryRepository = countryRepository;
             _tierRepository = tierRepository;
+            _mailHelper = mailHelper;
         }
 
         // GET: Invoices
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(_invoiceRepository.GetAll());
+            return View(await _invoiceRepository.GetAllInvoicesAndClientAsync());
         }
 
         public async Task<IActionResult> GetInvoiceClient()
@@ -90,13 +90,26 @@ namespace WatersAD.Controllers
 
             try
             {
-                var invoice = await _invoiceRepository.GetByIdAsync(id.Value);
+                var invoice = await _invoiceRepository.GetDetailsInvoiceAsync(id.Value);
                 if (invoice == null)
                 {
                     return new NotFoundViewResult("InvoiceNotFound");
                 }
+                var consumption = await _consumptionRepository.GetConsumptionAsync(invoice.Id);
 
-                return View(invoice);
+                var waterMeter = await _waterMeterRepository.GetWaterMeterWithCityAndCountryAsync(consumption.WaterMeter.Id);
+
+                var model = new InvoiceDetailsViewModel
+                {
+                    Client = invoice.Client,
+                    WaterMeter = waterMeter,
+                    Invoice = invoice,
+                    Consumption = consumption,
+
+
+
+                };
+                return View(model);
             }
             catch (Exception ex)
             {
@@ -106,39 +119,8 @@ namespace WatersAD.Controllers
             }
         }
 
-        // GET: Invoices/Create
-        public IActionResult Create()
-        {
 
-            return View();
-        }
-
-        // POST: Invoices/Create
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,InvoiceDate,ClientId,Issued,Sent,TotalAmount")] Invoice invoice)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    await _invoiceRepository.CreateAsync(invoice);
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-
-                    _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
-                    return RedirectToAction(nameof(Index));
-                }
-            }
-
-            return View(invoice);
-        }
-
-        // GET: Invoices/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> SendAndIssue(int? id)
         {
             if (id == null)
             {
@@ -148,100 +130,90 @@ namespace WatersAD.Controllers
             try
             {
                 var invoice = await _invoiceRepository.GetByIdAsync(id.Value);
-                if (invoice == null)
+                if(invoice == null)
                 {
                     return new NotFoundViewResult("InvoiceNotFound");
                 }
-
-                return View(invoice);
-            }
-            catch (Exception ex)
-            {
-
-                _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
-                return RedirectToAction(nameof(Index));
-            }
-        }
-
-        // POST: Invoices/Edit/5
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Invoice invoice)
-        {
-            if (id != invoice.Id)
-            {
-                return new NotFoundViewResult("InvoiceNotFound");
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                if(invoice.Issued || invoice.Sent)
                 {
-                    await _invoiceRepository.UpdateAsync(invoice);
+                    _flashMessage.Warning($"A fatura já foi emitida e enviada.");
+
                     return RedirectToAction(nameof(Index));
                 }
-                catch (Exception ex)
+                var client = await _clientRepository.GetByIdAsync(invoice.ClientId);
+                if (client == null) { return NotFound(); }
+
+                var locality = await _countryRepository.GetLocalityAsync(client.LocalityId);
+                if (locality == null) { return NotFound(); }
+
+                var city = await _countryRepository.GetCityAsync(locality.CityId);
+                if (city == null) { return NotFound(); }
+
+                locality.City = city;
+
+                var country = await _countryRepository.GetCountryAsync(city);
+                if (country == null) { return NotFound(); }
+
+                var consumption = await _consumptionRepository.GetConsumptionAsync(invoice.Id);
+                if (consumption == null)
                 {
-
-                    _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
-                    return RedirectToAction(nameof(Index));
-
+                    return NotFound();
                 }
 
-            }
-            _flashMessage.Warning("Por favor, corrija os erros no formulário.");
-            return View(invoice);
-        }
+                var waterMeter = await _waterMeterRepository.GetWaterMeterWithCityAndCountryAsync(consumption.WaterMeter.Id);
 
-        // GET: Invoices/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new NotFoundViewResult("InvoiceNotFound");
-            }
+                var waterMeterLocality = await _countryRepository.GetLocalityAsync(waterMeter.LocalityId);
+                if (waterMeterLocality == null) { return NotFound(); }
 
-            try
-            {
-                var invoice = await _invoiceRepository.GetByIdAsync(id.Value);
-                if (invoice == null)
+                var waterMeterCity = await _countryRepository.GetCityAsync(waterMeterLocality.CityId);
+                if (waterMeterCity == null)
                 {
-                    return new NotFoundViewResult("InvoiceNotFound");
+                    return NotFound();
                 }
 
-                return View(invoice);
+
+
+
+                var tier = await _tierRepository.GetByIdAsync(consumption.TierId);
+                if (tier == null) { return NotFound(); }
+
+                PdfDocument document = CreatePdfDocument();
+                PdfPage page = document.Pages.Add();
+                PdfGraphics graphics = page.Graphics;
+
+                DrawHeader(graphics, page, client, locality, country, invoice, waterMeter);
+
+
+                DrawBody(graphics, page, consumption, tier, invoice, waterMeter, waterMeterLocality, waterMeterCity);
+
+
+                AddFooter(graphics, page, invoice);
+
+                AddPageNumber(document);
+
+                MemoryStream stream = new MemoryStream();
+                document.Save(stream);
+                stream.Position = 0;
+
+                invoice.Issued = true;
+                invoice.Sent = true;
+                await _invoiceRepository.UpdateAsync(invoice);
+
+                _flashMessage.Info($"Fatura enviada e emitida com sucesso.");
+
+                return RedirectToAction(nameof(Index));
+
             }
             catch (Exception ex)
             {
                 _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
                 return RedirectToAction(nameof(Index));
             }
+
+
+
         }
 
-        // POST: Invoices/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            try
-            {
-                var invoice = await _invoiceRepository.GetByIdAsync(id);
-                if (invoice == null)
-                {
-                    return new NotFoundViewResult("InvoiceNotFound");
-
-                }
-
-                await _invoiceRepository.DeleteAsync(invoice);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
-                return RedirectToAction(nameof(Index));
-            }
-        }
 
         public async Task<IActionResult> InvoiceHistory(int clientId, int waterMeterId)
         {
@@ -278,7 +250,7 @@ namespace WatersAD.Controllers
         }
         public async Task<IActionResult> Pdf(int? clientId, int? invoiceId, int? waterMeterId, int? consumptionId)
         {
-           
+
             try
             {
                 if (clientId == null || invoiceId == null || waterMeterId == null || consumptionId == null)
@@ -287,8 +259,8 @@ namespace WatersAD.Controllers
                 var client = await _clientRepository.GetByIdAsync(clientId.Value);
                 if (client == null) { return NotFound(); }
 
-                 var locality = await _countryRepository.GetLocalityAsync(client.LocalityId);
-                if(locality == null) { return NotFound(); }
+                var locality = await _countryRepository.GetLocalityAsync(client.LocalityId);
+                if (locality == null) { return NotFound(); }
 
                 var city = await _countryRepository.GetCityAsync(locality.CityId);
                 if (city == null) { return NotFound(); }
@@ -301,9 +273,9 @@ namespace WatersAD.Controllers
                 var invoice = await _invoiceRepository.GetByIdAsync(invoiceId.Value);
                 if (invoice == null) { return NotFound(); }
 
-                var waterMeter = await  _waterMeterRepository.GetWaterMeterWithConsumptionsAsync(waterMeterId.Value);
+                var waterMeter = await _waterMeterRepository.GetWaterMeterWithConsumptionsAsync(waterMeterId.Value);
 
-                if(waterMeter== null) { return NotFound(); }
+                if (waterMeter == null) { return NotFound(); }
 
                 var waterMeterLocality = await _countryRepository.GetLocalityAsync(waterMeter.LocalityId);
                 if (waterMeterLocality == null) { return NotFound(); }
@@ -321,19 +293,19 @@ namespace WatersAD.Controllers
                 }
 
                 var tier = await _tierRepository.GetByIdAsync(consumption.TierId);
-                if(tier == null) { return NotFound(); }
+                if (tier == null) { return NotFound(); }
 
                 PdfDocument document = CreatePdfDocument();
                 PdfPage page = document.Pages.Add();
                 PdfGraphics graphics = page.Graphics;
 
-              
+
                 DrawHeader(graphics, page, client, locality, country, invoice, waterMeter);
 
-          
+
                 DrawBody(graphics, page, consumption, tier, invoice, waterMeter, waterMeterLocality, waterMeterCity);
 
-                
+
                 AddFooter(graphics, page, invoice);
 
                 AddPageNumber(document);
@@ -342,18 +314,18 @@ namespace WatersAD.Controllers
                 document.Save(stream);
                 stream.Position = 0; // Redefine a posição do stream
 
-                
+
                 return new FileStreamResult(stream, "application/pdf") { FileDownloadName = "Sample.pdf" };
 
-              
+
             }
             catch (Exception ex)
             {
                 _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
                 return this.RedirectToAction("Invoice", "GetInvoiceClient");
             }
-           
-          
+
+
 
         }
 
@@ -364,29 +336,29 @@ namespace WatersAD.Controllers
                 PdfPage page = document.Pages[i];
                 PdfGraphics graphics = page.Graphics;
 
-               
+
                 PdfFont font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
                 PdfBrush brush = PdfBrushes.Black;
 
-              
+
                 float pageWidth = page.GetClientSize().Width;
                 float pageHeight = page.GetClientSize().Height;
                 string pageNumberText = $"Página {i + 1}";
 
-                
+
                 SizeF textSize = font.MeasureString(pageNumberText);
 
-                
+
                 graphics.DrawString(pageNumberText, font, brush, new PointF(pageWidth - textSize.Width - 10, pageHeight - textSize.Height - 10));
             }
         }
 
         static PdfImage LoadImage(string relativePath)
         {
-            
+
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), relativePath);
 
-         
+
             using (FileStream imageStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
                 return PdfImage.FromStream(imageStream);
@@ -404,33 +376,33 @@ namespace WatersAD.Controllers
         private void DrawHeader(PdfGraphics graphics, PdfPage page, Client client, Locality locality, Country country, Invoice invoice, WaterMeter waterMeter)
         {
             float pageWidth = page.GetClientSize().Width;
-            float startX1 = 10; 
-            float startY1 = 10; 
+            float startX1 = 10;
+            float startY1 = 10;
 
-        
+
             PdfImage logoImage = LoadImage("wwwroot/image/layout/logoPdf.png");
             PdfImage waterImage = LoadImage("wwwroot/image/layout/aguanatural.jpg");
             float imageWidth = 70;
             float imageHeight = 70;
 
-          
+
             RectangleF logoRect = new RectangleF(startX1, startY1, imageWidth, imageHeight);
             page.Graphics.DrawImage(logoImage, logoRect);
 
-            
+
             float waterWidth = page.GetClientSize().Width;
             float waterHeight = 100;
             RectangleF waterRect = new RectangleF(0, 250, waterWidth, waterHeight);
             page.Graphics.DrawImage(waterImage, waterRect);
 
-            
+
             PdfFont font = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
             PdfFont fontClient = new PdfStandardFont(PdfFontFamily.Helvetica, 9, PdfFontStyle.Bold);
 
-            
+
             DrawCompanyInfo(graphics, font, startY1);
 
-           
+
             DrawClientInfo(graphics, fontClient, pageWidth, startY1, client, locality, country);
         }
 
@@ -461,29 +433,29 @@ namespace WatersAD.Controllers
             float startY = 140;
             float lineSpacing = 25;
 
-            
+
             RectangleF box = new RectangleF(0, startY, pageWidth, 140);
             PdfPen boxPen = new PdfPen(Color.White, 0);
             page.Graphics.DrawRectangle(boxPen, box);
 
-            float boxStartX = box.X + 10; 
-            float boxStartY = box.Y + 10; 
+            float boxStartX = box.X + 10;
+            float boxStartY = box.Y + 10;
 
-          
+
             PdfFont fontText = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
             PdfBrush textBrush = PdfBrushes.Black;
 
-            
+
             graphics.DrawString($"Contador:", fontText, textBrush, new Syncfusion.Drawing.PointF(boxStartX, boxStartY));
             graphics.DrawString($"Morada:", fontText, textBrush, new Syncfusion.Drawing.PointF(boxStartX, boxStartY + lineSpacing));
 
-           
+
             graphics.DrawString($"{waterMeter.Id}", fontText, textBrush, new Syncfusion.Drawing.PointF(boxStartX + 100, boxStartY));
             graphics.DrawString($"{waterMeter.FullAdress}", fontText, textBrush, new Syncfusion.Drawing.PointF(boxStartX + 100, boxStartY + lineSpacing));
             graphics.DrawString($"{waterMeter.RemainPostalCode} - {waterMeterLocality.Name}", fontText, textBrush, new Syncfusion.Drawing.PointF(boxStartX + 100, boxStartY + 2 * lineSpacing));
             graphics.DrawString($"{waterMeterCity.Name}", fontText, textBrush, new Syncfusion.Drawing.PointF(boxStartX + 100, boxStartY + 3 * lineSpacing));
 
-            
+
             DrawInvoiceDetails(graphics, page, consumption, tier, invoice, lineSpacing);
         }
 
@@ -496,7 +468,7 @@ namespace WatersAD.Controllers
             PdfFont fontText = new PdfStandardFont(PdfFontFamily.Helvetica, 12);
             PdfBrush textBrush = PdfBrushes.Black;
 
-         
+
             string startTitle = $"Fatura nº {invoice.Id}";
             float pageWidth = page.GetClientSize().Width;
             SizeF textSize = fontTitle.MeasureString(startTitle);
@@ -504,10 +476,10 @@ namespace WatersAD.Controllers
 
             graphics.DrawString(startTitle, fontTitle, PdfBrushes.DarkBlue, new Syncfusion.Drawing.PointF(startTitleX, startY));
 
-         
+
             startY += 40;
 
-           
+
             graphics.DrawString($"Data do consumo:", fontText, textBrush, new Syncfusion.Drawing.PointF(startX, startY + 9 * lineSpacing));
             graphics.DrawString($"Consumo:", fontText, textBrush, new Syncfusion.Drawing.PointF(startX, startY + 10 * lineSpacing));
             graphics.DrawString("Escalão:", fontText, textBrush, new Syncfusion.Drawing.PointF(startX, startY + 11 * lineSpacing));
@@ -515,14 +487,14 @@ namespace WatersAD.Controllers
 
             page.Graphics.DrawLine(new PdfPen(Color.Black, 2), 0, startY + 8 * lineSpacing, pageWidth, startY + 8 * lineSpacing);
 
-            float valueX = startX + 200; 
+            float valueX = startX + 200;
 
             graphics.DrawString($"{consumption.ConsumptionDate:dd/MM/yyyy}", fontText, textBrush, new Syncfusion.Drawing.PointF(valueX, startY + 9 * lineSpacing));
             graphics.DrawString($"{consumption.ConsumptionValue} litros", fontText, textBrush, new Syncfusion.Drawing.PointF(valueX, startY + 10 * lineSpacing));
             graphics.DrawString($"{tier.TierName}", fontText, textBrush, new Syncfusion.Drawing.PointF(valueX, startY + 11 * lineSpacing));
             graphics.DrawString($"{tier.TierPrice:C2} Euros", fontText, textBrush, new Syncfusion.Drawing.PointF(valueX, startY + 12 * lineSpacing));
 
-       
+
             DrawPaymentInfo(graphics, page, invoice, valueX, startY, lineSpacing);
         }
 
@@ -539,22 +511,22 @@ namespace WatersAD.Controllers
 
         private void AddFooter(PdfGraphics graphics, PdfPage page, Invoice invoice)
         {
-            float footerHeight = 40; 
+            float footerHeight = 40;
             float imageWidth = 70;
             float imageHeight = 70;
 
-           
+
             RectangleF imageRect = new RectangleF(page.GetClientSize().Width - imageWidth - 50, page.GetClientSize().Height - imageHeight - footerHeight - 90, imageWidth, imageHeight);
 
-         
+
             PdfImage mbWayImage = LoadImage("wwwroot/image/layout/MbWay.png");
             page.Graphics.DrawImage(mbWayImage, imageRect);
 
-            
+
             PdfFont fontMbWay = new PdfStandardFont(PdfFontFamily.Helvetica, 9);
             PdfBrush brush = PdfBrushes.Black;
 
-            float textYPosition = imageRect.Bottom + 5; 
+            float textYPosition = imageRect.Bottom + 5;
             page.Graphics.DrawString("Entidade: 9999999", fontMbWay, brush, new PointF(imageRect.X, textYPosition));
             page.Graphics.DrawString("Referência: 11111111", fontMbWay, brush, new PointF(imageRect.X, textYPosition + 20));
             page.Graphics.DrawString($"Valor: {invoice.TotalAmount:C2} Euros", fontMbWay, brush, new PointF(imageRect.X, textYPosition + 40));

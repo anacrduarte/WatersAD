@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Build.ObjectModelRemoting;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WatersAD.Data.Entities
@@ -75,5 +76,12 @@ namespace WatersAD.Data.Entities
         [ForeignKey("WaterMeterLocalityId")]
         public Locality WaterMeterLocality { get; set; }
         public int LocalityWaterMeterId { get; set; }
+
+        public int ClientId { get; set; }
+
+
+        [Display(Name = "Data de Instalação")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime InstallationDate { get; set; }
     }
 }

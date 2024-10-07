@@ -85,6 +85,11 @@ namespace WatersAD.Data.Repository
             return await _context.Set<WaterMeterService>().AsNoTracking().FirstOrDefaultAsync(e => e.Id == id);
         }
 
+        public async Task<WaterMeterService> GetWaterServiceRandom()
+        {
+            return await _context.WaterMeterServices.FirstOrDefaultAsync(wms => wms.Available);
+        }
+
         public async Task DeleteWaterServiceAsync(WaterMeterService meterService)
         {
             _context.Set<WaterMeterService>().Remove(meterService);
@@ -153,6 +158,11 @@ namespace WatersAD.Data.Repository
                 .ToListAsync();
         }
 
-  
+        public async Task<RequestWaterMeter> GetRequestWaterMeter(int id)
+        {
+            return await _context.RequestWaterMeters.FirstOrDefaultAsync(rwm=> rwm.Id == id);
+
+        }
+
     }
 }

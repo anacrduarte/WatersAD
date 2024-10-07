@@ -1,0 +1,84 @@
+﻿@model IEnumerable<WatersAD.Data.Entities.Consumption>
+@{
+    ViewData["Title"] = "ShowConsumptionsForeachWaterMeter";
+}
+
+<section class="about-section section-padding sectionDashboard">
+    <flash dismissable="true" />
+    <div class="col-lg-12 col-12">
+
+        <h2 class="text-center">Consumos</h2>
+        <p class="text-center"><a asp-action="Index" asp-controller="Clients" class="btn custom-btn smoothscroll mb-4">Voltar</a></p>
+    </div>
+    <div class="col-lg-10 col-12 mx-auto">
+    <div class="table-responsive table-containerInvoice">
+        <table class="display " id="MyTable">
+            <thead>
+
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ConsumptionDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.RegistrationDate)
+                    </th>
+                    <th>
+                            @Html.DisplayNameFor(model => model.ConsumptionValue) m&#179;
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.WaterMeter.FullAdress)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.WaterMeter.Client.FullName)
+                    </th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    if (item.ConsumptionValue > 0)
+                    {
+
+
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ConsumptionDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.RegistrationDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ConsumptionValue)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.WaterMeter.FullAdress)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.WaterMeter.Client.FullName)
+                            </td>
+                           
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+
+    </div>
+
+
+</section>
+
+
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_DataTableJQuery");
+    }
+ 
+
+}

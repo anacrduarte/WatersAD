@@ -4,56 +4,88 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<section class="about-section section-padding sectionDashboard">
+    <flash dismissable="true" />
+    <div class="col-lg-12 col-12">
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.InvoiceDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Client)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Issued)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Sent)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TotalAmount)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.InvoiceDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Client.Address)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Issued)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Sent)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalAmount)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+        <h2 class="text-center">Faturas</h2>
+        <p class="text-center">Todas as faturas</p>
+
+    </div>
+    <div class="col-lg-11 col-12 mx-auto">
+        <div class="table-responsive table-containerInvoice">
+            <table class="display " id="MyTable">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.InvoiceDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Client.FullName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Issued)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Sent)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.TotalAmount)
+                        </th>
+                        <th></th>
+                        <th></th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.InvoiceDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Client.Address)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Issued)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Sent)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TotalAmount)
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="bi bi-three-dots-vertical btn custom-btn  smoothscroll"> Detalhes</a>
+                               
+                            </td>
+                            <td>
+                                @if(!item.Issued && !item.Sent)
+                                {
+                                    <a asp-action="SendAndIssue" asp-route-id="@item.Id" class="bi bi-send btn custom-btn  smoothscroll"> Emitir e enviar</a>
+                                }
+                            
+                            </td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+
+</section>
+
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_DataTableJQuery");
+    }
+
+
 }
-    </tbody>
-</table>

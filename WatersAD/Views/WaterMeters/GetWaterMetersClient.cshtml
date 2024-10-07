@@ -10,6 +10,7 @@
 
         <h2 class="text-center">Contadores</h2>
         <p class="text-center">Contadores do cliente</p>
+        <p class="text-center"><a asp-action="Index" asp-controller="Clients" class="btn custom-btn smoothscroll mb-4">Voltar</a></p>
     </div>
 
     <div class="table-responsive table-containerInvoice">
@@ -68,6 +69,11 @@
                             <a asp-action="Create" asp-controller="Consumptions" asp-route-clientId="@item.ClientId" asp-route-waterMeterId ="@item.Id" class=" btn custom-btn  smoothscroll ">
                                 Adicionar consumo
                               
+                            </a>
+                        
+                            <a asp-action="ShowConsumptionsForeachWaterMeter" asp-controller="Consumptions"  asp-route-id="@item.Id" class=" btn custom-btn  smoothscroll ">
+                                Consumos
+
                             </a>
                         </td>
                     </tr>

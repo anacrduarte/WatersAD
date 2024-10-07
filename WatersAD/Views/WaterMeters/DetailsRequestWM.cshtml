@@ -1,0 +1,108 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model WatersAD.Models.RequestWaterMeterViewModel
+<section class="about-section section-padding sectionDashboard">
+    <flash dismissable="true" />
+    <div class="col-lg-12 col-12">
+
+        <h2 class="text-center">Detalhes de pedido de contador</h2>
+
+    </div>
+    <br />
+    <br />
+    <div class="container">
+
+        <div class="row d-flex justify-content-center align-items-center">
+          
+
+            <div class="col-lg-4 col-md-6 col-12 me-auto mb-4 mb-lg-0 text-center">
+
+                <h4 class="card-title"> Nome: @Html.DisplayFor(model => model.FullName)</h4>
+                <p class="card-text">Email: @Html.DisplayFor(model => model.Email) </p>
+
+            </div>
+
+
+            <div class="col-lg-4 col-md-6 col-12 me-auto mb-4 mb-lg-0">
+                <br />
+                <br />
+                <dl class="row">
+                   <dt >Dados do cliente</dt>
+                    <dt><br /></dt>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.NIF):
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.NIF)
+                    </dd>
+
+                    <dt class="col-sm-4 ">
+                        @Html.DisplayNameFor(model => model.PhoneNumber):
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.PhoneNumber)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.FullAdress):
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.FullAdress)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.FullPostalCode):
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.FullPostalCode)
+                    </dd>
+                    <dt class="col-sm-4">
+                        Localidade:
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Locality.Name), @Html.DisplayFor(model => model.City.Name)
+                    </dd>
+                    <dt><br /></dt>
+                    <dt>Dados do contador</dt>
+                    <dt><br /></dt>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.FullAdressWM):
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.FullAdressWM)
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.FullPostalCodeWM):
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.FullPostalCodeWM)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.LocalityWM.Name):
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.LocalityWM.Name),  @Html.DisplayFor(model => model.CityWM.Name)
+                    </dd>
+              
+
+
+                </dl>
+            </div>
+        </div>
+        <div class="col-lg-12 col-12 text-end">
+
+            <a asp-action="Index" asp-controller="Notification" class="btn custom-btn smoothscroll mb-4">Voltar</a>
+        </div>
+    </div>
+  
+
+
+
+
+
+
+
+</section>
+

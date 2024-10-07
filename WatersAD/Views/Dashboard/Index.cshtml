@@ -1,7 +1,5 @@
-﻿
-@{
-    ViewData["Title"] = "Index";
-}
+﻿@model IEnumerable<WatersAD.Data.Entities.Notification>
+
 <section class="hero-section d-flex justify-content-center align-items-center" id="section_1">
 
     <div class="section-overlay"></div>
@@ -10,8 +8,38 @@
 
     <div class="container">
         <div class="row">
+           
 
-            <div class="col-lg-6 col-12 mb-5 mb-lg-0">
+                    <div class="col-lg-6 col-12">
+                        <div class="section-bg-image-block">
+                            <h2 class="mb-lg-3">Notifações</h2>
+                    @if (Model.Any())
+                    {
+                        <p> Tem @Model.Count() notificações</p>
+                        @foreach (var item in Model)
+                        {
+                            <p>@item.Message</p>
+                        }
+                       
+                    }
+                    else
+                    {
+                        <p>Não há notificações pendentes</p>
+                    }
+
+                    <div class="d-flex justify-content-end">
+                        <a  class="btn custom-btn " asp-action="Index" asp-controller="Notification">Notificações</a>
+                    </div>
+                  
+                        </div>
+            
+                    </div>
+
+           
+            <div class="col-lg-5 offset-lg-1 col-12 align-items-center ">
+                <br />
+                <br />
+                <br />
                 <h2 class="text-white">Bem-vindo</h2>
 
                 <h1 class="cd-headline rotate-1 text-white mb-4 pb-2">
@@ -23,20 +51,7 @@
                     </span>
                 </h1>
 
-                <div class="custom-btn-group">
-                    <a asp-area="" asp-controller="Home" asp-action="About" class="btn custom-btn smoothscroll me-3">Sobre nós</a>
-
-
-                    @if (this.User.Identity.IsAuthenticated)
-                    {
-                        <a asp-area="" asp-controller="WaterMeters" asp-action="RequestWaterMeterClient" class="link smoothscroll">Pedir contador</a>
-                    }
-                    else
-                    {
-                        <a asp-area="" asp-controller="WaterMeters" asp-action="RequestWaterMeter" class="link smoothscroll">Pedir contador</a>
-                    }
-
-                </div>
+          
             </div>
 
         </div>
@@ -92,124 +107,10 @@
 </section>
 
 
-<section class="section-bg-image">
-    <svg viewBox="0 0 1265 144" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path fill="rgba(255, 255, 255, 1)" d="M 0 40 C 164 40 164 20 328 20 L 328 20 L 328 0 L 0 0 Z" stroke-width="0"></path> <path fill="rgba(255, 255, 255, 1)" d="M 327 20 C 445.5 20 445.5 89 564 89 L 564 89 L 564 0 L 327 0 Z" stroke-width="0"></path> <path fill="rgba(255, 255, 255, 1)" d="M 563 89 C 724.5 89 724.5 48 886 48 L 886 48 L 886 0 L 563 0 Z" stroke-width="0"></path><path fill="rgba(255, 255, 255, 1)" d="M 885 48 C 1006.5 48 1006.5 67 1128 67 L 1128 67 L 1128 0 L 885 0 Z" stroke-width="0"></path><path fill="rgba(255, 255, 255, 1)" d="M 1127 67 C 1196 67 1196 0 1265 0 L 1265 0 L 1265 0 L 1127 0 Z" stroke-width="0"></path></svg>
-
-    <div class="container">
-        <div class="row">
-
-            <div class="col-lg-6 col-12">
-                <div class="section-bg-image-block">
-                    <h2 class="mb-lg-3">Receba a nossa newsletter</h2>
-
-                    <p>A nossa newsletter oferece atualizações exclusivas sobre os serviços, dicas de sustentabilidade e notícias sobre a importância da água potável. </p>
-                    @await Html.PartialAsync("_NewsletterForm")
-
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <svg viewBox="0 0 1265 144" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path fill="rgba(255, 255, 255, 1)" d="M 0 40 C 164 40 164 20 328 20 L 328 20 L 328 0 L 0 0 Z" stroke-width="0"></path> <path fill="rgba(255, 255, 255, 1)" d="M 327 20 C 445.5 20 445.5 89 564 89 L 564 89 L 564 0 L 327 0 Z" stroke-width="0"></path> <path fill="rgba(255, 255, 255, 1)" d="M 563 89 C 724.5 89 724.5 48 886 48 L 886 48 L 886 0 L 563 0 Z" stroke-width="0"></path><path fill="rgba(255, 255, 255, 1)" d="M 885 48 C 1006.5 48 1006.5 67 1128 67 L 1128 67 L 1128 0 L 885 0 Z" stroke-width="0"></path><path fill="rgba(255, 255, 255, 1)" d="M 1127 67 C 1196 67 1196 0 1265 0 L 1265 0 L 1265 0 L 1127 0 Z" stroke-width="0"></path></svg>
-</section>
 
 
-<section class="membership-section section-padding" id="section_3">
-    <div class="container">
-        <div class="row">
-
-            <div class="col-lg-12 col-12 text-center mx-auto mb-lg-5 mb-4">
-                <h2>Informações</h2>
-            </div>
-
-            <div class="col-lg-6 col-12 mb-3 mb-lg-0">
-                <h4 class="mb-4 pb-lg-2">Tabela de preços</h4>
-
-                <div class="table-responsive">
-                    <table class="table text-center">
-                        <thead>
-                            <tr>
-                                <th style="width: 34%;">Escalão</th>
-
-                                <th style="width: 22%;">Valor unitário</th>
-
-                                <th style="width: 22%;">Limite</th>
 
 
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr>
-                                <th scope="row" class="text-start">1º Escalão</th>
-
-                                <td>
-
-                                    0.30€
-                                </td>
-
-                                <td>
-                                    5 m<sup>3</sup>
-                                </td>
-
-                            </tr>
-
-                            <tr>
-                                <th scope="row" class="text-start">2º Escalão</th>
-
-                                <td>
-                                    0.80€
-                                </td>
-
-                                <td>
-                                    15 m<sup>3</sup>
-                                </td>
-
-                            </tr>
-
-                            <tr>
-                                <th scope="row" class="text-start">3º Escalão</th>
-
-                                <td>
-                                    1.20€
-                                </td>
-
-                                <td>
-                                    25 m<sup>3</sup>
-                                </td>
-
-
-                            </tr>
-
-                            <tr>
-                                <th scope="row" class="text-start">4º Escalão</th>
-
-                                <td>
-                                    1.60€
-                                </td>
-
-                                <td>
-                                    > 25 m<sup>3</sup>
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="col-lg-5 col-12 mx-auto">
-                <h4 class="mb-4 pb-lg-2">Sistema de distribuição</h4>
-
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/yBd8UF3vwDs?si=rWzDV_6Su3BT9PAM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-            </div>
-
-        </div>
-    </div>
-</section>
 
 
 <section class="events-section section-bg section-padding" id="section_4">
@@ -325,48 +226,7 @@
 </section>
 
 
-<section class="contact-section section-padding" id="section_5">
-    <div class="container">
-        <div class="row">
 
-            <div class="col-lg-5 col-12">
-
-                @await Html.PartialAsync("_ContactForm")
-
-            </div>
-
-            <div class="col-lg-6 col-12">
-                <div class="contact-info mt-5">
-                    <div class="contact-info-item">
-                        <div class="contact-info-body">
-                            <strong>Braga, Portugal</strong>
-
-                            <p class="mt-2 mb-1">
-                                <a href="tel: 912 345 678" class="contact-link">
-                                    (+351)
-                                    912 345 678
-                                </a>
-                            </p>
-
-                            <p class="mb-0">
-                                <a href="mailto:A.Duarte@company.com" class="contact-link">
-                                    A.Duarte@company.com
-                                </a>
-                            </p>
-                        </div>
-
-                        <div class="contact-info-footer">
-                            <a href="https://maps.app.goo.gl/Ppkv2YLqVmC9PSBZ7" target="_blank">Direcções</a>
-                        </div>
-                    </div>
-
-                    <img src="~/image/layout/WorldMap.svg" class="img-fluid" alt="">
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
 
 @section Scripts {
 

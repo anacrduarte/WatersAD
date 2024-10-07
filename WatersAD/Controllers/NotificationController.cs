@@ -14,12 +14,20 @@ namespace WatersAD.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var notifications = await _notificationRepository.GetUnreadNotificationsAsync();  
-            return View(notifications); 
+            var notifications = await _notificationRepository.GetUnreadNotificationsAsync();
+            if (this.User.IsInRole("Admin"))
+            {
+                return View(notifications.Where(n => n.IsRead));
+            }
+            else
+            {
+                return View(notifications.Where(n => !n.IsRead));
+            }
+           
         }
 
         [HttpPost]
-        public async Task<IActionResult> MarkAsRead(int id)
+        public async Task<IActionResult> AcceptRequest(int id)
         {
             await _notificationRepository.MarkAsReadAsync(id);  
             return RedirectToAction("Index");  

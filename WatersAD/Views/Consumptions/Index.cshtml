@@ -6,8 +6,9 @@
 
 
 
-<flash dismissable="true" />
+
 <section class="about-section section-padding sectionDashboard">
+    <flash dismissable="true" />
     <div class="col-lg-12 col-12">
 
         <h2 class="text-center">Consumos</h2>
@@ -17,6 +18,7 @@
     <div class="table-responsive table-containerInvoice">
         <table class="display " id="MyTable">
             <thead>
+                
                 <tr>
                     <th>
                         @Html.DisplayNameFor(model => model.ConsumptionDate)
@@ -25,7 +27,7 @@
                         @Html.DisplayNameFor(model => model.RegistrationDate)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.ConsumptionValue)
+                        @Html.DisplayNameFor(model => model.ConsumptionValue) m&#179;
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.WaterMeter.Address)
@@ -39,6 +41,10 @@
             <tbody>
                 @foreach (var item in Model)
                 {
+                    if(item.ConsumptionValue > 0)
+                    {
+                        
+                 
                     <tr>
                         <td>
                             @Html.DisplayFor(modelItem => item.ConsumptionDate)
@@ -56,34 +62,19 @@
                             @Html.DisplayFor(modelItem => item.WaterMeter.Client.FullName)
                         </td>
                         <td>
-                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                
+                                <a asp-action="Details" asp-route-id="@item.Id" class="bi bi-three-dots-vertical btn custom-btn  smoothscroll">Detalhes</a>
 
-                        </td>
+
+                            </td>
                     </tr>
+                    }
                 }
             </tbody>
         </table>
     </div>
 
-    <div id="deleteDialog" class="modal fade ">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Remover</h4>
-                    <button type="button" class=" btn custom-btn bi bi-x-lg " data-dismiss="modal" id="btnNoDelete"></button>
 
-                </div>
-                <div class="modal-body">
-                    <p>Quer remover este cliente?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" id="btnYesDelete">Remover</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
 
@@ -92,85 +83,11 @@
 
 
 
-    <h1>Index</h1>
-
-<a asp-action="Create">Create New</a>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ConsumptionDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RegistrationDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ConsumptionValue)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.WaterMeter.Address)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.WaterMeter.Client.FullName)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ConsumptionDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RegistrationDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ConsumptionValue)
-            </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.WaterMeter.Address)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.WaterMeter.Client.FullName)
-                </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                    
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
 @section Scripts {
 
     @{
         await Html.RenderPartialAsync("_DataTableJQuery");
     }
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            var id = 0;
-
-            $('a[id*=btnDelete]').click(function () {
-                debugger;
-                id = $(this).data("id");
-                $("#deleteDialog").modal('show');
-                return false;
-            });
-
-            $("#btnNoDelete").click(function () {
-                $("#deleteDialog").modal('hide');
-                return false;
-            });
-
-            $("#btnYesDelete").click(function () {
-                window.location.href = '/Clients/Delete/' + id;
-            });
-
-        });
-    </script>
+  
 
 }

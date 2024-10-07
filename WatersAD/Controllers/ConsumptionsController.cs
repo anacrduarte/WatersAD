@@ -42,6 +42,15 @@ namespace WatersAD.Controllers
             return View(_consumptionRepository.GetAllWaterMeterAndClient());
         }
 
+        public async Task<IActionResult> ShowConsumptionsForeachWaterMeter(int? id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+            return View(await _consumptionRepository.GetAllConsumptionForWaterMeter(id.Value));
+        }
+
         public async Task<IActionResult> ShowConsumptions()
         {
             var user = await _userHelper.GetUserByEmailAsync(User.Identity!.Name!);
@@ -91,10 +100,16 @@ namespace WatersAD.Controllers
             try
             {
                 var consumption = await _consumptionRepository.GetByIdAsync(id.Value);
+
+
                 if (consumption == null)
                 {
                     return new NotFoundViewResult("ConsumptionNotFound");
                 }
+
+                var waterMeter =  await _waterMeterRepository.GetClientAndLocalityWaterMeterAsync(consumption.WaterMeterId);
+
+                consumption.WaterMeter = waterMeter;
 
                 return View(consumption);
             }
@@ -105,33 +120,17 @@ namespace WatersAD.Controllers
             }
         }
 
-        //TODO ver se quero que fique o que esta em baixo ou se vou alterar
-        //GET: Consumptions/Create
-        //public IActionResult Create()
-        //{
-        //    try
-        //    {
-        //        var model = new ConsumptionViewModel
-        //        {
-        //            WaterMeters = _waterMeterRepository.GetComboWaterMeter(),
-        //        };
-        //        return View(model);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //}
 
-        public IActionResult Create(int? clientId, int? waterMeterId)
+        public async Task<IActionResult> Create(int? clientId, int? waterMeterId)
         {
             try
             {
+                var client = await _clientRepository.GetByIdAsync(clientId.Value);
+                if (client == null) { return NotFound(); }
                 var model = new ConsumptionViewModel
                 {
-                    
-                    ClientId = clientId.Value,
+                    Client = client,
+                    ClientId = client.Id,
                     WaterMeterId = waterMeterId.Value
                 };
                 return View(model);
@@ -212,12 +211,20 @@ namespace WatersAD.Controllers
 
             try
             {
-                var consumption = await _consumptionRepository.GetByIdAsync(id.Value);
+                var consumption = await _consumptionRepository.GetWaterMeterAndClientAsync(id.Value);
                 if (consumption == null)
                 {
                     return new NotFoundViewResult("ConsumptionNotFound");
                 }
-                return View(consumption);
+                var model = new ConsumptionViewModel
+                {
+                    ConsumptionDate = consumption.ConsumptionDate,
+                    ConsumptionValue = consumption.ConsumptionValue,
+                    Client = consumption.WaterMeter.Client,
+                    WaterMeterId = consumption.WaterMeter.Id,
+                };
+                return View(model);
+              
             }
             catch (Exception ex)
             {
@@ -230,17 +237,14 @@ namespace WatersAD.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ConsumptionDate,RegistrationDate,ConsumptionValue")] Consumption consumption)
+        public async Task<IActionResult> Edit(ConsumptionViewModel model)
         {
-            if (id != consumption.Id)
-            {
-                return new NotFoundViewResult("ConsumptionNotFound");
-            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var consumption = await _consumptionRepository.GetByIdAsync(model.Id);
                     await _consumptionRepository.UpdateAsync(consumption);
                     _flashMessage.Info("Consumo editado com sucesso.");
 
@@ -254,7 +258,7 @@ namespace WatersAD.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(consumption);
+            return View(model);
         }
 
         // GET: Consumptions/Delete/5

@@ -93,5 +93,59 @@ namespace WatersAD.Models
         [Display(Name = "Country")]
         [Range(1, int.MaxValue, ErrorMessage = "You must select a country.")]
         public int CountryWaterMeterId { get; set; }
+
+        [Display(Name = "Nome")]
+        public string FullName
+        {
+            get
+            {
+
+                return $"{FirstName} {LastName}";
+            }
+        }
+        [Display(Name = "Código Postal")]
+        public string FullPostalCode
+        {
+            get
+            {
+                return $"{PostalCode}-{RemainPostalCode}";
+            }
+        }
+
+        [Display(Name = "Morada")]
+        public string FullAdress
+        {
+            get
+            {
+                return $"{Address}, nº {HouseNumber}";
+            }
+        }
+
+        public Locality Locality { get; set; }
+
+        public City City { get; set; }
+
+     
+        [Display(Name = "Código Postal")]
+        public string FullPostalCodeWM
+        {
+            get
+            {
+                return $"{PostalCode}-{RemainPostalCode}";
+            }
+        }
+
+        [Display(Name = "Morada")]
+        public string FullAdressWM
+        {
+            get
+            {
+                return $"{Address}, nº {HouseNumber}";
+            }
+        }
+
+        public Locality LocalityWM { get; set; }
+
+        public City CityWM { get; set; }
     }
 }

@@ -22,7 +22,10 @@
 
                         <div class="col-lg-8 col-12 mx-auto">
 
-                            <form method="post" class="custom-form membership-form shadow-lg" role="form" asp-action="RequestWaterMeter">
+                            <form method="post" class="custom-form membership-form shadow-lg" role="form" asp-action="RequestWaterMeterClient">
+                                <input type="hidden" asp-for="LocalityId" />
+                                <input type="hidden" asp-for="CountryId" />
+                                <input type="hidden" asp-for="CityId" />
                                 <input type="hidden" asp-for="ClientId" />
                                 <input type="hidden" asp-for="FirstName" />
                                 <input type="hidden" asp-for="LastName" />
@@ -33,6 +36,9 @@
                                 <input type="hidden" asp-for="HouseNumber" />
                                 <input type="hidden" asp-for="PostalCode" />
                                 <input type="hidden" asp-for="RemainPostalCode" />
+                               
+                               
+
                               
  
                                 <h4 class="text-white mt-4 mb-4">Dados do contador</h4>
@@ -70,22 +76,22 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <select asp-for="CountryId" asp-items="Model.Countries" class="form-control" id="CountryId"></select>
-                                            <label asp-for="CountryId">País</label>
+                                            <select asp-for="CountryWaterMeterId" asp-items="Model.Countries" class="form-control" id="MeterCountryId"></select>
+                                            <label asp-for="CountryWaterMeterId">País</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <select asp-for="CityId" asp-items="Model.Cities" class="form-control" id="CityId"></select>
-                                            <label asp-for="CityId">Cidade</label>
+                                            <select asp-for="CityWaterMeterId" asp-items="Model.Cities" class="form-control" id="MeterCityId"></select>
+                                            <label asp-for="CityWaterMeterId">Cidade</label>
                                         </div>
                                     </div>
                                 </div>
                              
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <select asp-for="LocalityId" asp-items="Model.Localities" class="form-control" id="LocalityId"></select>
-                                        <label asp-for="LocalityId">Localidade</label>
+                                        <select asp-for="LocalityWaterMeterId" asp-items="Model.Localities" class="form-control" id="MeterLocalityId"></select>
+                                        <label asp-for="LocalityWaterMeterId">Localidade</label>
                                     </div>
                                 </div>
 

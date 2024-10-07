@@ -38,19 +38,7 @@
     <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/27.1.48/material.css" />
     <!-- Syncfusion ASP.NET Core controls scripts -->
     <script src="https://cdn.syncfusion.com/ej2/27.1.48/dist/ej2.min.js"></script>
-   @*  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet" asp-append-version="true" />
-    <link href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet" asp-append-version="true" />
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link href="~/css/templatemo-tiya-golf-club.css" rel="stylesheet" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/WatersAD.styles.css" asp-append-version="true" />
-
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.7/css/dataTables.dataTables.css" />
-
-    <!-- Syncfusion ASP.NET Core controls styles -->
-    <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/27.1.48/material.css" />
-    <!-- Syncfusion ASP.NET Core controls scripts -->
-    <script src="https://cdn.syncfusion.com/ej2/27.1.48/dist/ej2.min.js"></script> *@
+ 
 </head>
 <body>
     <main>
@@ -127,12 +115,12 @@
                             </li>
                             <li class="nav-item">
 
-                                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")" asp-area="" asp-controller="Consumptions" asp-action="Index">Consumptions</a>
+                                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Consumptions" && ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")" asp-area="" asp-controller="Consumptions" asp-action="Index">Consumos</a>
                             </li>
 
 
                             <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "About" ? "active" : "")" asp-area="" asp-controller="Invoices" asp-action="Index">Invoices</a>
+                                <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Invoices" && ViewContext.RouteData.Values["action"].ToString() == "About" ? "active" : "")" asp-area="" asp-controller="Invoices" asp-action="Index">Faturas</a>
                             </li>
                         }
 

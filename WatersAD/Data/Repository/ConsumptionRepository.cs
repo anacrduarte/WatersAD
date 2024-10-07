@@ -30,10 +30,24 @@ namespace WatersAD.Data.Repository
                            .ThenInclude(wm => wm.Client)
                            .ToList();
         }
+        public async Task<IEnumerable<Consumption>> GetAllConsumptionForWaterMeter(int waterMeterId)
+        {
+            return await _context.Consumptions
+                           .Include(c => c.WaterMeter)
+                           .ThenInclude(wm => wm.Client)
+                           .Where(c => c.WaterMeterId == waterMeterId)
+                           .ToListAsync();
+        }
+        public async Task<Consumption> GetWaterMeterAndClientAsync(int consumptionId)
+        {
+            return await _context.Consumptions
+                           .Include(c => c.WaterMeter)
+                           .ThenInclude(wm => wm.Client)
+                           .FirstOrDefaultAsync(c => c.Id == consumptionId);
+        }
 
 
-
-        public Consumption? GetPreviousConsumption(WaterMeter waterMeter)
+        public Consumption GetPreviousConsumption(WaterMeter waterMeter)
         {
             return waterMeter.Consumptions
                 .OrderByDescending(c => c.ConsumptionDate)
@@ -42,10 +56,7 @@ namespace WatersAD.Data.Repository
 
         private decimal CalculateTotalAmount(double tierPrice, double currentValue, double previousValue)
         {
-            if(previousValue == null)
-            {
-                previousValue = 0;
-            }
+           
             return Convert.ToDecimal(tierPrice * (currentValue - previousValue) / 1000);
         }
 
@@ -76,7 +87,7 @@ namespace WatersAD.Data.Repository
                 ClientId = waterMeter.ClientId,
                 Client = waterMeter.Client,
                 InvoiceDate = DateTime.Now,
-
+                LimitDate = DateTime.Now.AddDays(30),
             };
 
             await _invoiceRepository.CreateAsync(invoice);
@@ -119,6 +130,20 @@ namespace WatersAD.Data.Repository
                  .ToListAsync();
         }
 
-
+        public async Task<ICollection<Consumption>> GetDetailsInvoicesForClientAsync(int invoiceId)
+        {
+            return await _context.Consumptions
+                 .Include(c => c.WaterMeter)
+                 .ThenInclude(wm=> wm.Client)
+                 .Include(c => c.Invoice)
+                 .Where(c => c.Invoice.Id == invoiceId)
+                 .ToListAsync();
+        }
+        public async Task<Consumption> GetConsumptionAsync(int invoiceId)
+        {
+            return await _context.Consumptions
+                .Include(c => c.WaterMeter)
+                .FirstOrDefaultAsync(c => c.Invoice.Id == invoiceId);
+        }
     }
 }

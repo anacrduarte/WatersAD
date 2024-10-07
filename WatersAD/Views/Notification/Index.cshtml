@@ -5,30 +5,84 @@
 
 
 
-<h2>Notificações</h2>
+<section class="about-section section-padding sectionDashboard">
+    <flash dismissable="true" />
+    <div class="col-lg-12 col-12">
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Mensagem</th>
-            <th>Data</th>
-            <th>Ação</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var notification in Model)
-        {
-            <tr>
-                <td>@notification.Message</td>
-                <td>@notification.CreatedAt.ToString("g")</td>
-                <td>
-                    <form asp-action="MarkAsRead" method="post">
-                        <input type="hidden" name="id" value="@notification.Id" />
-                        <button type="submit" class="btn btn-primary">Marcar como Lida</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+        <h2 class="text-center">Pedidos de contador</h2>
+        
+    </div>
+    <div class="col-lg-10 col-12 mx-auto">
+        <div class="table-responsive table-containerInvoice">
+            <table class="display " id="MyTable">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Mensagem</th>
+                        <th>Data</th>
+                        <th>Cliente</th>
 
+
+                        <th></th>
+
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    @foreach (var item in Model)
+                    {
+
+                        
+
+
+                        <tr>
+                            <td><a class="btn custom-btn  smoothscroll bi bi-three-dots-vertical" asp-action="DetailsRequestWM" asp-controller="WaterMeters" asp-route-id="@item.Id">  </a><br /></td>
+                            <td>@item.Message</td>
+                            <td>@item.CreatedAt.ToString("g")</td>
+                            <td></td>
+                            <td class="align-items-lg-center">
+                                @if (this.User.IsInRole("Admin"))
+                                {
+                                    <form asp-action="CreateWaterMeterAndClient" asp-controller="WaterMeters" method="post">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn custom-btn smoothscroll">Adicionar</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="AcceptRequest" method="post">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn custom-btn smoothscroll">Aceitar pedido</button>
+                                    </form>
+                                }
+
+                              
+                            </td>
+                        </tr>
+
+
+                       
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+</section>
+
+
+
+
+
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_DataTableJQuery");
+    }
+}

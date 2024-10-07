@@ -30,6 +30,12 @@ namespace WatersAD.Data.Repository
 
         Task<ICollection<Consumption>> GetAllInvoicesForClientAsync(int id);
 
+        Task<Consumption> GetWaterMeterAndClientAsync(int consumptionId);
 
+        Task<IEnumerable<Consumption>> GetAllConsumptionForWaterMeter(int waterMeterId);
+
+        Task<ICollection<Consumption>> GetDetailsInvoicesForClientAsync(int invoiceId);
+
+        Task<Consumption> GetConsumptionAsync(int invoiceId);
     }
 }

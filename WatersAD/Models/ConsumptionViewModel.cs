@@ -31,12 +31,12 @@ namespace WatersAD.Models
 
         [Required]
         [Display(Name = "Order date")]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = false)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime ConsumptionDate { get; set; }
 
         [Required]
         [Display(Name = "Order date")]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = false)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime RegistrationDate { get; set; }
 
         public double ConsumptionValue { get; set; }

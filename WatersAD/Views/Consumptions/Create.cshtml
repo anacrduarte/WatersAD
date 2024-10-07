@@ -12,7 +12,7 @@
                         <flash dismissable="true" />
                         <div class="col-lg-12 col-12 text-center mx-auto mb-lg-5 mb-4">
                             <h2 class="">Adicionar consumo</h2>
-                            <p class="text-center">Novo Consumo</p>
+                            <p class="text-center">Cliente: @Model.Client.FullName</p>
 
 
                         </div>
@@ -21,8 +21,8 @@
                             <form class="custom-form membership-form shadow-lg" role="form" asp-action="Create" method="post">
                                 <input type="hidden" asp-for="WaterMeterId" />
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h4 class="text-white mb-4">Dados pessoais</h4>
-                                    <a asp-action="Index" asp-controller="Clients" class="btn custom-btn smoothscroll mb-4">Voltar</a>
+                                    <h4 class="text-white mb-4">Novo consumo</h4>
+                                    <a asp-action="GetWaterMetersClient" asp-controller="WaterMeters" asp-route-id="@Model.ClientId" class="btn custom-btn smoothscroll mb-4">Voltar</a>
                                 </div>
                                 <div class="row g-3">
                                     
@@ -45,7 +45,7 @@
                                     </div>
                                     <div class="col-md-12">
                                         <div class="form-floating">
-                                            <input asp-for="ConsumptionValue" class="form-control" placeholder="Valor do consumo" required>
+                                            <input type="number" asp-for="ConsumptionValue" class="form-control" placeholder="Valor do consumo" required>
                                             <label asp-for="ConsumptionValue">Valor do consumo</label>
 
                                         </div>

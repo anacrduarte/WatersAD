@@ -1,9 +1,132 @@
-﻿@model WatersAD.Data.Entities.Invoice
+﻿@model WatersAD.Models.InvoiceDetailsViewModel
 
 @{
     ViewData["Title"] = "Details";
 }
 
+<section class="about-section section-padding sectionDashboard">
+    <flash dismissable="true" />
+    <div class="col-lg-12 col-12">
+
+        <h2 class="text-center">Detalhes</h2>
+      
+    </div>
+    <div class="container">
+
+        <div class="row d-flex justify-content-center align-items-center">
+
+
+                <div class="col-lg-5 col-md-6 col-12 me-auto mb-4 mb-lg-0 text-center">
+
+                                <h4 class="card-title"> Cliente: @Html.DisplayFor(model => model.Client.FullName)</h4>
+                                <p class="card-text">Email: @Html.DisplayFor(model => model.Client.Email) </p>
+               
+                </div>
+
+
+
+            <div class="col-lg-5 col-md-6 col-12 me-auto mb-4 mb-lg-0">
+                <br />
+                <br />
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Client.PhoneNumber):
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Client.PhoneNumber)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Client.NIF):
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Client.NIF)
+                    </dd>
+                    
+                    <dt class="col-sm-4 ">
+                        @Html.DisplayNameFor(model => model.WaterMeter.FullAdress):
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.WaterMeter.FullAdress)
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.WaterMeter.FullPostalCode):
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.WaterMeter.FullPostalCode)
+                    </dd>
+                <dt class="col-sm-4">
+                    Localidade:
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.WaterMeter.Locality.Name), @Html.DisplayFor(model => model.WaterMeter.Locality.City.Name)
+                </dd>
+                 
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Invoice.InvoiceDate):
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Invoice.InvoiceDate)
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Invoice.Issued):
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Invoice.Issued)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Invoice.Sent):
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Invoice.Sent)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Invoice.TotalAmount):
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Invoice.TotalAmount)
+                    </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Consumption.ConsumptionDate):
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Consumption.ConsumptionDate)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Consumption.ConsumptionValue):
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Consumption.ConsumptionValue)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Invoice.LimitDate):
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Invoice.LimitDate)
+                </dd>
+               
+
+                </dl>
+            </div>
+        </div>
+        <div class="col-lg-12 col-12 text-end">
+
+            <a asp-action="Index" asp-controller="Invoices" class="btn custom-btn smoothscroll mb-4">Voltar</a>
+        </div>
+    </div>
+        
+
+
+   
+
+        
+ 
+
+</section>
+
+
+@* 
 <h1>Details</h1>
 
 <div>
@@ -46,3 +169,4 @@
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+ *@

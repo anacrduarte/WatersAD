@@ -192,7 +192,7 @@ namespace WatersAD.Controllers
                                            "Water AD - Confirmação de Email",
                                            $"<h1>Águas Duarte - Confirmação de Email</h1>" +
                                                $"Clique no link para poder entrar como utilizador, a sua palavra-passe é {model.Password}, tem que alterar assim que fizer login. " +
-                                               $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>");
+                                               $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>",null, "fatura.pdf");
 
                         if (!response.IsSuccess)
                         {

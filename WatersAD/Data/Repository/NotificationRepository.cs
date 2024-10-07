@@ -15,9 +15,7 @@ namespace WatersAD.Data.Repository
 
         public async Task<IEnumerable<Notification>> GetUnreadNotificationsAsync()
         {
-            return await _context.Notifications
-                .Where(n => !n.IsRead)  
-                .ToListAsync();  
+            return await _context.Notifications.ToListAsync();  
         }
 
         public async Task MarkAsReadAsync(int notificationId)
@@ -25,6 +23,7 @@ namespace WatersAD.Data.Repository
             var notification = await _context.Notifications.FindAsync(notificationId);  
             if (notification != null)
             {
+                
                 notification.IsRead = true; 
                 await _context.SaveChangesAsync();
             }

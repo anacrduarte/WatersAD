@@ -14,7 +14,17 @@ namespace WatersAD.Data.Repository
             _context = context;
         }
 
-     
-      
+        public async Task<ICollection<Invoice>> GetAllInvoicesAndClientAsync()
+        {
+            return await _context.Invoices.Include(c => c.Client).ToListAsync();
+                
+        }
+        public async Task<Invoice> GetDetailsInvoiceAsync(int invoiceId)
+        {
+            return await _context.Invoices
+                .Include(c=> c.Client)
+                .FirstOrDefaultAsync(c => c.Id == invoiceId);
+
+        }
     }
 }
