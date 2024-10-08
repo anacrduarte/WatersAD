@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WatersAD.Data;
 
@@ -11,9 +12,11 @@ using WatersAD.Data;
 namespace WatersAD.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241008101413_updateRequestWaterMeterII")]
+    partial class updateRequestWaterMeterII
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -422,6 +425,9 @@ namespace WatersAD.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Available")
+                        .HasColumnType("bit");
 
                     b.Property<int>("CityId")
                         .HasColumnType("int");
@@ -917,7 +923,7 @@ namespace WatersAD.Migrations
                         .IsRequired();
 
                     b.HasOne("WatersAD.Data.Entities.WaterMeter", "WaterMeter")
-                        .WithMany()
+                        .WithMany("RequestWaterMeter")
                         .HasForeignKey("WaterMeterId");
 
                     b.HasOne("WatersAD.Data.Entities.Locality", "WaterMeterLocality")
@@ -983,6 +989,8 @@ namespace WatersAD.Migrations
             modelBuilder.Entity("WatersAD.Data.Entities.WaterMeter", b =>
                 {
                     b.Navigation("Consumptions");
+
+                    b.Navigation("RequestWaterMeter");
                 });
 #pragma warning restore 612, 618
         }

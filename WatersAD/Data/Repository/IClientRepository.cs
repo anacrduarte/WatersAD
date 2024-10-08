@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using WatersAD.Data.Entities;
+﻿using WatersAD.Data.Entities;
 
 namespace WatersAD.Data.Repository
 {
@@ -32,11 +31,11 @@ namespace WatersAD.Data.Repository
         IEnumerable<Client> GetAllWithLocalitiesAndWaterMeterInactive();
 
         /// <summary>
-        /// Retrieves a list of clients to be used in dropdown selection controls.
+        /// Asynchronously retrieves a <see cref="Client"/> object based on the specified user email.
         /// </summary>
-        /// <returns>An IEnumerable of SelectListItem objects representing clients.</returns>
-        IEnumerable<SelectListItem> GetComboClients();
-
+        /// <param name="email">The email address of the user whose associated client information is to be retrieved.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the <see cref="Client"/> object associated with the provided email, or null if no client is found.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="email"/> parameter is null or empty.</exception>
         Task<Client> GetClientByUserEmailAsync(string email);
 
 

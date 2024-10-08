@@ -1,0 +1,50 @@
+﻿@model WatersAD.Models.NotificationViewModel
+@{
+    ViewData["Title"] = "AcceptRequest";
+}
+
+<section class="about-section section-padding sectionDashboard">
+    <flash dismissable="true" />
+    <div class="container">
+        <div class="row">
+            <section>
+                <div class="container">
+                    <div class="row">
+
+                        <div class="col-lg-12 col-12 text-center mx-auto mb-lg-5 mb-4">
+                            <h2 class="">Data de instalação</h2>
+                            <p class="text-center">Defina a data de instalação do contador</p>
+
+
+                        </div>
+                        <div class="col-lg-6 col-12 mx-auto">
+                            <form class="custom-form membership-form shadow-lg" role="form" asp-action="AcceptRequest" method="post">
+                                <input type="hidden" asp-for="NotificationId" />
+                                <input type="hidden" asp-for="RequestWaterMeterId" />
+
+
+                                    <div class="col-md-12">
+                                        <div class="form-floating">
+                                            <input asp-for="InstallationDate" class="form-control" placeholder="Data de instalação" required>
+                                            <label asp-for="InstallationDate">Data de instalação</label>
+
+                                        </div>
+                                    </div>
+
+
+                             
+                                <button type="submit" class="form-control mt-4">Submeter</button>
+
+
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+
+        </div>
+    </div>
+</section>
+

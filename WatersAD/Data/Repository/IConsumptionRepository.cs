@@ -26,16 +26,34 @@ namespace WatersAD.Data.Repository
         /// </summary>
         /// <param name="waterMeter">The <see cref="WaterMeter"/> for which to retrieve the previous consumption record.</param>
         /// <returns>The previous <see cref="Consumption"/> record, or null if no prior consumption exists.</returns>
-        Consumption? GetPreviousConsumption(WaterMeter waterMeter);
+        Consumption GetPreviousConsumption(WaterMeter waterMeter);
 
+        /// <summary>
+        /// Asynchronously retrieves all consumption invoices associated with the specified client ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the client.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a collection of <see cref="Consumption"/> objects representing the invoices for the client.</returns>
         Task<ICollection<Consumption>> GetAllInvoicesForClientAsync(int id);
 
+        /// <summary>
+        /// Asynchronously retrieves a <see cref="Consumption"/> record, including the associated water meter and client information, based on the specified consumption ID.
+        /// </summary>
+        /// <param name="consumptionId">The unique identifier of the consumption record.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the <see cref="Consumption"/> object with the associated water meter and client details.</returns>
         Task<Consumption> GetWaterMeterAndClientAsync(int consumptionId);
 
+        /// <summary>
+        /// Asynchronously retrieves all consumption records associated with a specific water meter ID.
+        /// </summary>
+        /// <param name="waterMeterId">The unique identifier of the water meter.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains an enumerable collection of <see cref="Consumption"/> objects for the specified water meter.</returns>
         Task<IEnumerable<Consumption>> GetAllConsumptionForWaterMeter(int waterMeterId);
 
-        Task<ICollection<Consumption>> GetDetailsInvoicesForClientAsync(int invoiceId);
-
+        /// <summary>
+        /// Asynchronously retrieves a specific consumption record based on the provided invoice ID.
+        /// </summary>
+        /// <param name="invoiceId">The unique identifier of the invoice.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the <see cref="Consumption"/> object associated with the given invoice ID.</returns>
         Task<Consumption> GetConsumptionAsync(int invoiceId);
     }
 }

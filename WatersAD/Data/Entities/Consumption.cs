@@ -7,6 +7,7 @@ namespace WatersAD.Data.Entities
         public int Id { get; set; }
 
         public int TierId { get; set; }
+
         public Tier Tier { get; set; }
 
         [Required]
@@ -23,7 +24,9 @@ namespace WatersAD.Data.Entities
         public double ConsumptionValue {  get; set; }
 
         public int WaterMeterId { get; set; }
+
         public WaterMeter WaterMeter { get; set; }
+
 
         public Invoice Invoice { get; set; }
 

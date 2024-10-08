@@ -24,6 +24,7 @@
                         <th>
                            @Html.DisplayNameFor(model => model.Cities.FirstOrDefault().Name)
                         </th>
+                       
 
                        <th></th>
                         
@@ -42,6 +43,7 @@
                             <td>
                                 <a asp-action="DetailsCity" asp-route-id="@item.Id">@Html.DisplayFor(model => item.Name)</a>
                             </td>
+                          
                             <td>
                                 <a asp-action="AddLocality" asp-route-id="@item.Id" class="btn custom-btn  smoothscroll">Adicionar localidade</a>
                                 <a asp-action="EditCity" asp-route-id="@item.Id" class="bi bi-pencil-square btn custom-btn  smoothscroll">Editar</a>

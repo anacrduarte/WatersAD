@@ -9,11 +9,11 @@ namespace WatersAD.Models
     {
       
 
-        public Client? Client { get; set; }
+        public Client Client { get; set; }
 
         public int ClientId { get; set; }
 
-        public IEnumerable<SelectListItem>? WaterMeterServices { get; set; }
+        public IEnumerable<SelectListItem> WaterMeterServices { get; set; }
 
         [Display(Name = "Data de Instalação")]
         public DateTime InstallationDate { get; set; }

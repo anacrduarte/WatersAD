@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using WatersAD.Data;
 using WatersAD.Data.Entities;
 using WatersAD.Enum;
@@ -26,7 +27,21 @@ namespace WatersAD.Helpers
         }
         public async Task<IdentityResult> AddUserAsync(User user, string password)
         {
-           return await _userManager.CreateAsync(user, password);
+            var result = await _userManager.CreateAsync(user, password);
+
+            if (result.Succeeded)
+            {
+                var claims = new List<Claim>
+                            {
+                                new Claim(ClaimTypes.Name, user.Email),
+                                new Claim("ImageUrl", user.ImageUrl),
+                                new Claim("FullName", $"{user.FirstName} {user.LastName}"),
+                            };
+
+                await _userManager.AddClaimsAsync(user, claims);
+            }
+
+            return result;
         }
 
         public async Task AddUserToRoleAsync(User user, string roleName)
@@ -42,7 +57,7 @@ namespace WatersAD.Helpers
                 await _userManager.UpdateAsync(user);
 
             }
-            
+
             return await _userManager.ChangePasswordAsync(user, odlPassword, newPassword);
         }
 
@@ -50,7 +65,7 @@ namespace WatersAD.Helpers
         {
             var roleExists = await _roleManager.RoleExistsAsync(roleName);
 
-            if(!roleExists)
+            if (!roleExists)
             {
                 await _roleManager.CreateAsync(new IdentityRole
                 {
@@ -61,15 +76,15 @@ namespace WatersAD.Helpers
 
         public IEnumerable<SelectListItem> GetComboTypeRole()
         {
-            
-            var roles =  _roleManager.Roles.Select(r => new SelectListItem
-                        {
-                            Value = r.Name,
-                            Text = r.Name,   
-                        })
+
+            var roles = _roleManager.Roles.Select(r => new SelectListItem
+            {
+                Value = r.Name,
+                Text = r.Name,
+            })
                         .OrderBy(l => l.Text).ToList();
 
-          
+
             roles.Insert(0, new SelectListItem
             {
                 Value = "",
@@ -91,7 +106,7 @@ namespace WatersAD.Helpers
 
         public async Task<bool> IsUserInRoleAsync(User user, string roleName)
         {
-           return await _userManager.IsInRoleAsync(user, roleName);
+            return await _userManager.IsInRoleAsync(user, roleName);
         }
 
         public async Task<SignInResult> LoginAsync(LoginViewModel model)
@@ -110,13 +125,29 @@ namespace WatersAD.Helpers
 
         public async Task<IdentityResult> UpdateUserAsync(User user)
         {
-            return await _userManager.UpdateAsync(user);
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                var claims = new List<Claim>
+                            {
+                                new Claim(ClaimTypes.Name, user.Email),
+                                new Claim("ImageUrl", user.ImageUrl),
+                                new Claim("FullName", $"{user.FirstName} {user.LastName}"),
+                            };
+
+                var existingClaims = await _userManager.GetClaimsAsync(user);
+                await _userManager.RemoveClaimsAsync(user, existingClaims);
+
+
+                await _userManager.AddClaimsAsync(user, claims);
+            }
+            return result;
         }
 
 
         public async Task<IEnumerable<User>> GetUsersWithRole(UserType roleName)
         {
-          
+
             return await _userManager.Users
                 .Where(u => u.UserType == roleName)
                 .OrderBy(u => u.FirstName).ToListAsync();
@@ -142,8 +173,8 @@ namespace WatersAD.Helpers
             return await _userManager.ResetPasswordAsync(user, token, password);
         }
 
-     
 
-      
+
+
     }
 }

@@ -9,6 +9,7 @@ using WatersAD.Models;
 
 namespace WatersAD.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class EmployeesController : Controller
     {
 

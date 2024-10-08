@@ -34,7 +34,7 @@ namespace WatersAD.Data.Repository
             {
                 return;
             }
-            city.Localities.Add(new Locality { Name = model.Name});
+            city.Localities.Add(new Locality { Name = model.Name });
             _context.Cities.Update(city);
             await _context.SaveChangesAsync();
         }
@@ -58,10 +58,10 @@ namespace WatersAD.Data.Repository
         public async Task<int> DeleteLocalityAsync(Locality locality)
         {
             var city = await _context.Cities
-                .Where(c =>c.Localities.Any(l => l.Id == locality.Id))
+                .Where(c => c.Localities.Any(l => l.Id == locality.Id))
                 .FirstOrDefaultAsync();
 
-            if(city == null)
+            if (city == null)
             {
                 return 0;
             }
@@ -91,7 +91,7 @@ namespace WatersAD.Data.Repository
             return await _context.Cities.FindAsync(id);
         }
 
-       
+
         public IQueryable GetCountriesWithCities()
         {
             return _context.Countries
@@ -142,7 +142,7 @@ namespace WatersAD.Data.Repository
             var city = await _context.Cities
                 .Where(c => c.Localities.Any(l => l.Id == locality.Id)).FirstOrDefaultAsync();
 
-            if(city == null)
+            if (city == null)
             {
                 return 0;
             }
@@ -151,7 +151,7 @@ namespace WatersAD.Data.Repository
             return city.Id;
         }
 
-    
+
         public IEnumerable<SelectListItem> GetComboCities(int countryId)
         {
             var country = _context.Countries.Find(countryId);

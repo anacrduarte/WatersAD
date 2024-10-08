@@ -7,20 +7,45 @@ namespace WatersAD.Data.Extensions
         public static string GetInitials(this ClaimsPrincipal user)
         {
             if (user == null || !user.Identity.IsAuthenticated || string.IsNullOrEmpty(user.Identity.Name))
-                return ""; // Valor padrão se não estiver autenticado ou sem nome
+                return ""; 
 
-            var fullName = user.Identity.Name;
+            var fullNameClaim = user.FindFirst("FullName");
+
+            var fullName = fullNameClaim?.Value;
+
+            if (string.IsNullOrEmpty(fullName))
+                return "";
+
             var names = fullName.Split(' ');
             if (names.Length > 1)
             {
-                // Pega a primeira letra do primeiro e do último nome
+                
                 return $"{names[0][0]}{names[names.Length - 1][0]}".ToUpper();
             }
             else
             {
-                // Se houver apenas um nome, pega as duas primeiras letras
+                
                 return fullName.Substring(0, 2).ToUpper();
             }
+        }
+
+        public static string GetImageUrl(this ClaimsPrincipal user)
+        {
+            if (user == null || !user.Identity.IsAuthenticated)
+                return ""; 
+
+            
+            var imageUrlClaim = user.FindFirst("ImageUrl");
+
+            var imageUrl = imageUrlClaim?.Value ?? "";
+
+           
+            if (imageUrl.Equals("~/image/noimage.png", StringComparison.OrdinalIgnoreCase))
+            {
+                
+                return ""; 
+            }
+            return imageUrl;
         }
     }
 }

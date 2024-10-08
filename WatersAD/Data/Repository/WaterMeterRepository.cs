@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WatersAD.Data.Entities;
-using WatersAD.Models;
 
 namespace WatersAD.Data.Repository
 {
@@ -32,7 +31,7 @@ namespace WatersAD.Data.Repository
         }
         public IQueryable GetWaterMeterServices()
         {
-            return _context.Set<WaterMeterService>().Where(wm=> wm.Available).AsNoTracking();
+            return _context.Set<WaterMeterService>().Where(wm => wm.Available).AsNoTracking();
 
         }
 
@@ -40,8 +39,8 @@ namespace WatersAD.Data.Repository
         {
             return await _context.WaterMeters
                 .Include(c => c.Client)
-                .Include(c=> c.WaterMeterService)
-                .Include(l=> l.Locality)
+                .Include(c => c.WaterMeterService)
+                .Include(l => l.Locality)
                 .ThenInclude(c => c.City)
                 .ToListAsync();
 
@@ -52,7 +51,7 @@ namespace WatersAD.Data.Repository
             return await _context.WaterMeters
                 .Include(wm => wm.Locality)
                     .ThenInclude(l => l.City)
-                        .ThenInclude(c => c.Country) 
+                        .ThenInclude(c => c.Country)
                 .Where(wm => wm.Id == waterMeterId)
                 .FirstOrDefaultAsync();
         }
@@ -60,10 +59,10 @@ namespace WatersAD.Data.Repository
         public async Task<WaterMeter> GetClientAndLocalityWaterMeterAsync(int waterMeterId)
         {
             return await _context.WaterMeters
-                .Include(s=> s.WaterMeterService)
+                .Include(s => s.WaterMeterService)
                 .Include(c => c.Client)
                 .Include(l => l.Locality)
-                 .ThenInclude(ci=> ci.City)
+                 .ThenInclude(ci => ci.City)
                  .ThenInclude(co => co.Country)
                 .Where(wm => wm.Id == waterMeterId)
                 .FirstOrDefaultAsync();
@@ -97,7 +96,7 @@ namespace WatersAD.Data.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task<WaterMeter?> GetWaterMeterWithConsumptionsAsync(int waterMeterId)
+        public async Task<WaterMeter> GetWaterMeterWithConsumptionsAsync(int waterMeterId)
         {
             return await _context.WaterMeters
                 .Include(wm => wm.Consumptions)
@@ -131,36 +130,17 @@ namespace WatersAD.Data.Repository
             await _context.SaveChangesAsync();
         }
 
-        //TODO arranjar outra maneira de mostar os water meter
-        public IEnumerable<SelectListItem> GetComboWaterMeter()
-        {
-            var list = _context.WaterMeters.Select(c => new SelectListItem
-            {
-                Text = c.Address,
-                Value = c.Id.ToString(),
-
-            }).OrderBy(l => l.Text).ToList();
-
-            list.Insert(0, new SelectListItem
-            {
-                Text = "(Select a Water Meter...)",
-                Value = "0",
-            });
-
-            return list;
-        }
-
         public async Task<IEnumerable<WaterMeter>> GetWaterMetersWithConsumptionsByClientAsync(int id)
         {
             return await _context.WaterMeters
                 .Include(wm => wm.Consumptions)
-                .Where(wm => wm.Client.Id == id) 
+                .Where(wm => wm.Client.Id == id)
                 .ToListAsync();
         }
 
         public async Task<RequestWaterMeter> GetRequestWaterMeter(int id)
         {
-            return await _context.RequestWaterMeters.FirstOrDefaultAsync(rwm=> rwm.Id == id);
+            return await _context.RequestWaterMeters.FirstOrDefaultAsync(rwm => rwm.Id == id);
 
         }
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.IO;
+using System.Security.Claims;
 using Vereyon.Web;
 using WatersAD.Data.Entities;
 using WatersAD.Enum;
@@ -30,24 +31,7 @@ namespace WatersAD.Controllers
             _mailHelper = mailHelper;
         }
 
-        /// <summary>
-        /// Show the page
-        /// </summary>
-        /// <returns></returns>
-        //public IActionResult Login()
-        //{
-        //    if (User!.Identity!.IsAuthenticated && this.User.IsInRole("Admin"))
-        //    {
-
-        //        return RedirectToAction("Index", "Dashboard");
-        //    }
-        //    else if(User!.Identity!.IsAuthenticated && this.User.IsInRole("Customer"))
-        //    {
-        //        return RedirectToAction("Index", "Home");
-        //    }
-
-        //    return View();
-        //}
+   
 
         /// <summary>
         /// To do login
@@ -168,10 +152,16 @@ namespace WatersAD.Controllers
                         {
                             path = await _imageHelper.UploadImageAsync(model.ImageFile, "user");
                         }
+                        else
+                        {
+                            path = "~/image/noimage.png";
+                        }
 
                         user = _converterHelper.ToUser(model, path);
 
                         var result = await _userHelper.AddUserAsync(user, model.Password);
+                     
+                      
 
                         if (!string.IsNullOrEmpty(model.SelectedRole))
                         {
@@ -181,7 +171,7 @@ namespace WatersAD.Controllers
 
                         string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
 
-                        string? tokenLink = Url.Action("ConfirmEmail", "Account", new
+                        string tokenLink = Url.Action("ConfirmEmail", "Account", new
                         {
                             userid = user.Id,
                             token = myToken
@@ -237,6 +227,7 @@ namespace WatersAD.Controllers
          
             return newModel;
         }
+
         public async Task<IActionResult> ChangeUser()
         {
             var user = await _userHelper.GetUserByEmailAsync(User.Identity!.Name!);
@@ -285,6 +276,7 @@ namespace WatersAD.Controllers
                         user.FirstName = convertUser.FirstName;
                         user.LastName = convertUser.LastName;
                         user.ImageUrl = convertUser.ImageUrl;
+                        
 
                         var response = await _userHelper.UpdateUserAsync(user);
 
@@ -368,7 +360,7 @@ namespace WatersAD.Controllers
             return View(model);
         }
 
-   
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ChangeRole(string role)
         {
             if (string.IsNullOrEmpty(role))
@@ -402,7 +394,8 @@ namespace WatersAD.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
         }
-    
+
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditRole(string email)
         {
             if (string.IsNullOrEmpty(email))
@@ -607,7 +600,7 @@ namespace WatersAD.Controllers
 
                     _flashMessage.Info("Erro ao alterar palavra-passe.");
 
-                    return  View(model);
+                    return RedirectToAction(nameof(ResetPassword));
                 }
                 else
                 {
@@ -620,10 +613,11 @@ namespace WatersAD.Controllers
             {
 
                 _flashMessage.Danger($"Ocorreu um erro ao tentar alterar a palavra-passe: {ex.Message}");
+                return RedirectToAction(nameof(ResetPassword));
             }
 
             
-            return View(model);
+            
         }
 
         

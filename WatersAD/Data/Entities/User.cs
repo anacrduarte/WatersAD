@@ -9,11 +9,11 @@ namespace WatersAD.Data.Entities
     {
         [Required]
         [MaxLength(50, ErrorMessage = "The field {0} only can contain {1} characters length.")]
-        public string? FirstName { get; set; }
+        public string FirstName { get; set; }
 
         [Required]
         [MaxLength(50, ErrorMessage = "The field {0} only can contain {1} characters length.")]
-        public string? LastName { get; set; }
+        public string LastName { get; set; }
 
         
         [Display(Name = "Type User")]
@@ -22,13 +22,13 @@ namespace WatersAD.Data.Entities
 
         [Required]
         [MaxLength(200, ErrorMessage = "The field {0} only can contain {1} characters length.")]
-        public string? Address { get; set; }
+        public string Address { get; set; }
 
 
         [Display(Name = "Image")]
-        public string? ImageUrl { get; set; }
+        public string ImageUrl { get; set; }
 
-        public string? ImageFullPath
+        public string ImageFullPath
         {
             get
             {

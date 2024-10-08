@@ -19,7 +19,14 @@
                     <tr>
                         <th></th>
                         <th>Mensagem</th>
-                        <th>Data</th>
+                         @if (this.User.IsInRole("Admin"))
+                        {
+                            <th>Data da istalação</th>
+                        }
+                        else
+                        {
+                        <th>Data do pedido</th>
+                        }
                         <th>Cliente</th>
 
 
@@ -52,10 +59,11 @@
                                 }
                                 else
                                 {
-                                    <form asp-action="AcceptRequest" method="post">
-                                        <input type="hidden" name="id" value="@item.Id" />
-                                        <button type="submit" class="btn custom-btn smoothscroll">Aceitar pedido</button>
-                                    </form>
+                                    <a asp-action="AcceptRequest" class="btn custom-btn smoothscroll" asp-route-id="@item.Id">
+
+                                        Aceitar pedido
+                                    </a>
+                                 
                                 }
 
                               

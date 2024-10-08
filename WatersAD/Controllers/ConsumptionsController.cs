@@ -37,6 +37,7 @@ namespace WatersAD.Controllers
         }
 
         // GET: Consumptions
+        [Authorize(Roles = "Employee")]
         public IActionResult Index()
         {
             return View(_consumptionRepository.GetAllWaterMeterAndClient());
@@ -60,32 +61,47 @@ namespace WatersAD.Controllers
                 return new NotFoundViewResult("ConsumptionNotFound");
             }
            var client = await _clientRepository.GetClientByUserEmailAsync(user.Email);
-
-            
-         
-            try
+            if(client == null)
             {
-                var waterMeter = await _waterMeterRepository.GetWaterMetersWithConsumptionsByClientAsync(client.Id);
-              
+                _flashMessage.Warning("Erro a identificar cliente");
+                return RedirectToAction("Index", "Home");
+            }
 
-                var model = new ShowConsumptionsViewModel
+            client = await _clientRepository.GetClientWithWaterMeter(client.Id);
+
+            if (client.WaterMeters.Any())
+            {
+                try
                 {
-                    ClientId = client.Id,
-                    WaterMeters = waterMeter,
-                    Consumptions = waterMeter.SelectMany(wm => wm.Consumptions).OrderByDescending(c => c.ConsumptionDate).ToList(),
-                   
-                };
+                    var waterMeter = await _waterMeterRepository.GetWaterMetersWithConsumptionsByClientAsync(client.Id);
+                    if (waterMeter == null)
+                    {
+                        _flashMessage.Warning("Erro ao carregar os contadores.");
+                        return RedirectToAction("Index", "Home");
+                    }
+
+                    var model = new ShowConsumptionsViewModel
+                    {
+                        ClientId = client.Id,
+                        WaterMeters = waterMeter,
+                        Consumptions = waterMeter.SelectMany(wm => wm.Consumptions).OrderByDescending(c => c.ConsumptionDate).ToList(),
+
+                    };
 
 
+                    return View(model);
+                }
+                catch (Exception ex)
+                {
+                    _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
+                    return this.RedirectToAction("Consumptions", "ShowConsumptions");
+                }
 
-
-                return View(model);
             }
-            catch (Exception ex)
-            {
-                _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
-                return this.RedirectToAction("Consumptions", "ShowConsumptions");
-            }
+            _flashMessage.Warning("Ainda não tem contadores associados.");
+            return RedirectToAction("Index", "Home");
+
+
         }
 
 
@@ -120,7 +136,7 @@ namespace WatersAD.Controllers
             }
         }
 
-
+        [Authorize(Roles = "Employee")]
         public async Task<IActionResult> Create(int? clientId, int? waterMeterId)
         {
             try
@@ -201,114 +217,66 @@ namespace WatersAD.Controllers
             return View(model);
         }
 
-        // GET: Consumptions/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new NotFoundViewResult("ConsumptionNotFound");
-            }
+        //// GET: Consumptions/Edit/5
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new NotFoundViewResult("ConsumptionNotFound");
+        //    }
 
-            try
-            {
-                var consumption = await _consumptionRepository.GetWaterMeterAndClientAsync(id.Value);
-                if (consumption == null)
-                {
-                    return new NotFoundViewResult("ConsumptionNotFound");
-                }
-                var model = new ConsumptionViewModel
-                {
-                    ConsumptionDate = consumption.ConsumptionDate,
-                    ConsumptionValue = consumption.ConsumptionValue,
-                    Client = consumption.WaterMeter.Client,
-                    WaterMeterId = consumption.WaterMeter.Id,
-                };
-                return View(model);
+        //    try
+        //    {
+        //        var consumption = await _consumptionRepository.GetWaterMeterAndClientAsync(id.Value);
+        //        if (consumption == null)
+        //        {
+        //            return new NotFoundViewResult("ConsumptionNotFound");
+        //        }
+        //        var model = new ConsumptionViewModel
+        //        {
+        //            ConsumptionDate = consumption.ConsumptionDate,
+        //            ConsumptionValue = consumption.ConsumptionValue,
+        //            Client = consumption.WaterMeter.Client,
+        //            WaterMeterId = consumption.WaterMeter.Id,
+        //        };
+        //        return View(model);
               
-            }
-            catch (Exception ex)
-            {
-                _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
-                return RedirectToAction(nameof(Index));
-            }
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //}
 
-        // POST: Consumptions/Edit/5
+        //// POST: Consumptions/Edit/5
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ConsumptionViewModel model)
-        {
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(ConsumptionViewModel model)
+        //{
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var consumption = await _consumptionRepository.GetByIdAsync(model.Id);
-                    await _consumptionRepository.UpdateAsync(consumption);
-                    _flashMessage.Info("Consumo editado com sucesso.");
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            var consumption = await _consumptionRepository.GetByIdAsync(model.Id);
+        //            await _consumptionRepository.UpdateAsync(consumption);
+        //            _flashMessage.Info("Consumo editado com sucesso.");
 
-                }
-                catch (Exception ex)
-                {
+        //        }
+        //        catch (Exception ex)
+        //        {
 
-                    _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
+        //            _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
                     
 
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(model);
-        }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    return View(model);
+        //}
 
-        // GET: Consumptions/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new NotFoundViewResult("ConsumptionNotFound");
-            }
-            try
-            {
-
-                var consumption = await _consumptionRepository.GetByIdAsync(id.Value);
-                if (consumption == null)
-                {
-                    return new NotFoundViewResult("ConsumptionNotFound");
-                }
-
-                return View(consumption);
-            }
-            catch (Exception ex)
-            {
-                _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
-                return RedirectToAction(nameof(Index));
-            }
-        }
-
-        // POST: Consumptions/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            try
-            {
-                var consumption = await _consumptionRepository.GetByIdAsync(id);
-                if (consumption == null)
-                {
-                    return new NotFoundViewResult("ConsumptionNotFound");
-                }
-
-                await _consumptionRepository.DeleteAsync(consumption);
-                _flashMessage.Info("Consumo apagado com sucesso.");
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
-                return RedirectToAction(nameof(Index));
-            }
-        }
 
     
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Xml;
 using WatersAD.Data.Repository;
@@ -6,6 +7,7 @@ using WatersAD.Models;
 
 namespace WatersAD.Controllers
 {
+    [Authorize(Roles = "Employee,Admin")]
     public class DashboardController : Controller
     {
         private readonly INotificationRepository _notificationRepository;
@@ -17,9 +19,10 @@ namespace WatersAD.Controllers
         public async Task<IActionResult> Index()
         {
             var notifications = await _notificationRepository.GetUnreadNotificationsAsync();
+            var request = await _notificationRepository.GetRequestWaterMeterAsync();
             if (this.User.IsInRole("Admin"))
             {
-                return View(notifications.Where(n => n.IsRead));
+                return View(request.SelectMany(r => r.Notifications).Where(n => n.IsRead));
             }
             else
             {

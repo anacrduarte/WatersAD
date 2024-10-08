@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
-using System.Net;
-using WatersAD.Data.Entities;
+﻿using WatersAD.Data.Entities;
 using WatersAD.Data.Repository;
 using WatersAD.Enum;
 using WatersAD.Models;
@@ -15,10 +13,7 @@ namespace WatersAD.Helpers
         {
             _countryRepository = countryRepository;
         }
-        public RegisterNewUserViewModel ToRegisterNewUserViewModel(User user)
-        {
-            throw new NotImplementedException();
-        }
+
 
         public User ToUser(RegisterNewUserViewModel model, string path)
         {
@@ -26,7 +21,7 @@ namespace WatersAD.Helpers
 
             return new User
             {
-                
+
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Email = model.Username,
@@ -82,24 +77,11 @@ namespace WatersAD.Helpers
                 User = client.User,
                 WaterMeters = new List<WaterMeter>(),
                 Invoices = new List<Invoice>(),
-                
-                
+
+
             };
         }
 
-        public WaterMeter ToWaterMeter(ClientViewModel model, int clientId, Locality locality, WaterMeterService service)
-        {
-            return new WaterMeter
-            {
-                ClientId = clientId,
-                Address = model.Address,
-                HouseNumber = model.HouseNumber,
-                InstallationDate = model.InstallationDate,
-                LocalityId = locality.Id,
-                WaterMeterServiceId = service.Id ,
-                IsActive = true,
-            };
-        }
 
         public ClientViewModel ToClientViewModel(Client client)
         {
@@ -126,7 +108,7 @@ namespace WatersAD.Helpers
                 User = client.User,
 
             };
-        
+
 
             return model;
         }
@@ -146,7 +128,7 @@ namespace WatersAD.Helpers
                 HouseNumber = employee.HouseNumber,
                 NIF = employee.NIF,
                 User = employee.User,
-                
+
 
             };
         }

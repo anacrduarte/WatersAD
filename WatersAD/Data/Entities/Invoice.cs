@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace WatersAD.Data.Entities
 {
@@ -12,10 +13,9 @@ namespace WatersAD.Data.Entities
 
         public int ClientId { get; set; }
 
+        [JsonIgnore]
         public Client Client { get; set; }
 
-        
-        ICollection<Consumption> Consumptions { get; set; }
         [Display(Name = "Emitida")]
         public bool Issued { get; set; } = false;
         [Display(Name = "Enviada")]

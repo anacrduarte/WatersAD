@@ -1,10 +1,7 @@
 ﻿@model WatersAD.Models.InvoicesClientViewModel
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+
 <section class="hero-section d-flex justify-content-center align-items-center" id="section_1">
+    <flash dismissable="true" />
 
     <div class="section-overlay"></div>
 
@@ -48,40 +45,40 @@
     </div>
     <div class="table-responsive table-containerInvoice">
     <table class="display " id="MyTable" >
-                    <thead>
+            <thead>
                     <tr>
-                <th class="text-center">
-                        @Html.DisplayNameFor(model => model.Invoices.First().InvoiceDate)
-                        </th>
-                <th class="text-center">
-                             @Html.DisplayNameFor(model => model.Invoices.First().TotalAmount)
-                         </th>
-                <th>
+                    <th class="text-center">
+                            @Html.DisplayNameFor(model => model.Invoices.First().InvoiceDate)
+                            </th>
+                    <th class="text-center">
+                                    @Html.DisplayNameFor(model => model.Invoices.First().TotalAmount)
+                                </th>
+                    <th>
                     
-                </th>
-                    </tr>
+                    </th>
+                </tr>
 
       
                     
-                    </thead>
-                    <tbody>
-                    @foreach (var item in Model.Invoices)
-                                {
-                                    <tr>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.InvoiceDate)
-                                        </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.TotalAmount)
-                    </td>
-                                        <td>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Invoices)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.InvoiceDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TotalAmount)
+                        </td>
+                        <td>
 
                             <a asp-action="Details" asp-route-id="@item.Id" class="btn custom-btn smoothscroll me-3">Detalhes</a>
                                        
-                                        </td>
-                                    </tr>
-                                }
-                     </tbody>
+                        </td>
+                    </tr>
+                }
+            </tbody>
     </table>
 
     </div>
@@ -89,23 +86,6 @@
 
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("_DataTableJQuery");
     }
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('#MyTable').DataTable({
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Portuguese.json"
-                },
-                columnDefs: [
-                    {
-                        targets: -1,
-                        className: 'dt-body-right'
-                    }
-                   
-                ]
-            });
-        });
-    </script>
 }

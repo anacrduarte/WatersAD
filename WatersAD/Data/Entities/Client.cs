@@ -46,11 +46,11 @@ namespace WatersAD.Data.Entities
         [Display(Name = "Codigo-Postal")]
         [Required]
         [MaxLength(4, ErrorMessage = "The field {0} can contain {1} characters.")]
-        public string? PostalCode { get; set; }
+        public string PostalCode { get; set; }
 
         [Display(Name = "Codigo-Postal")]
         [MaxLength(3, ErrorMessage = "The field {0} can contain {1} characters.")]
-        public string? RemainPostalCode { get; set; }
+        public string RemainPostalCode { get; set; }
 
        
         public ICollection<WaterMeter> WaterMeters { get; set; }
@@ -64,7 +64,7 @@ namespace WatersAD.Data.Entities
         public ICollection<Invoice> Invoices { get; set; }
 
         [Display(Name = "Nome")]
-        public string? FullName
+        public string FullName
         {
             get
             {
@@ -72,6 +72,7 @@ namespace WatersAD.Data.Entities
                 return $"{FirstName} {LastName}";
             }
         }
+
         [Display(Name = "Código Postal")]
         public string FullPostalCode
         {

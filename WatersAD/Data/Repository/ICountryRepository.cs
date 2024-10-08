@@ -116,6 +116,5 @@ namespace WatersAD.Data.Repository
         /// <returns>An <see cref="IEnumerable{SelectListItem}"/> of localities for selection in a user interface.</returns>
         IEnumerable<SelectListItem> GetComboLocalities(int cityId);
 
-        
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using Vereyon.Web;
 using WatersAD.Data.Entities;
@@ -8,6 +9,7 @@ using WatersAD.Models;
 
 namespace WatersAD.Controllers
 {
+   
     public class WaterMetersController : Controller
     {
         private readonly IWaterMeterRepository _waterMeterRepository;
@@ -50,7 +52,7 @@ namespace WatersAD.Controllers
 
             return View(waterMeters);
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: WaterMetersServices
         public IActionResult DetailsWaterServices()
         {
@@ -96,7 +98,7 @@ namespace WatersAD.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: WaterMeters/Create
         public async Task<IActionResult> Create(int? id)
         {
@@ -124,6 +126,7 @@ namespace WatersAD.Controllers
                     WaterMeterServices = _waterMeterRepository.GetComboWaterMeterServices(),
 
                     Client = client,
+                  
                 };
 
                 if (!model.Countries.Any() || !model.Cities.Any() || !model.Localities.Any())
@@ -180,7 +183,7 @@ namespace WatersAD.Controllers
                     }
 
                     waterMeterService.Available = false;
-                    //TODO ver se ao usar isto a lista de consumption ATENÇAO
+
                     await _waterMeterRepository.UpdateWaterServiceAsync(waterMeterService);
 
                     var waterMeter = new WaterMeter
@@ -229,9 +232,9 @@ namespace WatersAD.Controllers
                 }
             }
             _flashMessage.Warning("Por favor, corrija os erros no formulário.");
-            return View(model);
+            return RedirectToAction(nameof(Create));
         }
-
+        [Authorize(Roles = "Admin")]
         // GET: WaterMeters/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -346,7 +349,7 @@ namespace WatersAD.Controllers
 
         // POST: WaterMeters/Delete/5
 
-
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try
@@ -371,7 +374,7 @@ namespace WatersAD.Controllers
 
 
 
-
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteWaterMeterService(int? id)
         {
             if (id == null)
@@ -400,7 +403,7 @@ namespace WatersAD.Controllers
             }
         }
 
-
+        [Authorize(Roles = "Admin")]
         // GET: WaterMeters/CreateWaterMeterService
         public IActionResult CreateWaterMeterService()
         {
@@ -540,6 +543,7 @@ namespace WatersAD.Controllers
                     LocalityId = model.LocalityId,
                     LocalityWaterMeterId = model.LocalityWaterMeterId,
                     ClientId = model.ClientId,
+                    InstallationDate= DateTime.Now,
                 };
 
                 request.Locality = locality;
@@ -612,6 +616,7 @@ namespace WatersAD.Controllers
 
             return View(model);
         }
+
         [HttpPost]
         public async Task<IActionResult> RequestWaterMeterClient(RequestWaterMeterViewModel model)
         {
@@ -709,7 +714,7 @@ namespace WatersAD.Controllers
 
 
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateWaterMeterAndClient(int? id)
@@ -797,6 +802,7 @@ namespace WatersAD.Controllers
                     await _clientRepository.CreateAsync(newClient);
 
                     client = newClient;
+                    
                 }
 
 
@@ -834,14 +840,20 @@ namespace WatersAD.Controllers
 
                 waterMeter.Consumptions.Add(consumption);
 
-                await _waterMeterRepository.UpdateAsync(waterMeter);
+               
 
                 waterMeter.WaterMeterService = waterMeterService;
                 waterMeter.Client = client;
 
+                await _waterMeterRepository.UpdateAsync(waterMeter);
+
+               
+
                 client.WaterMeters.Add(waterMeter);
 
                 await _clientRepository.UpdateAsync(client);
+
+                await _notificationRepository.UpadateRequestAsync(request.Id, waterMeter.Id);
 
                 var response = await SendConfirmationEmailAsync(associatedUser, request.Email);
                 if (!response.IsSuccess)

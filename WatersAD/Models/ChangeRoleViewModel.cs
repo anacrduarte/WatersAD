@@ -10,18 +10,18 @@ namespace WatersAD.Models
         public int? UserId { get; set; }
 
         [Display(Name = "Email")]
-        public string? UserName { get; set; }
+        public string UserName { get; set; }
 
         [Display(Name = "Role actual")]
-        public UserType? CurrentRole { get; set; }
+        public UserType CurrentRole { get; set; }
 
         public string SelectedRole { get; set; }
 
-        public IEnumerable<User>? User { get; set; }
+        public IEnumerable<User> User { get; set; }
 
 
         [Display(Name = "Type User")]
-        public IEnumerable<SelectListItem>? Roles { get; set; }
+        public IEnumerable<SelectListItem> Roles { get; set; }
 
     }
 }

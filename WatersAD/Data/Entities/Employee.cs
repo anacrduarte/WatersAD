@@ -21,39 +21,39 @@ namespace WatersAD.Data.Entities
         [Required]
         [Display(Name = "Nº")]
         [MaxLength(100, ErrorMessage = "The field {0} only can contain {1} characters length.")]
-        public string? HouseNumber { get; set; }
+        public string HouseNumber { get; set; }
 
         [Required]
         public string Email { get; set; }
 
-        public User? User { get; set; }
+        public User User { get; set; }
 
 
         [Required]
         [RegularExpression(@"^\d{9}$", ErrorMessage = "The NIF must be exactly 9 digits.")]
-        public string? NIF { get; set; }
+        public string NIF { get; set; }
 
         [Required]
         [Display(Name = "Nº telefone")]
-        public string? PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; }
 
         public bool IsActive { get; set; } = true;
 
         [Display(Name = "Código-Postal")]
         [Required]
         [MaxLength(4, ErrorMessage = "The field {0} can contain {1} characters.")]
-        public string? PostalCode { get; set; }
+        public string PostalCode { get; set; }
 
         [Display(Name = "Código-Postal")]
         [MaxLength(3, ErrorMessage = "The field {0} can contain {1} characters.")]
-        public string? RemainPostalCode { get; set; }
+        public string RemainPostalCode { get; set; }
 
         public int LocalityId { get; set; }
 
-        public Locality? Locality { get; set; }
+        public Locality Locality { get; set; }
 
         [Display(Name = "Nome")]
-        public string? FullName
+        public string FullName
         {
             get
             {
@@ -78,6 +78,6 @@ namespace WatersAD.Data.Entities
             }
         }
 
-        public string? OldEmail { get; set; }
+        public string OldEmail { get; set; }
     }
 }

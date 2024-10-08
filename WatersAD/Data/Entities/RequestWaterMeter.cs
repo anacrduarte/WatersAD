@@ -83,5 +83,7 @@ namespace WatersAD.Data.Entities
         [Display(Name = "Data de Instalação")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime InstallationDate { get; set; }
+
+        public bool Resolved { get; set; }
     }
 }

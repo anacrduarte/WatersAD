@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Vereyon.Web;
 using WatersAD.Data.Entities;
 using WatersAD.Data.Repository;
@@ -6,6 +7,7 @@ using WatersAD.Helpers;
 
 namespace WatersAD.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class TiersController : Controller
     {
 

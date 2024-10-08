@@ -64,10 +64,5 @@ namespace WatersAD.Models
         [MaxLength(3, ErrorMessage = "The field {0} can contain {1} characters.")]
         public string RemainPostalCode { get; set; }
 
-        public int ConsumptionId { get; set; }
-
-        public Consumption Consumption { get; set; }
-
-        public string FullName { get; set; }
     }
 }

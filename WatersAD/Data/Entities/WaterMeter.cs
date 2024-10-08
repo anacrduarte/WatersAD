@@ -51,8 +51,7 @@ namespace WatersAD.Data.Entities
        
         public ICollection<Consumption> Consumptions { get; set; }
 
-      
-        public ICollection<RequestWaterMeter> RequestWaterMeter { get; set; }
+  
         [Display(Name = "Código postal")]
         public string FullPostalCode
         {

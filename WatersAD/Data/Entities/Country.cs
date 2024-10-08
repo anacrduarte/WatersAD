@@ -11,7 +11,8 @@ namespace WatersAD.Data.Entities
         [MaxLength(50, ErrorMessage = "The field {0} can contain {1} characters.")]
         public string Name { get; set; }
 
-        public ICollection<City>? Cities { get; set; }
+        public ICollection<City> Cities { get; set; }
+
 
         [Display(Name = "Número de cidades")]
         public int NumberCities => Cities == null ? 0 : Cities.Count();

@@ -6,8 +6,10 @@ namespace WatersAD.Models
     {
         public string FullName { get; set; }
 
+
         [EmailAddress(ErrorMessage = "Por favor, insira um endereço de email válido.")]
         public string Email { get; set; }
+
         public string Message { get; set; }
     }
 }

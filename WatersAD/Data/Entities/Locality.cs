@@ -15,7 +15,7 @@ namespace WatersAD.Data.Entities
 
         public int CityId { get; set; }
 
-        public bool Available { get; set; } 
+      
 
      
     }

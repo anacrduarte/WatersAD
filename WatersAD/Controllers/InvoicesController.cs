@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Syncfusion.Drawing;
 using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
@@ -39,7 +40,7 @@ namespace WatersAD.Controllers
             _tierRepository = tierRepository;
             _mailHelper = mailHelper;
         }
-
+        [Authorize(Roles = "Employee")]
         // GET: Invoices
         public async Task<IActionResult> Index()
         {
@@ -62,7 +63,12 @@ namespace WatersAD.Controllers
                     return NotFound();
                 }
                 var consumption = await _consumptionRepository.GetAllInvoicesForClientAsync(client.Id);
-
+                if (consumption.Count < 1)
+                {
+                    _flashMessage.Warning("Ainda não tem faturas associadas");
+                    return RedirectToAction("Index", "Home");
+                }
+               
 
                 var model = new InvoicesClientViewModel
                 {
@@ -119,7 +125,7 @@ namespace WatersAD.Controllers
             }
         }
 
-
+        [Authorize(Roles = "Employee")]
         public async Task<IActionResult> SendAndIssue(int? id)
         {
             if (id == null)

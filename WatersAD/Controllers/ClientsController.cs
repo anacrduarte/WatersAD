@@ -200,7 +200,7 @@ namespace WatersAD.Controllers
 
 
         // GET: Clients/Edit/5
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -277,7 +277,7 @@ namespace WatersAD.Controllers
         }
 
         // GET: Clients/Delete/5
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -314,12 +314,12 @@ namespace WatersAD.Controllers
 
             
         }
-         
+        [Authorize(Roles = "Admin")]
         public IActionResult FormerClients()
         {
             return View(_clientRepository.GetAllWithLocalitiesAndWaterMeterInactive());
         }
-
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddClientAgain(int? id)
         {
             if (id == null)
@@ -358,6 +358,7 @@ namespace WatersAD.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateClientEmail(int? id)
         {
             if (id == null)
@@ -454,7 +455,7 @@ namespace WatersAD.Controllers
         {
             string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
 
-            string? tokenLink = Url.Action("ConfirmEmail", "Account", new
+            string tokenLink = Url.Action("ConfirmEmail", "Account", new
             {
                 userid = user.Id,
                 token = myToken
