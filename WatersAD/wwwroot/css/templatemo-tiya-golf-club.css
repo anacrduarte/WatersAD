@@ -8,11 +8,7 @@ https://templatemo.com/tm-587-tiya-golf-club
 /*---------------------------------------
   CUSTOM Avatar            
 -----------------------------------------*/
-/*.e-avatar {
-    background-image: url("../image/user/Account.png");
-    margin: 2px;
-    border-radius: 3px;
-}*/
+
 
 .sectionDashboard {
     margin-top: 6%; 
@@ -24,7 +20,147 @@ https://templatemo.com/tm-587-tiya-golf-club
     background-color: #3D405B;
 }
 
+/*---------------------------------------
+  DASBOARD STYLE           
+-----------------------------------------*/
 
+.dashboard-container {
+    position: relative; 
+    margin-top: 40px;
+    overflow: auto; 
+    z-index: 1;
+}
+.e-panel-content1 {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; 
+ 
+}
+.e-dashboard-layout.e-control .e-panel .e-panel-container .e-panel-header {
+    color: rgba(0, 0, 0, 0.61);
+}
+
+.e-panel .e-header-text {
+    padding: 12px 0 12px 0;
+    
+}
+
+#dashboard .e-panel-container .e-panel-header {
+    border-bottom: 3px solid #3D405B;
+}
+
+
+.e-dashboard-layout.e-control .e-panel:hover {
+    border: 0px;
+}
+
+.e-dashboard-layout.e-control .e-panel .e-panel-header {
+   
+    height: 100px;
+    padding: 10px;
+    vertical-align: middle;
+    /* text-align: left; */
+    border-bottom: 0.5px solid rgba(0, 0, 0, .125);
+    
+}
+
+.e-panel-header {
+    align-content:center;
+    margin-bottom: 0;
+    background-color: #81B29A;
+   
+}
+/*
+.e-dashboard-layout.e-control .e-panel .e-panel-header {
+    height: 50px
+}
+*/
+    .e-dashboard-layout.e-control .e-panel .e-panel-header div {
+        text-align: center;
+    }
+
+.header {
+    padding: 5px;
+    display: inline-block;
+}
+
+.e-panel-content {
+    height: 80%;
+}
+/*#dashboard_layout .e-panel .e-panel-container {
+    vertical-align: middle;
+    font-weight: 600;
+    font-size: 30px;
+    text-align: center;
+    line-height: 90px;
+}*/
+/*.e-dashboardlayout.e-control.e-responsive {
+    background: #3D405B;
+}
+*/
+
+.centered-container {
+    display: flex;
+    flex-direction: column;  
+    align-items: center; 
+    justify-content: center;  
+    min-height: 300px;  
+    max-height: 500px; 
+    overflow-y: auto; 
+    padding: 20px;  
+    
+}
+
+.centered-text {
+    text-align: center; /* Centraliza o texto horizontalmente */
+}
+
+.btn-centered {
+    margin-top: 1rem; /* Espaçamento superior para o botão */
+}
+
+/* Remove o marcador da lista */
+.no-bullet-list {
+    list-style-type: none; /* Remove os pontos */
+    padding-left: 0; /* Remove o espaçamento à esquerda */
+}
+
+.e-panel-content2 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 5px;
+    align-content:center;
+}
+
+.box {
+    background-color: #F2CC8F;
+    border: 1px solid #81B29A;
+    border-radius: 8px;
+     padding: 2px;
+    width: 32%;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.box1 {
+    background-color: #F4F1DE;
+    border: 1px solid #81B29A;
+    border-radius: 8px;
+     padding: 10px;
+    width: 98%;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+    .box strong {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 1.2em;
+        color: #333;
+    }
+.box1 strong {
+    font-size: 1.2em;
+    color: #333;
+}
 /*---------------------------------------
   CUSTOM PROPERTIES ( VARIABLES )             
 -----------------------------------------*/
@@ -481,10 +617,12 @@ strong {
   z-index: 99;
   padding-top: 0px;
   padding-bottom: 10px;
+
 }
 .navbarColor {
     background: transparent;
 }
+
 
 .navbar-brand,
 .navbar-brand:hover {
@@ -693,11 +831,9 @@ strong {
   margin-bottom: -90px;
 }
 .hero-section2 {
-  
-  
-    height: 210vh;
+    background-image: url('../image/layout/w3.jpg');
+    height: 240vh;
     min-height: 670px;
-    
 }
 .hero-section3 {
     height: 160vh;
@@ -711,9 +847,12 @@ strong {
     background-image: url('../image/layout/water2.jpg');
     height: 120vh;
 }
-
+.hero-sectionRecover1 {
+    background-image: url('../image/layout/w4.jpg');
+    height: 120vh;
+}
 .hero-sectionRecover2 {
-    background-image: url('../image/layout/water3.jpg');
+    background-image: url('../image/layout/w2.jpg');
     height: 140vh;
 }
 

@@ -141,13 +141,31 @@ namespace WatersAD.Controllers
         {
             try
             {
+                DateTime nextMonthDate;
+                var waterMeter = await _waterMeterRepository.GetWaterMeterWithConsumptionsAsync(waterMeterId.Value);
+                if(waterMeter.Consumptions == null)
+                {
+                    nextMonthDate = new DateTime(2024, 1, 1);
+                }
+                else
+                {
+                    DateTime previousDate = waterMeter.Consumptions
+                                   .OrderByDescending(c => c.ConsumptionDate)
+                                   .FirstOrDefault()?.ConsumptionDate ?? DateTime.Now;
+
+                    nextMonthDate = previousDate.AddMonths(1);
+                }
+
+              
+
                 var client = await _clientRepository.GetByIdAsync(clientId.Value);
                 if (client == null) { return NotFound(); }
                 var model = new ConsumptionViewModel
                 {
                     Client = client,
                     ClientId = client.Id,
-                    WaterMeterId = waterMeterId.Value
+                    WaterMeterId = waterMeter.Id,
+                    ConsumptionDate = nextMonthDate,
                 };
                 return View(model);
             }

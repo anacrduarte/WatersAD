@@ -203,7 +203,7 @@ namespace WatersAD.Controllers
 
                     var consumption = new Consumption
                     {
-                        ConsumptionDate = DateTime.UtcNow,
+                        ConsumptionDate = new DateTime(2024, 1, 1),
                         ConsumptionValue = 0,
                         WaterMeter = waterMeter,
                         TierId = 1,
@@ -586,6 +586,10 @@ namespace WatersAD.Controllers
                
               
             var userClient = await _clientRepository.GetClientByUserEmailAsync(user.Email);
+            if(userClient == null)
+            {
+                return NotFound();
+            }
 
             var client = await _clientRepository.GetClientAndLocalityAndCityAsync(userClient.Id);
             if (client == null || userClient == null)
@@ -743,6 +747,7 @@ namespace WatersAD.Controllers
                         UserType = Enum.UserType.Customer,
                         Address = request.Address,
                         PhoneNumber = request.PhoneNumber,
+                        ImageUrl = "~/image/noimage.png",
 
                     };
 
@@ -879,7 +884,7 @@ namespace WatersAD.Controllers
         {
             string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
 
-            string? tokenLink = Url.Action("ConfirmEmail", "Account", new
+            string tokenLink = Url.Action("ConfirmEmail", "Account", new
             {
                 userid = user.Id,
                 token = myToken

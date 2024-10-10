@@ -41,7 +41,7 @@
 <body>
     <main>
       
-        <nav class="navbar navbar-expand-lg @(ViewContext.RouteData.Values["controller"].ToString() == "Dashboard" && ViewContext.RouteData.Values["action"].ToString() == "Index" ? "" : "navbar-colored") @(ViewContext.RouteData.Values["controller"].ToString() == "Account" && ViewContext.RouteData.Values["action"].ToString() == "ResetPassword" ? "navbarColor" : "")@(ViewContext.RouteData.Values["controller"].ToString() == "Account" && ViewContext.RouteData.Values["action"].ToString() == "ChangeUser" ? "navbarColor" : "")">
+        <nav class="navbar navbar-expand-lg navbar-colored  @(ViewContext.RouteData.Values["controller"].ToString() == "Account" && ViewContext.RouteData.Values["action"].ToString() == "ResetPassword" ? "navbarColor" : "")@(ViewContext.RouteData.Values["controller"].ToString() == "Account" && ViewContext.RouteData.Values["action"].ToString() == "ChangeUser" ? "navbarColor" : "")">
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center" asp-controller="Dashboard" asp-action="Index">
                     <img src="~/image/layout/logo3.svg" class="navbar-brand-image img-fluid" alt="A. Duarte">
@@ -236,7 +236,7 @@
     <script src="~/js/layout/custom.js" asp-append-version="true"></script>
 
     <!-- Script de site geral -->
-    <script src="~/js/site.js" asp-append-version="true"></script>
+  @*   <script src="~/js/site.js" asp-append-version="true"></script> *@
 
     <!-- Syncfusion ASP.NET Core Script Manager -->
     <ejs-scripts></ejs-scripts>
@@ -247,7 +247,3 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-@section Scripts {
-   
-  
-}

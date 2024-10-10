@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using System;
 using WatersAD.Data.Entities;
 using WatersAD.Enum;
 using WatersAD.Helpers;
@@ -13,7 +11,7 @@ namespace WatersAD.Data
         private readonly IUserHelper _userHelper;
         private Random _random;
 
-        public SeedDb(DataContext context, IUserHelper userHelper )
+        public SeedDb(DataContext context, IUserHelper userHelper)
         {
             _context = context;
             _userHelper = userHelper;
@@ -23,34 +21,15 @@ namespace WatersAD.Data
         public async Task SeedAsync()
         {
             await _context.Database.EnsureCreatedAsync();
+            await CreateTiersAsync();
+            await CreateCountyAndCityAndLocalityAsync();
             await CheckRolesAsync();
             await CheckUserAsync("Ana", "Duarte", "ana@mail.com", "987654321", "Rua das Flores", UserType.Admin, "~/image/user/Account.png");
-            await CheckUserAsync("João", "Silva", "joao.silva@example.com", "912345678", "Rua das Flores, 123, Lisboa", UserType.Employee, "~/image/noimage.png");
-            await CheckUserAsync("Maria", "Santos", "maria.santos@example.com", "923456789", "Avenida da Liberdade, 456, Porto", UserType.Customer, "~/image/noimage.png");
-            await CheckUserAsync("Pedro", "Oliveira", "pedro.oliveira@example.com", "934567890", "Praça do Comércio, 789, Coimbra", UserType.Customer, "~/image/noimage.png");
-            //await CheckUserAsync("Ana", "Pereira", "ana.pereira@example.com", "945678901", "Rua da Baixa, 159, Braga", UserType.Customer, null);
-            //await CheckUserAsync("Luís", "Ferreira", "luis.ferreira@example.com", "956789012", "Avenida da República, 987, Faro", UserType.Employee, null);
-            //await CheckUserAsync("Tiago", "Costa", "tiago.costa@example.com", "961234567", "Rua das Amoreiras, 1, Lisboa", UserType.Customer, null);
-            //await CheckUserAsync("Rita", "Gomes", "rita.gomes@example.com", "962345678", "Avenida das Nações, 2, Porto", UserType.Customer, null);
-            //await CheckUserAsync("Filipe", "Almeida", "filipe.almeida@example.com", "963456789", "Praça do Rossio, 3, Coimbra", UserType.Customer, null);
-            //await CheckUserAsync("Beatriz", "Silva", "beatriz.silva@example.com", "964567890", "Rua do Comércio, 4, Braga", UserType.Customer, null);
-            //await CheckUserAsync("Gustavo", "Pereira", "gustavo.pereira@example.com", "965678901", "Avenida de Roma, 5, Faro", UserType.Customer, null);
-            //await CheckUserAsync("Laura", "Martins", "laura.martins@example.com", "966789012", "Rua das Laranjeiras, 6, Évora", UserType.Customer, null);
-            //await CheckUserAsync("Hugo", "Mendes", "hugo.mendes@example.com", "967890123", "Praça do Marquês, 7, Setúbal", UserType.Customer, null);
-            //await CheckUserAsync("Inês", "Ramos", "ines.ramos@example.com", "968901234", "Avenida da Liberdade, 8, Lisboa", UserType.Customer, null);
-            //await CheckUserAsync("Nuno", "Figueiredo", "nuno.figueiredo@example.com", "969012345", "Rua do Pôr do Sol, 9, Porto", UserType.Customer, null);
-            //await CheckUserAsync("Sofia", "Teixeira", "sofia.teixeira@example.com", "970123456", "Praça de Camões, 10, Coimbra", UserType.Customer, null);
-            //await CheckUserAsync("André", "Cunha", "andre.cunha@example.com", "971234567", "Rua dos Três Castelos, 11, Braga", UserType.Customer, null);
-            //await CheckUserAsync("Clara", "Vasconcelos", "clara.vasconcelos@example.com", "972345678", "Avenida de França, 12, Faro", UserType.Customer, null);
-            //await CheckUserAsync("Ricardo", "Pinto", "ricardo.pinto@example.com", "973456789", "Rua de São Bento, 13, Évora", UserType.Customer, null);
-            //await CheckUserAsync("Patrícia", "Barbosa", "patricia.barbosa@example.com", "974567890", "Praça da Alegria, 14, Setúbal", UserType.Customer, null);
-            //await CheckUserAsync("Samuel", "Alves", "sa@mail.com", "975678901", "Rua Nova, 15, Lisboa", UserType.Employee, null);
-
-
+   
             await AddWaterMeterServiceAsync();
 
 
-           
+
         }
 
         private async Task<User> CheckUserAsync(string firstName, string lastName, string email, string phone, string address, UserType userType, string image)
@@ -61,7 +40,7 @@ namespace WatersAD.Data
             {
                 user = new User
                 {
-                    
+
                     FirstName = firstName,
                     LastName = lastName,
                     Email = email,
@@ -81,6 +60,8 @@ namespace WatersAD.Data
                 }
 
                 await _userHelper.AddUserToRoleAsync(user, userType.ToString());
+
+
             }
 
             return user;
@@ -88,7 +69,7 @@ namespace WatersAD.Data
 
         private async Task AddWaterMeterServiceAsync()
         {
-            if(!_context.WaterMeterServices.Any())
+            if (!_context.WaterMeterServices.Any())
             {
                 var waterMeters = new List<WaterMeterService>();
 
@@ -112,10 +93,10 @@ namespace WatersAD.Data
                 await _context.SaveChangesAsync();
 
             }
-           
+
 
         }
-   
+
 
         private async Task CheckRolesAsync()
         {
@@ -125,7 +106,201 @@ namespace WatersAD.Data
 
         }
 
- 
+        private async Task CreateTiersAsync()
+        {
+            if (!_context.Tiers.Any())
+            {
+                var tiers = new List<Tier>
+                {
+                   new Tier {
+                        TierName = "Escalão 1",
+                        TierNumber = 1,
+                        TierPrice = 0.3,
+                        UpperLimit = 5000,
+                    },
+                   new Tier {
+                        TierName = "Escalão 2",
+                        TierNumber = 2,
+                        TierPrice = 0.8,
+                        UpperLimit = 15000,
+                   },
+                   new Tier {
+                        TierName = "Escalão 3",
+                        TierNumber = 3,
+                        TierPrice = 1.2,
+                        UpperLimit = 25000,
+                   },
+                   new Tier {
+                        TierName = "Escalão 4",
+                        TierNumber = 4,
+                        TierPrice = 1.6,
+                        UpperLimit = 2147483647,
+                   }
+                };
+                _context.Tiers.AddRange(tiers);
+               await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task CreateCountyAndCityAndLocalityAsync()
+        {
+            if (!_context.Countries.Any())
+            {
+                var country = new Country
+                {
+                    Name = "Portugal",
+                    Cities = new List<City>
+                    {
+                        new City
+                        {
+                            Name = "Braga",
+                            Localities = new List<Locality>
+                            {
+                               new Locality { Name = "Maximinos" },
+                               new Locality { Name = "São José de São Lázaro" },
+                               new Locality { Name = "Braga (São João)" },
+                               new Locality { Name = "S. Vicente" },
+                               new Locality { Name = "Esporões" },
+                               new Locality { Name = "Gualtar" }
+                            }
+                        },
+                        new City
+                        {
+                            Name = "Vila Nova de Famalicão",
+                            Localities = new List<Locality>
+                            {
+                                new Locality { Name = "Famalicão" },
+                                new Locality { Name = "Ribeirão" },
+                                new Locality { Name = "Lousado" },
+                                new Locality { Name = "Caldelas" },
+                                new Locality { Name = "Telhado" },
+                                new Locality { Name = "Rato" },
+                                new Locality { Name = "Fradelos" },
+                                new Locality { Name = "Santa Maria de Famalicão" },
+                                new Locality { Name = "Cruz" },
+                                new Locality { Name = "Delães" },
+                                new Locality { Name = "Chafé" },
+                                new Locality { Name = "Vila Nova" },
+                                new Locality { Name = "Alberque" },
+                                new Locality { Name = "Azevedo" },
+                                new Locality { Name = "Antas" },
+                                new Locality { Name = "Landim" },
+                                new Locality { Name = "Gavião" },
+                                new Locality { Name = "Guilhabreu" },
+                                new Locality { Name = "Joane" },
+                                new Locality { Name = "Lamas" }
+                            }
+                        },
+                        new City
+                        {
+                            Name = "Vizela",
+                            Localities = new List<Locality>
+                            {
+                                new Locality { Name = "Vizela (Santo Adrião)" },
+                                new Locality { Name = "Infesta" },
+                                new Locality { Name = "Caldas de Vizela" },
+                                new Locality { Name = "São Miguel" },
+                                new Locality { Name = "São João" },
+                                new Locality { Name = "Silvares" },
+                                new Locality { Name = "Serra" },
+                                new Locality { Name = "Parque da Cidade" },
+                                new Locality { Name = "Cano" },
+                                new Locality { Name = "Arco de Baúlhe" }
+                            }
+                        },
+                        new City
+                        {
+                            Name = "Guimarães",
+                            Localities = new List<Locality>
+                            {
+                                new Locality { Name = "Centro Histórico" },
+                                new Locality { Name = "Serra de Santa Catarina" },
+                                new Locality { Name = "São Torcato" },
+                                new Locality { Name = "Pevidém" },
+                                new Locality { Name = "Gonçalves" },
+                                new Locality { Name = "Azevedo" },
+                                new Locality { Name = "Selho S. Jorge" },
+                                new Locality { Name = "Atães" },
+                                new Locality { Name = "Cavalões" },
+                                new Locality { Name = "Moreira de Cónegos" },
+                                new Locality { Name = "Ruas" },
+                                new Locality { Name = "São Paio" },
+                                new Locality { Name = "Sande" },
+                                new Locality { Name = "Creixomil" },
+                                new Locality { Name = "Ribeirão" },
+                                new Locality { Name = "Caldeiro" },
+                                new Locality { Name = "Caldas" },
+                                new Locality { Name = "Rendufinho" },
+                                new Locality { Name = "Brito" },
+                                new Locality { Name = "Bico" }
+                            }
+                        },
+                        new City
+                        {
+                            Name = "Santo-Tirso",
+                            Localities = new List<Locality>
+                            {
+                                new Locality { Name = "Santo Tirso" },
+                                new Locality { Name = "Roriz" },
+                                new Locality { Name = "Souto" },
+                                new Locality { Name = "S. Miguel de Lema" },
+                                new Locality { Name = "S. Martinho do Campo" },
+                                new Locality { Name = "S. Salvador do Campo" },
+                                new Locality { Name = "Alvito" },
+                                new Locality { Name = "Riba de Ave" },
+                                new Locality { Name = "S. Bento da Vitória" },
+                                new Locality { Name = "São Mamede" }
+                            }
+                        },
+                        new City
+                        {
+                            Name = "Póvoa de Varzim",
+                            Localities = new List<Locality>
+                            {
+                                new Locality { Name = "Póvoa de Varzim" },
+                                new Locality { Name = "Aguçadoura" },
+
+                            }
+                        },
+                        new City
+                        {
+                            Name = "Esposende",
+                            Localities = new List<Locality>
+                            {
+                                new Locality { Name = "Esposende" },
+                                new Locality { Name = "Marinhas" },
+
+                            }
+                        },
+                        new City
+                        {
+                            Name = "Barcelos",
+                            Localities = new List<Locality>
+                            {
+                                new Locality { Name = "Barcelos" },
+                                new Locality { Name = "Vila de Punhe" },
+
+                            }
+                        },
+                        new City
+                        {
+                            Name = "Fafe",
+                            Localities = new List<Locality>
+                            {
+                                new Locality { Name = "Fafe" },
+                                new Locality { Name = "Aboim da Nóbrega" },
+
+                            }
+                        }
+
+                    }
+                };
+                _context.Countries.Add(country);
+                await _context.SaveChangesAsync();
+
+            }
+        }
+
 
     }
 }

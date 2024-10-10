@@ -47,7 +47,7 @@
 
 <body>
 <main>
-        <nav class="navbar navbar-expand-lg navbarColor">
+        <nav class="navbar navbar-expand-lg @(ViewContext.RouteData.Values["controller"].ToString() == "Account" && ViewContext.RouteData.Values["action"].ToString() == "NotAuthorized" ? "navbar-colored" : "") @(ViewContext.RouteData.Values["controller"].ToString() == "Home" && ViewContext.RouteData.Values["action"].ToString() == "Error404" ? "navbar-colored" : "")">
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
                     <img src="~/image/layout/logo3.svg" class="navbar-brand-image img-fluid" alt="A. Duarte">
@@ -113,24 +113,43 @@
                         @if (this.User.Identity.IsAuthenticated)
                         {
 
-                            <a>
-                                <span class="e-avatar  e-avatar-circle blue custom-border-btn">@this.User.GetInitials()</span>
+                            <style>
+                                .e-avatar {
+                                    margin: 2px;
+                                    border-radius: 3px;
+                                }
+
+                                .e-avatar2 {
+                                    background-image: url(@Url.Content(this.User.GetImageUrl()));
+                                    margin: 2px;
+                                    border-radius: 3px;
+                                }
+                            </style>
+
+                            <a asp-area="" asp-controller="Account" asp-action="ChangeUser">
+
+                                @if (string.IsNullOrEmpty(this.User.GetImageUrl()))
+                                {
+                                    <span class="e-avatar  e-avatar-circle blue custom-border-btn">
+
+                                        <span>@this.User.GetInitials()</span>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="e-avatar  e-avatar-circle blue custom-border-btn e-avatar2">
+
+                                        <span> </span>
+                                    </span>
+                                }
+
                                 <span class=" btn custom-btn custom-border-btn ">@this.User.Identity.Name</span>
-                                </a>
+                            </a>
 
                             <form asp-action="Logout" asp-controller="Account" method="post" class="d-inline">
                                 <button type="submit" class="btn custom-btn custom-border-btn">Logout</button>
                             </form>
 
-                            <style>
-
-
-                                .e-avatar {
-                                    background-image: url(@Url.Content("~/image/user/Account.png"));
-                                    margin: 2px;
-                                    border-radius: 3px;
-                                }
-                                </style>
                         }
                         else
                         {
@@ -230,7 +249,7 @@
     <script src="~/js/layout/custom.js" asp-append-version="true"></script>
 
     <!-- Script de site geral -->
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    @* <script src="~/js/site.js" asp-append-version="true"></script> *@
 
     <!-- Syncfusion ASP.NET Core Script Manager -->
     <ejs-scripts></ejs-scripts>

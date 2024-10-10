@@ -11,7 +11,7 @@
                 "wwwroot",
                 oldPath.TrimStart('~', '/').Replace('/', '\\'));
 
-                if (File.Exists(oldFilePath))
+                if (File.Exists(oldFilePath) && oldFilePath != Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "image", "noimage.png"))
                 {
                     File.Delete(oldFilePath);
                 }

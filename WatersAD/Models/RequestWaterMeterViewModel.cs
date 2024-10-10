@@ -9,6 +9,7 @@ namespace WatersAD.Models
     {
         public int ClientId { get; set; }
 
+
         [Required]
         [Display(Name = "Rua")]
         [MaxLength(100, ErrorMessage = "The field {0} only can contain {1} characters length.")]

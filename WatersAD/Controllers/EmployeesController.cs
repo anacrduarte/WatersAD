@@ -130,6 +130,7 @@ namespace WatersAD.Controllers
                             UserType = Enum.UserType.Employee,
                             Address = employee.Address,
                             PhoneNumber = employee.PhoneNumber,
+                            ImageUrl = "~/image/noimage.png",
                         };
 
 
@@ -426,7 +427,7 @@ namespace WatersAD.Controllers
         {
             string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
 
-            string? tokenLink = Url.Action("ConfirmEmail", "Account", new
+            string tokenLink = Url.Action("ConfirmEmail", "Account", new
             {
                 userid = user.Id,
                 token = myToken
@@ -434,7 +435,7 @@ namespace WatersAD.Controllers
 
             string subject = "Waters AD - Confirmação de Email";
             string body = $"<h1>Waters AD - Confirmação de Email</h1>" +
-                          $"Clique no link para confirmar seu email e entrar como utilizador:" +
+                          $"Clique no link para confirmar seu email e entrar como utilizador, tem que alterar a sua palavra passe obrigatóriamente a actual é 123456." +
                           $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>";
 
             return await _mailHelper.SendMail($"{user.FirstName} {user.LastName}", email, subject, body);

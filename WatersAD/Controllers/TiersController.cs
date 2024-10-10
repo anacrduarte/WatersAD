@@ -40,15 +40,27 @@ namespace WatersAD.Controllers
         {
             if (ModelState.IsValid)
             {
+                var existingTiers =  _tierRepository.GetAll(); 
+
+                
+                foreach (var existingTier in existingTiers)
+                {
+                    if (tier.UpperLimit <= existingTier.UpperLimit)
+                    {
+                        
+                        _flashMessage.Warning($"O valor máximo do novo escalão está entre os valores de um escalão existente!Edite o limite dos escalões de depois crie um novo.");
+                        return View(tier); 
+                    }
+                }
                 try
                 {
                     await _tierRepository.CreateAsync(tier);
                     return RedirectToAction(nameof(Index));
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
 
-                    _flashMessage.Warning($"Cada escalão só pode ter um unico número de escalão associado!!");
+                    _flashMessage.Warning($"Erro na requisição do pedido. {ex.Message} " );
 
 
                     return View(tier);

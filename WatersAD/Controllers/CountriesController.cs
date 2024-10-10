@@ -8,7 +8,7 @@ using WatersAD.Models;
 
 namespace WatersAD.Controllers
 {
-    [Authorize(Roles = "Admin")]
+   
     public class CountriesController : Controller
     {
         private readonly ICountryRepository _countryRepository;
@@ -21,12 +21,14 @@ namespace WatersAD.Controllers
         }
 
         // GET: Countries
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             return View(_countryRepository.GetCountriesWithCities());
         }
 
         // GET: Countries/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -45,6 +47,7 @@ namespace WatersAD.Controllers
 
 
         // GET: Countries/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -75,6 +78,7 @@ namespace WatersAD.Controllers
         }
 
         // GET: Countries/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -105,6 +109,7 @@ namespace WatersAD.Controllers
         }
 
         // GET: Countries/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -136,6 +141,7 @@ namespace WatersAD.Controllers
         }
 
         // GET: Countries/DetailsCity/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DetailsCity(int? id)
         {
             if (id == null)
@@ -153,6 +159,7 @@ namespace WatersAD.Controllers
         }
 
         // GET: Countries/AddCity
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddCity(int? id)
         {
             if (id == null)
@@ -193,6 +200,7 @@ namespace WatersAD.Controllers
         }
 
         // GET: Countries/EditCity
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditCity(int? id)
         {
             if (id == null)
@@ -234,6 +242,7 @@ namespace WatersAD.Controllers
         }
 
         // GET: Countries/DeleteCity/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCity(int? id)
         {
             if (id == null)
@@ -270,6 +279,7 @@ namespace WatersAD.Controllers
 
 
         // GET: Countries/AddLocality
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddLocality(int? id)
         {
             if (id == null)
@@ -301,6 +311,7 @@ namespace WatersAD.Controllers
         }
 
         // GET: Countries/EditLocality
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditLocality(int? id)
         {
             if (id == null)
@@ -347,6 +358,7 @@ namespace WatersAD.Controllers
 
 
         // GET: Countries/DeleteLocality/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteLocality(int? id)
         {
             if (id == null)

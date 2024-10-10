@@ -131,10 +131,11 @@ namespace WatersAD.Controllers
                             UserType = Enum.UserType.Customer,
                             Address = client.Address,
                             PhoneNumber = client.PhoneNumber,
+                            ImageUrl = "~/image/noimage.png",
 
                         };
 
-
+                       
 
                         var result = await _userHelper.AddUserAsync(newUser, "123456");
 
@@ -417,7 +418,7 @@ namespace WatersAD.Controllers
 
                     if (!updateUserResult.Succeeded)
                     {
-                        _flashMessage.Danger("Erro ao atualizar o e-mail do usuário.");
+                        _flashMessage.Danger("Erro ao atualizar o e-mail do utilizador.");
                         return View(model);
                     }
 
@@ -426,7 +427,7 @@ namespace WatersAD.Controllers
                     client.Email = model.Email;
                     await _clientRepository.UpdateAsync(client);
 
-                    _flashMessage.Confirmation("E-mail do cliente atualizado com sucesso.");
+                    _flashMessage.Confirmation("Email do cliente atualizado com sucesso.");
 
                     Response response = await SendConfirmationEmailAsync(user, model.Email);
                     if (!response.IsSuccess)
@@ -463,7 +464,7 @@ namespace WatersAD.Controllers
 
             string subject = "Waters AD - Confirmação de Email";
             string body = $"<h1>Waters AD - Confirmação de Email</h1>" +
-                          $"Clique no link para confirmar seu email e entrar como utilizador:" +
+                          $"Clique no link para confirmar seu email e entrar como utilizador, tem que alterar a sua palavra passe obrigatóriamente a actual é 123456." +
                           $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>";
 
             return await _mailHelper.SendMail($"{user.FirstName} {user.LastName}", email, subject, body);

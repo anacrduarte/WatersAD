@@ -492,7 +492,7 @@ namespace WatersAD.Controllers
 
             try
             {
-                User? user = await _userHelper.GetUserAsync(new Guid(userId));
+                User user = await _userHelper.GetUserAsync(new Guid(userId));
 
                 if (user == null)
                 {
@@ -620,7 +620,10 @@ namespace WatersAD.Controllers
             
         }
 
-        
+        public IActionResult NotAuthorized()
+        {
+            return View();
+        }
 
 
     }
