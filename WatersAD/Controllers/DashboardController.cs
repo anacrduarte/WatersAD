@@ -75,7 +75,7 @@ namespace WatersAD.Controllers
             if (this.User.IsInRole("Admin"))
             {
                 
-                model.UnreadNotifications = request.SelectMany(r => r.Notifications).Where(n => n.IsRead);
+                model.UnreadNotifications =  request.Where(r => !r.Decline).SelectMany(r => r.Notifications).Where(n => n.IsRead);
             }
             else
             {

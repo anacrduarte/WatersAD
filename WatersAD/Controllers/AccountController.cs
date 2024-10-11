@@ -54,16 +54,18 @@ namespace WatersAD.Controllers
                         return new NotFoundViewResult("UserNotFound");
                     }
 
+                    if (user.MustChangePassword)
+                    {
+                        return RedirectToAction("ChangePassword", new { email = user.Email });
+                    }
+
                     var result = await _userHelper.LoginAsync(model);
 
                     if (result.Succeeded)
                     {
                        
 
-                        if (user.MustChangePassword)
-                        {
-                            return RedirectToAction("ChangePassword");
-                        }
+                       
 
                         if (this.Request.Query.Keys.Contains("ReturnUrl"))
                         {
@@ -120,7 +122,8 @@ namespace WatersAD.Controllers
                     Roles = _userHelper.GetComboTypeRole()
                 };
 
-
+                _flashMessage.Info("Ao criar este utilizador não o está a associar a um Cliente ou Empregado, simplesmente está a criar uma conta.Pode criar o utilizador aqui e depois quando criar o cliente ou funcionário, se o email corresponder o utilizador fica" +
+                    " associado.");
                 return View(model);
             }
             catch (Exception ex)
@@ -309,9 +312,13 @@ namespace WatersAD.Controllers
             return View(model);
         }
 
-        public IActionResult ChangePassword()
+        public IActionResult ChangePassword(string email)
         {
-            return View();
+            var model = new ChangePasswordViewModel
+            {
+                Email = email,
+            };
+            return View(model);
         }
 
 
@@ -329,7 +336,7 @@ namespace WatersAD.Controllers
                         return View(model);
                     }
 
-                    var user = await _userHelper.GetUserByEmailAsync(User.Identity!.Name!);
+                    var user = await _userHelper.GetUserByEmailAsync(model.Email);
 
                     if (user != null)
                     {
@@ -342,18 +349,20 @@ namespace WatersAD.Controllers
                         else
                         {
                             _flashMessage.Danger(result.Errors.FirstOrDefault()!.Description);
+                            return RedirectToAction("Index", "Home");
                         }
                     }
                     else
                     {
                         _flashMessage.Danger("Utilizador não encontrado.");
+                        return RedirectToAction("Index", "Home");
                     }
                 }
                 catch (Exception ex)
                 {
 
                     _flashMessage.Danger($"Erro ao alterar a palavra-passe: {ex.Message}");
-                    return View(model);
+                    return RedirectToAction("Index", "Home");
                 }
             }
             _flashMessage.Warning("Por favor, corrija os erros no formulário.");

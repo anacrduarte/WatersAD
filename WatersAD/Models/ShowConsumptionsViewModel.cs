@@ -9,6 +9,8 @@ namespace WatersAD.Models
 
         public IEnumerable<Consumption> Consumptions { get; set; }
 
+        public IEnumerable<WaterMeterService> WaterMeterServices { get; set; }
+
 
 
     }

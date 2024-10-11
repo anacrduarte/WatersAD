@@ -110,12 +110,13 @@ namespace WatersAD.Controllers
                     if (locality == null)
                     {
                         _flashMessage.Danger("Localidade inválida.");
-                        return View(model);
+                        return View(LoadClientViewModel(model));
                     }
 
                     var client = _converterHelper.ToCliente(model, locality);
 
                     client.Locality = locality;
+                   
 
                     var associatedUser = await _userHelper.GetUserByEmailAsync(client.Email);
 
@@ -137,13 +138,13 @@ namespace WatersAD.Controllers
 
                        
 
-                        var result = await _userHelper.AddUserAsync(newUser, "123456");
+                        var result = await _userHelper.AddUserAsync(newUser, "123456Wd#");
 
                         if (!result.Succeeded)
                         {
 
                             _flashMessage.Danger("Erro ao criar utilizador.");
-                            return View(model);
+                            return View(LoadClientViewModel(model));
                         }
 
 
@@ -159,10 +160,10 @@ namespace WatersAD.Controllers
                         else
                         {
                             _flashMessage.Info("Instruções de confirmação de email foram enviadas para o email do cliente.");
-                            client.User = newUser;
+                            
                         }
 
-
+                        client.User = newUser;
                     }
                     else
                     {
@@ -187,18 +188,41 @@ namespace WatersAD.Controllers
                 }
                 catch (Exception ex)
                 {
+
                     _flashMessage.Danger("Ocorreu um erro ao criar o cliente: " + ex.Message);
-                    
-                    return View(model);
+                  
+                    return View(LoadClientViewModel(model));
                 }
             }
 
             _flashMessage.Warning("Por favor, corrija os erros no formulário.");
-            return View(model);
+            
+            return View(LoadClientViewModel(model));
            
         }
 
+        private ClientViewModel LoadClientViewModel(ClientViewModel model)
+        {
+            return new ClientViewModel
+            {
+                Countries = _countryRepository.GetComboCountries(),
+                Cities = _countryRepository.GetComboCities(model.CityId),
+                Localities = _countryRepository.GetComboLocalities(model.LocalityId),
+                WaterMeterServices = _waterMeterRepository.GetComboWaterMeterServices(),
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Address = model.Address,
+                HouseNumber = model.HouseNumber,
+                NIF = model.NIF,
+                PostalCode = model.PostalCode,
+                RemainPostalCode = model.RemainPostalCode,
+                Client = model.Client,
+                User = model.User,
+                PhoneNumber = model.PhoneNumber,
+                Email = model.Email,
 
+            };
+        }
 
         // GET: Clients/Edit/5
         [Authorize(Roles = "Admin")]
@@ -276,6 +300,8 @@ namespace WatersAD.Controllers
             _flashMessage.Warning("Por favor, corrija os erros no formulário.");
             return View(nameof(Index));
         }
+
+        
 
         // GET: Clients/Delete/5
         [Authorize(Roles = "Admin")]
@@ -464,7 +490,7 @@ namespace WatersAD.Controllers
 
             string subject = "Waters AD - Confirmação de Email";
             string body = $"<h1>Waters AD - Confirmação de Email</h1>" +
-                          $"Clique no link para confirmar seu email e entrar como utilizador, tem que alterar a sua palavra passe obrigatóriamente a actual é 123456." +
+                          $"Clique no link para confirmar seu email e entrar como utilizador, tem que alterar a sua palavra passe obrigatóriamente a actual é 123456Wd#." +
                           $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>";
 
             return await _mailHelper.SendMail($"{user.FirstName} {user.LastName}", email, subject, body);

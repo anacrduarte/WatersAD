@@ -134,6 +134,7 @@ namespace WatersAD.Data.Repository
         {
             return await _context.WaterMeters
                 .Include(wm => wm.Consumptions)
+                .Include(wm=> wm.WaterMeterService)
                 .Where(wm => wm.Client.Id == id)
                 .ToListAsync();
         }

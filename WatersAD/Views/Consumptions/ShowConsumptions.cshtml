@@ -2,7 +2,8 @@
 @{
     ViewData["Title"] = "ShowConsumptions";
     var cssClass = Model.WaterMeters.Count() > 4 ? "hero-section4" : "hero-section3";
-
+    var currentDay = DateTime.Now.Day;
+    var cssClass2 = Model.WaterMeters.Count() == 1 ? "col-lg-12" : "col-lg-6";
 }
 
 <section class="hero-section d-flex justify-content-center align-items-center" id="section_1">
@@ -44,17 +45,17 @@
 
     <div class="col-lg-12 col-12">
         <h2 class="text-center" >Contadores/Consumos</h2>
-        <p class="text-center">Pode editar os consumos que ainda não foram emitidos.</p>
+        <p class="text-center">Pode inserir consumos entre o dia 1 e 10 de cada mês.</p>
     </div>
     <br />
         <div class="container">
             <div class="row">
         @foreach (var waterMeter in Model.WaterMeters)
         {
-            <div class="col-lg-6 col-12 me-auto mb-4 mb-lg-0 ">
+           <div class="@cssClass2 col-12 me-auto mb-4 mb-lg-0 ">
             <div class="table-responsive tablePading">
-                        <p class="text-center"> Número do contador:
-                            @waterMeter.WaterMeterServiceId
+                        <p class="text-center"> Número de série do contador:
+                            @waterMeter.WaterMeterService.SerialNumber
                         </p>
                 <table class="table text-center">
                     <thead>
@@ -83,8 +84,13 @@
                     </tbody>
                 </table>
                         <div class="col-lg-3 col-12 ms-auto custom-btn-group">
+                            
                             <ul class="social-icon mt-lg-5 mt-3 mb-4">
+                                @if (currentDay >= 1 && currentDay <= 10)
+                                {
                                 <a asp-area="" asp-controller="Consumptions" asp-action="Create" asp-route-clientId="@Model.ClientId" asp-route-waterMeterId="@waterMeter.Id" class="btn custom-btn smoothscroll me-3 bi bi-plus-circle"> Leitura </a>
+                                }
+                                  
                             </ul>
 
 

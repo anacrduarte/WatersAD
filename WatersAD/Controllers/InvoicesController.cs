@@ -75,7 +75,7 @@ namespace WatersAD.Controllers
                     ClientId = client.Id,
                     WaterMeters = consumption.Select(c => c.WaterMeter).Distinct().ToList(),
                     Consumptions = consumption,
-                    Invoices = consumption.Select(c => c.Invoice).Distinct().ToList(),
+                    Invoices = consumption.Select(c => c.Invoice).Where(i => i.Issued && i.Sent).Distinct().ToList(),
                 };
                 return View(model);
             }
@@ -204,10 +204,21 @@ namespace WatersAD.Controllers
                 invoice.Issued = true;
                 invoice.Sent = true;
                 await _invoiceRepository.UpdateAsync(invoice);
+                var response = await _mailHelper.SendMail(client.FullName, client.Email, $"Fatura referente ao mês de {invoice.InvoiceDate.ToString("MMMM")}", "Caro cliente, em anexo enviamos a fatura da água.Obrigado.", stream);
 
-                _flashMessage.Info($"Fatura enviada e emitida com sucesso.");
+                if (response.IsSuccess)
+                {
+                    _flashMessage.Info($"Fatura enviada e emitida com sucesso.");
 
-                return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    _flashMessage.Info($"Erro ao enviar a fatura.");
+
+                    return RedirectToAction(nameof(Index));
+                }
+               
 
             }
             catch (Exception ex)

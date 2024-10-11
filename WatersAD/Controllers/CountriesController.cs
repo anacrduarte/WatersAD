@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Metrics;
 using Vereyon.Web;
 using WatersAD.Data.Entities;
 using WatersAD.Data.Repository;
@@ -101,8 +102,17 @@ namespace WatersAD.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _countryRepository.UpdateAsync(country);
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    await _countryRepository.UpdateAsync(country);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+
+                    _flashMessage.Danger($"Erro ao processar a solicitação: {ex.Message}");
+                    return RedirectToAction(nameof(Index));
+                }
             }
 
             return View(country);
@@ -128,12 +138,16 @@ namespace WatersAD.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-            catch (DbUpdateException)
+            catch (Exception ex)
             {
-                _flashMessage.Warning($"{country.Name} in use!!");
-                _flashMessage.Warning($"{country.Name} It cannot be deleted since there are orders that contain the product.</br></br>" +
-                    $"Try deleting all the orders that are using it, " +
-                    $"and try deleting it again.");
+                if (ex.InnerException != null && ex.InnerException.Message.Contains("DELETE"))
+                {
+                    _flashMessage.Warning($"{country.Name} está em uso!!");
+                    _flashMessage.Warning($"{country.Name} Não pode ser eliminado sem eliminar as cidades primeiro."); 
+                     
+
+                }
+                _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
 
                 return RedirectToAction(nameof(Index));
             }
@@ -224,17 +238,26 @@ namespace WatersAD.Controllers
         {
             if (this.ModelState.IsValid)
             {
-                var city = await _countryRepository.GetCityAsync(model.CityId);
-                if (city == null)
+                try
                 {
-                    return NotFound();
-                }
-                city.Name = model.Name;
+                    var city = await _countryRepository.GetCityAsync(model.CityId);
+                    if (city == null)
+                    {
+                        return NotFound();
+                    }
+                    city.Name = model.Name;
 
-                var countryId = await _countryRepository.UpdateCityAsync(city);
-                if (countryId != 0)
+                    var countryId = await _countryRepository.UpdateCityAsync(city);
+                    if (countryId != 0)
+                    {
+                        return this.RedirectToAction("Details", new { id = model.CountryId });
+                    }
+                }
+                catch (Exception ex)
                 {
-                    return this.RedirectToAction("Details", new { id = model.CountryId });
+
+                    _flashMessage.Danger($"Erro ao processar a solicitação: {ex.Message}");
+                    return RedirectToAction(nameof(Index));
                 }
             }
 
@@ -261,17 +284,19 @@ namespace WatersAD.Controllers
                 var countryId = await _countryRepository.DeleteCityAsync(city);
                 return this.RedirectToAction("Details", new { id = countryId });
             }
-            catch (DbUpdateException)
+            catch (Exception ex)
             {
+                if (ex.InnerException != null && ex.InnerException.Message.Contains("DELETE"))
+                {
+                    _flashMessage.Warning($"{city.Name} está em uso!!");
+                    _flashMessage.Warning($"{city.Name} Não pode ser eliminado sem eliminar as cidades primeiro.");
 
-                _flashMessage.Warning($"{city.Name} in use!!");
-                _flashMessage.Warning($"{city.Name} It cannot be deleted since there are orders that contain the product.</br></br>" +
-                    $"Try deleting all the orders that are using it, " +
-                    $"and try deleting it again.");
+
+                }
+                _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
 
                 var countryId = city.CountryId;
 
-                //TODO alterar para view de erro ou para a do pais
                 return this.RedirectToAction("Details", new { id = countryId });
             }
 
@@ -303,8 +328,17 @@ namespace WatersAD.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _countryRepository.AddLocalityAsync(model);
-                return RedirectToAction("DetailsCity", new { id = model.CityId });
+                try
+                {
+                    await _countryRepository.AddLocalityAsync(model);
+                    return RedirectToAction("DetailsCity", new { id = model.CityId });
+                }
+                catch (Exception ex)
+                {
+
+                    _flashMessage.Danger($"Erro ao processar a solicitação: {ex.Message}");
+                    return RedirectToAction(nameof(Index));
+                }
             }
 
             return this.View(model);
@@ -336,19 +370,28 @@ namespace WatersAD.Controllers
         {
             if (this.ModelState.IsValid)
             {
-                var locality = await _countryRepository.GetLocalityAsync(model.LocalityId);
-                if (locality == null)
+                try
                 {
-                    return NotFound();
+                    var locality = await _countryRepository.GetLocalityAsync(model.LocalityId);
+                    if (locality == null)
+                    {
+                        return NotFound();
+                    }
+
+                    locality.Name = model.Name;
+
+
+                    var cityId = await _countryRepository.UpdateLocalityAsync(locality);
+                    if (cityId != 0)
+                    {
+                        return this.RedirectToAction("DetailsCity", new { id = cityId });
+                    }
                 }
-
-                locality.Name = model.Name;
-                
-
-                var cityId = await _countryRepository.UpdateLocalityAsync(locality);
-                if (cityId != 0)
+                catch (Exception ex)
                 {
-                    return this.RedirectToAction("DetailsCity", new { id = cityId });
+
+                    _flashMessage.Danger($"Erro ao processar a solicitação: {ex.Message}");
+                    return RedirectToAction(nameof(Index));
                 }
             }
 
@@ -371,9 +414,26 @@ namespace WatersAD.Controllers
             {
                 return NotFound();
             }
+            try
+            {
 
-            var cityId = await _countryRepository.DeleteLocalityAsync(locality);
-            return this.RedirectToAction("DetailsCity", new { id = cityId });
+                var cityId = await _countryRepository.DeleteLocalityAsync(locality);
+                return this.RedirectToAction("DetailsCity", new { id = cityId });
+            }
+            catch (Exception ex)
+            {
+
+                if (ex.InnerException != null && ex.InnerException.Message.Contains("DELETE"))
+                {
+                    _flashMessage.Warning($"{locality.Name} está em uso!!");
+                    _flashMessage.Warning($"{locality.Name} Não pode ser eliminado sem eliminar todas as dependências.");
+
+
+                }
+                var cityId = locality.CityId;
+                _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
+                return this.RedirectToAction("DetailsCity", new { id = cityId });
+            }
         }
 
         [HttpPost]

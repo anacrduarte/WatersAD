@@ -86,7 +86,7 @@ namespace WatersAD.Data.Repository
                 TotalAmount = totalAmount,
                 ClientId = waterMeter.ClientId,
                 Client = waterMeter.Client,
-                InvoiceDate = DateTime.Now,
+                InvoiceDate = model.ConsumptionDate.AddDays(5),
                 LimitDate = DateTime.Now.AddDays(30),
             };
 

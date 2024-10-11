@@ -15,7 +15,7 @@
                 <div class="mb-4">
                     <label class="form-label mb-2" asp-for="Password">Palavra-passe</label>
 
-                    <input asp-for="Password" type="password"  id="member-login-password" pattern="[0-9a-zA-Z]{4,10}" class="form-control" placeholder="Palavra-passe" required>
+                <input asp-for="Password" type="password" id="member-login-password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$" class="form-control" placeholder="Palavra-passe" required>
 
                 </div>
 

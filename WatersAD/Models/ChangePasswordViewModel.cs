@@ -5,6 +5,9 @@ namespace WatersAD.Models
     public class ChangePasswordViewModel
     {
         [Required]
+        public string Email { get; set; }
+
+        [Required]
         [Display(Name = "Current password")]
         public string OldPassword { get; set; }
 

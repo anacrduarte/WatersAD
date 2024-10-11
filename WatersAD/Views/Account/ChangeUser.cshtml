@@ -28,7 +28,7 @@
                     <form class="custom-form membership-form shadow-lg" role="form" asp-action="ChangeUser" method="post" enctype="multipart/form-data">
                     <input type="hidden" asp-for="ImageUrl" />
                         <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="text-white mb-4">Dados do utilizador</h4>
+                            <h5 class="text-white mb-4">Dados do utilizador</h5>
                               @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
                                 {
                                     <a asp-controller="Dashboard" asp-action="Index" class="btn custom-btn smoothscroll mb-4">Voltar</a>
@@ -71,10 +71,14 @@
                                 
                         </div>
                         <button type="submit" value="ChangeUser" class="form-control mt-4">Submeter</button>
-
-
+                 
                     </form>
+                <div class="d-flex justify-content-between align-items-lg-end mt-4">
+                    <div class="ms-auto">
 
+                        <a asp-controller="Account" asp-action="ResetPassword" class="btn custom-btn smoothscroll mb-4">Alterar palavra passe</a>
+                    </div>
+                </div>
             </div>
                         
 

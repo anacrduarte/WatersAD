@@ -14,7 +14,7 @@ namespace WatersAD.Models
 
         public int ClientId { get; set; }
 
-        public IEnumerable<SelectListItem> Clients { get; set; }
+       
 
         public Client Client { get; set; }
 

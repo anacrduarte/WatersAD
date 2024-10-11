@@ -27,12 +27,18 @@
                         {
                         <th>Data do pedido</th>
                         }
-                        <th>Cliente</th>
+                    
 
-
-                        <th></th>
-
-
+                        @if (this.User.IsInRole("Admin"))
+                        {
+                            <th></th>
+                        }
+                        else
+                        {
+                            <th></th>
+                            <th></th>
+                        }
+                     
 
                     </tr>
                 </thead>
@@ -48,26 +54,38 @@
                             <td><a class="btn custom-btn  smoothscroll bi bi-three-dots-vertical" asp-action="DetailsRequestWM" asp-controller="WaterMeters" asp-route-id="@item.Id">  </a><br /></td>
                             <td>@item.Message</td>
                             <td>@item.CreatedAt.ToString("g")</td>
-                            <td></td>
-                            <td class="align-items-lg-center">
+
+                           
+                     
+                            
                                 @if (this.User.IsInRole("Admin"))
-                                {
+                            {
+                                <td class="align-items-lg-center">
                                     <form asp-action="CreateWaterMeterAndClient" asp-controller="WaterMeters" method="post">
                                         <input type="hidden" name="id" value="@item.Id" />
                                         <button type="submit" class="btn custom-btn smoothscroll">Adicionar</button>
                                     </form>
+                                </td>
                                 }
                                 else
                                 {
+                                     <td class="align-items-lg-center">
                                     <a asp-action="AcceptRequest" class="btn custom-btn smoothscroll" asp-route-id="@item.Id">
 
                                         Aceitar pedido
                                     </a>
-                                 
+                                </td>
+                                <td class="align-items-lg-center">
+                                    <form asp-action="DeclineRequest" asp-route-id="@item.Id" method="post">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn custom-btn smoothscroll">Recusar pedido</button>
+                                    
+                                    </form>
+                                </td>
                                 }
 
                               
-                            </td>
+                            
                         </tr>
 
 

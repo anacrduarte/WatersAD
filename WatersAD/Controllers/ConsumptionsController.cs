@@ -85,7 +85,7 @@ namespace WatersAD.Controllers
                         ClientId = client.Id,
                         WaterMeters = waterMeter,
                         Consumptions = waterMeter.SelectMany(wm => wm.Consumptions).OrderByDescending(c => c.ConsumptionDate).ToList(),
-
+                        WaterMeterServices = waterMeter.Select(wm => wm.WaterMeterService).ToList(),
                     };
 
 
@@ -136,7 +136,7 @@ namespace WatersAD.Controllers
             }
         }
 
-        [Authorize(Roles = "Employee")]
+        
         public async Task<IActionResult> Create(int? clientId, int? waterMeterId)
         {
             try
@@ -166,6 +166,7 @@ namespace WatersAD.Controllers
                     ClientId = client.Id,
                     WaterMeterId = waterMeter.Id,
                     ConsumptionDate = nextMonthDate,
+                   
                 };
                 return View(model);
             }
@@ -191,14 +192,14 @@ namespace WatersAD.Controllers
                     if (waterMeter == null)
                     {
                         _flashMessage.Warning("Contador não encontrado.");
-                        return View(model);
+                        return RedirectToAction("Consumptions", "ShowConsumptions");
                     }
 
                     var consumption = await _consumptionRepository.GetByIdAsync(model.Id);
                     if (consumption != null)
                     {
                         _flashMessage.Warning("Este consumo já existe.");
-                        return View(model);
+                        return RedirectToAction("Consumptions", "ShowConsumptions");
                     }
 
                     var matchingTier = await _tierRepository.GetMatchingTierAsync(model.ConsumptionValue);
@@ -206,21 +207,41 @@ namespace WatersAD.Controllers
                     if (matchingTier == null)
                     {
                         _flashMessage.Warning("Escalão não encontrado.");
-                        return View(model);
+                        return RedirectToAction("ShowConsumptions", "Consumptions");
                     }
 
                     var previousConsumption = _consumptionRepository.GetPreviousConsumption(waterMeter);
 
+                    
 
-                    if (previousConsumption != null && model.ConsumptionValue <= previousConsumption.ConsumptionValue)
+                    var associatedUser = await _userHelper.GetUserByEmailAsync(User.Identity!.Name!);
+                    if( associatedUser == null)
                     {
-                        _flashMessage.Warning("O valor de consumo atual deve ser maior do que o último valor registrado.");
+                        _flashMessage.Warning("Utilizador não encontrado.");
+                        return RedirectToAction("ShowConsumptions", "Consumptions");
+                    }
+                   
 
-                        return View(model);
+                    if (associatedUser.UserType == Enum.UserType.Customer)
+                    {
+                        
+                        if (previousConsumption != null && model.ConsumptionValue <= previousConsumption.ConsumptionValue)
+                        {
+                            _flashMessage.Warning("O valor de consumo atual deve ser maior do que o último valor registrado.");
+
+                            return RedirectToAction("ShowConsumptions", "Consumptions");
+                        }
                     }
 
+
                     await _consumptionRepository.CreateConsumptionAndInvoiceAsync(model, waterMeter, matchingTier, previousConsumption);
-                    return RedirectToAction(nameof(Index));
+
+
+                    if (associatedUser.UserType == Enum.UserType.Customer)
+                    {
+                        return RedirectToAction("ShowConsumptions","Consumptions" );
+                    }
+                        return RedirectToAction(nameof(Index));
 
                 }
                 catch (Exception ex)
@@ -234,66 +255,6 @@ namespace WatersAD.Controllers
             _flashMessage.Warning("Por favor, corrija os erros no formulário.");
             return View(model);
         }
-
-        //// GET: Consumptions/Edit/5
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new NotFoundViewResult("ConsumptionNotFound");
-        //    }
-
-        //    try
-        //    {
-        //        var consumption = await _consumptionRepository.GetWaterMeterAndClientAsync(id.Value);
-        //        if (consumption == null)
-        //        {
-        //            return new NotFoundViewResult("ConsumptionNotFound");
-        //        }
-        //        var model = new ConsumptionViewModel
-        //        {
-        //            ConsumptionDate = consumption.ConsumptionDate,
-        //            ConsumptionValue = consumption.ConsumptionValue,
-        //            Client = consumption.WaterMeter.Client,
-        //            WaterMeterId = consumption.WaterMeter.Id,
-        //        };
-        //        return View(model);
-              
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //}
-
-        //// POST: Consumptions/Edit/5
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(ConsumptionViewModel model)
-        //{
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            var consumption = await _consumptionRepository.GetByIdAsync(model.Id);
-        //            await _consumptionRepository.UpdateAsync(consumption);
-        //            _flashMessage.Info("Consumo editado com sucesso.");
-
-        //        }
-        //        catch (Exception ex)
-        //        {
-
-        //            _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
-                    
-
-        //        }
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(model);
-        //}
 
 
     

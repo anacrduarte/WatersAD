@@ -321,31 +321,7 @@ namespace WatersAD.Controllers
             return View(model);
         }
 
-        //// GET: WaterMeters/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new NotFoundViewResult("WaterMeterNotFound");
-        //    }
-
-        //    try
-        //    {
-        //        var waterMeter = await _waterMeterRepository.GetByIdAsync(id.Value);
-
-        //        if (waterMeter == null)
-        //        {
-        //            return new NotFoundViewResult("WaterMeterNotFound");
-        //        }
-
-        //        return View(waterMeter);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _flashMessage.Danger($"Ocorreu um erro ao processar a requisição. {ex.Message}");
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //}
+    
 
         // POST: WaterMeters/Delete/5
 
@@ -751,7 +727,7 @@ namespace WatersAD.Controllers
 
                     };
 
-                    var result = await _userHelper.AddUserAsync(newUser, "123456");
+                    var result = await _userHelper.AddUserAsync(newUser, "123456Wd#");
 
                     if (!result.Succeeded)
                     {
@@ -835,7 +811,7 @@ namespace WatersAD.Controllers
 
                 var consumption = new Consumption
                 {
-                    ConsumptionDate = DateTime.UtcNow,
+                    ConsumptionDate = new DateTime(2024, 1, 1),
                     ConsumptionValue = 0,
                     WaterMeter = waterMeter,
                     TierId = 1,
@@ -892,7 +868,7 @@ namespace WatersAD.Controllers
 
             string subject = "Waters AD - Confirmação de Email";
             string body = $"<h1>Waters AD - Confirmação de Email</h1>" +
-                          $"Clique no link para confirmar seu email e entrar como utilizador:" +
+                          $"Clique no link para confirmar seu email e entrar como utilizador, tem que alterar obrigatóriamente a sua palavra passe, a sua actual é 123456Wd#" +
                           $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>";
 
             return await _mailHelper.SendMail($"{user.FirstName} {user.LastName}", email, subject, body);

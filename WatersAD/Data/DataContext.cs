@@ -50,7 +50,7 @@ namespace WatersAD.Data
 
 
             modelBuilder.Entity<Client>().HasIndex(c => c.NIF).IsUnique();
-            //modelBuilder.Entity<Employee>().HasIndex(c => c.NIF).IsUnique();
+            modelBuilder.Entity<Employee>().HasIndex(c => c.NIF).IsUnique();
             modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<City>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<Tier>().HasIndex(c => c.TierNumber).IsUnique();

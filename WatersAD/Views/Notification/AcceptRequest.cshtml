@@ -25,7 +25,8 @@
 
                                     <div class="col-md-12">
                                         <div class="form-floating">
-                                            <input asp-for="InstallationDate" class="form-control" placeholder="Data de instalação" required>
+                                        <input asp-for="InstallationDate" value="@DateTime.Now.ToString("yyyy-MM-dd")"
+                                               type="date" class="form-control" placeholder="Data de instalação" required>
                                             <label asp-for="InstallationDate">Data de instalação</label>
 
                                         </div>

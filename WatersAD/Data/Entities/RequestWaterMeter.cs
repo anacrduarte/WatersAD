@@ -85,5 +85,7 @@ namespace WatersAD.Data.Entities
         public DateTime InstallationDate { get; set; }
 
         public bool Resolved { get; set; }
+
+        public bool Decline { get; set; }
     }
 }

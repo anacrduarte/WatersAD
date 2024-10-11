@@ -51,6 +51,7 @@
             <div class="col-lg-10 col-12 mx-auto mb-4 mb-lg-0 ">
             @foreach (var waterMeter in Model.WaterMeters)
             {
+               
                 
                     <div class="table-responsive tablePading">
 
@@ -60,13 +61,13 @@
                                     <th style="width: 22%;">Morada</th>
                                     <th style="width: 34%;">Data da Fatura</th>
                                     <th style="width: 22%;">Total a pagar</th>
-                                    <th style="width: 22%;">Datalhes </th>
+                                    <th style="width: 22%;">Detalhes </th>
                                 </tr>
                             </thead>
                             <tbody>
 
 
-                                @foreach (var consumption in Model.Consumptions.Where(c => c.WaterMeterId == waterMeter.Id).Take(5))
+                                @foreach (var consumption in Model.Consumptions.Where(c => c.WaterMeterId == waterMeter.Id && c.Invoice.Issued).Take(5))
                                     {
                                   
 

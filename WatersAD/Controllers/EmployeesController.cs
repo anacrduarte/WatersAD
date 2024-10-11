@@ -134,13 +134,13 @@ namespace WatersAD.Controllers
                         };
 
 
-                        var result = await _userHelper.AddUserAsync(newUser, "123456");
+                        var result = await _userHelper.AddUserAsync(newUser, "123456Wd#");
 
                         if (!result.Succeeded)
                         {
 
                             _flashMessage.Danger("Erro ao criar utilizador.");
-                            return View(employee);
+                            return View(LoadEmployeeViewModel(model));
                         }
 
                         await _userHelper.AddUserToRoleAsync(newUser, Enum.UserType.Employee.ToString());
@@ -156,7 +156,7 @@ namespace WatersAD.Controllers
 
                         }
 
-                   
+                    employee.User = newUser;
 
                     }
                     else
@@ -183,14 +183,35 @@ namespace WatersAD.Controllers
                 {
                     _flashMessage.Danger("Ocorreu um erro ao criar o funcionário: " + ex.Message);
 
-                    return View(model);
+                    return View(LoadEmployeeViewModel(model));
                 }
             }
 
             _flashMessage.Warning("Por favor, corrija os erros no formulário.");
-            return View(model);
+            return View(LoadEmployeeViewModel(model));
 
 
+        }
+        private EmployeeViewModel LoadEmployeeViewModel(EmployeeViewModel model)
+        {
+            return new EmployeeViewModel
+            {
+                Countries = _countryRepository.GetComboCountries(),
+                Cities = _countryRepository.GetComboCities(model.CityId),
+                Localities = _countryRepository.GetComboLocalities(model.LocalityId),
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Address = model.Address,
+                HouseNumber = model.HouseNumber,
+                NIF = model.NIF,
+                PostalCode = model.PostalCode,
+                RemainPostalCode = model.RemainPostalCode,
+                Employee = model.Employee,
+                User = model.User,
+                PhoneNumber = model.PhoneNumber,
+                Email = model.Email,
+
+            };
         }
 
         // GET: Employees/Edit/5
@@ -435,7 +456,7 @@ namespace WatersAD.Controllers
 
             string subject = "Waters AD - Confirmação de Email";
             string body = $"<h1>Waters AD - Confirmação de Email</h1>" +
-                          $"Clique no link para confirmar seu email e entrar como utilizador, tem que alterar a sua palavra passe obrigatóriamente a actual é 123456." +
+                          $"Clique no link para confirmar seu email e entrar como utilizador, tem que alterar a sua palavra passe obrigatóriamente a actual é 123456Wd#." +
                           $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>";
 
             return await _mailHelper.SendMail($"{user.FirstName} {user.LastName}", email, subject, body);
