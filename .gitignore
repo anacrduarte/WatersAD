@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /WatersAD/appsettings.json
 /WatersAD/Program.cs
+/WatersAD/Data/SeedDb.cs
+/WatersAD/Data/SeedDb.cs
