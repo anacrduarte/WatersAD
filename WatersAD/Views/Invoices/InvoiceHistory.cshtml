@@ -37,7 +37,7 @@
 
 
 
-<section class="about-section section-padding ">
+<section id="about" class="about-section section-padding ">
 
     <div class="col-lg-12 col-12">
         <h2 class="text-center">Faturas</h2>
@@ -62,7 +62,7 @@
                     
             </thead>
             <tbody>
-                @foreach (var item in Model.Invoices)
+                @foreach (var item in Model.Invoices.Where(i=> i.Issued && i.Sent))
                 {
                     <tr>
                         <td class="text-center">
@@ -88,4 +88,13 @@
     @{
         await Html.RenderPartialAsync("_DataTableJQuery");
     }
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+           
+            const section = document.getElementById('about');
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' }); 
+            }
+        });
+    </script>
 }

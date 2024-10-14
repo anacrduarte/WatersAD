@@ -68,14 +68,17 @@ namespace WatersAD.Controllers
                     _flashMessage.Warning("Ainda não tem faturas associadas");
                     return RedirectToAction("Index", "Home");
                 }
-               
+
+                var invoices = consumption.Select(c => c.Invoice).Where(i => i.Issued && i.Sent).Distinct().ToList();
+              
 
                 var model = new InvoicesClientViewModel
                 {
                     ClientId = client.Id,
                     WaterMeters = consumption.Select(c => c.WaterMeter).Distinct().ToList(),
                     Consumptions = consumption,
-                    Invoices = consumption.Select(c => c.Invoice).Where(i => i.Issued && i.Sent).Distinct().ToList(),
+                    Invoices = invoices,
+                   
                 };
                 return View(model);
             }
@@ -105,12 +108,18 @@ namespace WatersAD.Controllers
 
                 var waterMeter = await _waterMeterRepository.GetWaterMeterWithCityAndCountryAsync(consumption.WaterMeter.Id);
 
+                var waterMeterService = await _waterMeterRepository.GetWaterServiceByIdAsync(consumption.WaterMeter.Id);
+
+                var tier = await _tierRepository.GetByIdAsync(consumption.TierId);
+
                 var model = new InvoiceDetailsViewModel
                 {
                     Client = invoice.Client,
                     WaterMeter = waterMeter,
                     Invoice = invoice,
                     Consumption = consumption,
+                    WaterMeterService = waterMeterService,
+                    Tier = tier,
 
 
 

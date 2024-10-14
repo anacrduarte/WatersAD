@@ -13,5 +13,7 @@ namespace WatersAD.Models
         public IEnumerable<Invoice> Invoices { get; set; }
 
        public WaterMeter WaterMeter { get; set; }
+
+       
     }
 }

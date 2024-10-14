@@ -1,9 +1,11 @@
 ﻿using System.Security.Claims;
 
+
 namespace WatersAD.Data.Extensions
 {
     public static class ClaimsPrincipalExtensions
     {
+     
         public static string GetInitials(this ClaimsPrincipal user)
         {
             if (user == null || !user.Identity.IsAuthenticated || string.IsNullOrEmpty(user.Identity.Name))
@@ -39,11 +41,22 @@ namespace WatersAD.Data.Extensions
 
             var imageUrl = imageUrlClaim?.Value ?? "";
 
+
            
             if (imageUrl.Equals("~/image/noimage.png", StringComparison.OrdinalIgnoreCase))
             {
                 
                 return ""; 
+            }
+
+            var filePath = Path.Combine(
+             Directory.GetCurrentDirectory(),
+             "wwwroot",
+             imageUrl.TrimStart('~', '/').Replace('/', '\\'));
+
+            if (!File.Exists(filePath))
+            {
+                return "";
             }
             return imageUrl;
         }

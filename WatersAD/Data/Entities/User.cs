@@ -34,10 +34,10 @@ namespace WatersAD.Data.Entities
             {
                 if (string.IsNullOrEmpty(ImageUrl))
                 {
-                    return "https://localhost:44334/image/noimage.jpg"; 
+                    return "http://www.AguasDuarte.somee.com/image/noimage.jpg"; 
                 }
 
-                return $"https://localhost:44334{ImageUrl.Substring(1)}";
+                return $"http://www.AguasDuarte.somee.com{ImageUrl.Substring(1)}";
             }
         }
 

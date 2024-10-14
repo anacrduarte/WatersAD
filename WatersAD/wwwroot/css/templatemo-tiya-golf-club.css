@@ -25,10 +25,11 @@ https://templatemo.com/tm-587-tiya-golf-club
 -----------------------------------------*/
 
 .dashboard-container {
-    position: relative; 
+    position: relative;
     margin-top: 40px;
-    overflow: auto; 
+    overflow: auto;
     z-index: 1;
+
 }
 .e-panel-content1 {
     display: flex;
@@ -1418,8 +1419,11 @@ strong {
     max-width: 155px;
     margin-top: 15px;
     margin-bottom: 15px;
-  }
 
+  }
+    .about-section {
+        padding-top: 150px;
+    }
   .navbar-expand-lg .navbar-nav {
     padding-top: 15px;
     padding-bottom: 10px;
@@ -1432,17 +1436,35 @@ strong {
 
   .hero-section {
     position: relative;
-    top: 82px;
+    top: 110px;
     margin-bottom: 82px;
   }
+    .member-block {
+        width: 60%;
+        margin: 0 auto;
+    }
+    .hero-section2{
+        height:50%;
+    }
+    .e-dashboardlayout-panel {
+        grid-column: span 12 !important; /* Força o painel a ocupar 12 colunas (100%) */
+        grid-row: auto; /* Garante que os painéis não colidam e fiquem empilhados */
+     
+    }
 
-  .events-listing-section {
-    margin-bottom: 50px;
-  }
-
-  .events-detail-section .custom-block-info {
-    padding: 40px;
-  }
+  
+    .dashboard-container {
+    
+        width: 100%;
+        padding: 0 10px; /* Adiciona um pouco de padding para não colar nas bordas */
+    }
+    .events-listing-section {
+        margin-bottom: 50px;
+    }
+   
+    .events-detail-section .custom-block-info {
+        padding: 40px;
+    }
 
   .events-detail-info {
     padding: 35px 25px;

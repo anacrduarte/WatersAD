@@ -61,12 +61,10 @@ namespace WatersAD.Controllers
 
                     var result = await _userHelper.LoginAsync(model);
 
+                   
                     if (result.Succeeded)
                     {
-                       
-
-                       
-
+                      
                         if (this.Request.Query.Keys.Contains("ReturnUrl"))
                         {
                             return Redirect(this.Request.Query["ReturnUrl"].First());
@@ -234,6 +232,7 @@ namespace WatersAD.Controllers
         public async Task<IActionResult> ChangeUser()
         {
             var user = await _userHelper.GetUserByEmailAsync(User.Identity!.Name!);
+            await _userHelper.UpdateUserClaimsAsync(user);
 
             var model = new ChangeUserViewModel();
 
@@ -343,8 +342,24 @@ namespace WatersAD.Controllers
                         var result = await _userHelper.ChangePasswordAsync(user, model.OldPassword!, model.NewPassword!);
                         if (result.Succeeded)
                         {
-                            _flashMessage.Confirmation("A palavra-passe foi alterada com sucesso!");
-                            return RedirectToAction("Index", "Home");
+                          var resultLogin = await _userHelper.LoginAsync(new LoginViewModel { UserName = model.Email, Password = model.NewPassword, RememberMe = false});
+                            if (resultLogin.Succeeded)
+                            {
+                                if (this.Request.Query.Keys.Contains("ReturnUrl"))
+                                {
+                                    return Redirect(this.Request.Query["ReturnUrl"].First());
+                                }
+
+                                if (this.User.IsInRole("Admin") || this.User.IsInRole("Employee"))
+                                {
+
+                                    return RedirectToAction("Index", "Dashboard");
+                                }
+                                else
+                                {
+                                    return RedirectToAction("Index", "Home");
+                                }
+                            }
                         }
                         else
                         {

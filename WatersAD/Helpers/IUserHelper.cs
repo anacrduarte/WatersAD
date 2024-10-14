@@ -125,5 +125,7 @@ namespace WatersAD.Helpers
         /// <param name="password">The new password to set for the user.</param>
         /// <returns>An IdentityResult indicating success or failure of the password reset.</returns>
         Task<IdentityResult> ResetPasswordAsync(User user, string token, string password);
+
+        Task UpdateUserClaimsAsync(User user);
     }
 }

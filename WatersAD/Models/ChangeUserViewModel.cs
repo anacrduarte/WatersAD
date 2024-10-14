@@ -16,7 +16,7 @@ namespace WatersAD.Models
 
         public IFormFile ImageFile { get; set; }
 
-
+    
 
     }
 }

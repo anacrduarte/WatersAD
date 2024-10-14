@@ -76,14 +76,14 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input type="password" asp-for="Password" class="form-control" placeholder="Palavra-passe" required>
+                                            <input type="password" asp-for="Password" class="form-control" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$" placeholder="Palavra-passe" required>
                                             <label asp-for="Password">Palavra-passe</label>
 
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input type="password" asp-for="Confirm" class="form-control" placeholder="Confirmar palavra-passe" required>
+                                            <input type="password" asp-for="Confirm" class="form-control" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$" placeholder="Confirmar palavra-passe" required>
                                             <label asp-for="Confirm">Confirmar palavra-passe</label>
 
                                         </div>

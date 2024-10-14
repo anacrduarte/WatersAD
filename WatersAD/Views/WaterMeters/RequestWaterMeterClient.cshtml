@@ -46,14 +46,14 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input type="text" asp-for="AddressWaterMeter" id="contador-number" class="form-control" placeholder="Rua do contador">
+                                            <input type="text" asp-for="AddressWaterMeter" id="contador-number" class="form-control" placeholder="Rua do contador" required>
                                             <label asp-for="AddressWaterMeter">Rua</label>
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input type="text" asp-for="HouseNumberWaterMeter" id="contador-address" class="form-control" placeholder="Nº ">
+                                            <input type="text" asp-for="HouseNumberWaterMeter" id="contador-address" class="form-control" placeholder="Nº " required>
                                             <label asp-for="HouseNumberWaterMeter">Nº</label>
                                         </div>
                                     </div>
@@ -61,14 +61,14 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input type="text" asp-for="PostalCodeWaterMeter" class="form-control" placeholder="Codigo-Postal">
+                                            <input type="text" asp-for="PostalCodeWaterMeter" class="form-control" placeholder="Codigo-Postal" required>
                                             <label asp-for="PostalCodeWaterMeter">Codigo-Postal</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input type="text" asp-for="RemainPostalCodeWaterMeter" class="form-control" placeholder="">
-                                            <label asp-for="RemainPostalCodeWaterMeter">Codigo-Postal</label>
+                                            <input type="text" asp-for="RemainPostalCodeWaterMeter" class="form-control" placeholder="" required>
+                                            <label asp-for="RemainPostalCodeWaterMeter">Extensão Código Postal</label>
                                         </div>
                                     </div>
                                 </div>
@@ -76,13 +76,13 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <select asp-for="CountryWaterMeterId" asp-items="Model.Countries" class="form-control" id="MeterCountryId"></select>
+                                            <select asp-for="CountryWaterMeterId" asp-items="Model.Countries" class="form-control" id="MeterCountryId" required></select>
                                             <label asp-for="CountryWaterMeterId">País</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <select asp-for="CityWaterMeterId" asp-items="Model.Cities" class="form-control" id="MeterCityId"></select>
+                                            <select asp-for="CityWaterMeterId" asp-items="Model.Cities" class="form-control" id="MeterCityId" required></select>
                                             <label asp-for="CityWaterMeterId">Cidade</label>
                                         </div>
                                     </div>
@@ -90,7 +90,7 @@
                              
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <select asp-for="LocalityWaterMeterId" asp-items="Model.Localities" class="form-control" id="MeterLocalityId"></select>
+                                        <select asp-for="LocalityWaterMeterId" asp-items="Model.Localities" class="form-control" id="MeterLocalityId" required></select>
                                         <label asp-for="LocalityWaterMeterId">Localidade</label>
                                     </div>
                                 </div>

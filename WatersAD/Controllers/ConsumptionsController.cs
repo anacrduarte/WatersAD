@@ -84,7 +84,7 @@ namespace WatersAD.Controllers
                     {
                         ClientId = client.Id,
                         WaterMeters = waterMeter,
-                        Consumptions = waterMeter.SelectMany(wm => wm.Consumptions).OrderByDescending(c => c.ConsumptionDate).ToList(),
+                        Consumptions = waterMeter.SelectMany(wm => wm.Consumptions).OrderBy(c => c.ConsumptionDate).ToList(),
                         WaterMeterServices = waterMeter.Select(wm => wm.WaterMeterService).ToList(),
                     };
 

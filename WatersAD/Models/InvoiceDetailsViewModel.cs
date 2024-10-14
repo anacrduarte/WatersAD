@@ -11,5 +11,9 @@ namespace WatersAD.Models
         public Invoice Invoice { get; set; }
 
         public Consumption Consumption { get; set; }
+
+        public Tier Tier { get; set; }
+
+        public WaterMeterService WaterMeterService { get; set; }
     }
 }

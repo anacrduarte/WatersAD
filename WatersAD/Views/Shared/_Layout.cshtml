@@ -9,6 +9,8 @@
     <meta name="author" content="">
 
     <title>Águas Duarte - Água em movimento</title>
+
+    <link rel="icon" href="~/image/favicon-32x32.png" type="image/x-icon">
     <!-- CSS FILES -->
 
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet" asp-append-version="true" />
@@ -50,6 +52,17 @@
                         <small>WATER IN MOTION</small>
                     </span>
                 </a>
+
+                <div class="d-lg-none ms-auto me-3">
+                    <form asp-action="Logout" asp-controller="Account" method="post" class="d-inline">
+                        <button type="submit" class="btn custom-btn custom-border-btn">Logout</button>
+                    </form>
+                   
+                </div>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
                
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-lg-auto">
@@ -235,14 +248,13 @@
     <script src="~/js/layout/modernizr.js" asp-append-version="true"></script>
     <script src="~/js/layout/custom.js" asp-append-version="true"></script>
 
-    <!-- Script de site geral -->
-  @*   <script src="~/js/site.js" asp-append-version="true"></script> *@
+
 
     <!-- Syncfusion ASP.NET Core Script Manager -->
     <ejs-scripts></ejs-scripts>
 
     <script src="https://cdn.datatables.net/2.1.7/js/dataTables.js"></script>
-
+ 
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

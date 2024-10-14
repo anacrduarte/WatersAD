@@ -11,7 +11,7 @@ namespace WatersAD.Data.Entities
         public Tier Tier { get; set; }
 
         [Required]
-        [Display(Name = "Data de consumo")]
+        [Display(Name = "Data")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime ConsumptionDate { get; set; }
 

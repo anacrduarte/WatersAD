@@ -144,6 +144,10 @@ namespace WatersAD.Helpers
             return result;
         }
 
+        public async Task UpdateUserClaimsAsync(User user)
+        {
+            await _signInManager.RefreshSignInAsync(user);
+        }
 
         public async Task<IEnumerable<User>> GetUsersWithRole(UserType roleName)
         {

@@ -54,10 +54,51 @@ namespace WatersAD.Data.Repository
                 .FirstOrDefault();
         }
 
-        private decimal CalculateTotalAmount(double tierPrice, double currentValue, double previousValue)
+        private decimal CalculateTotalAmount(List<Tier> tiers, double currentValue, double previousValue)
         {
+            double consumption = currentValue - previousValue;
 
-            return Convert.ToDecimal(tierPrice * (currentValue - previousValue) / 1000);
+            decimal totalAmount = 0;
+            double remainingConsumption = consumption/1000;
+            double previousLimit = 0;
+
+           
+            foreach (var tier in tiers)
+            {
+                double tierConsumption;
+
+                if (remainingConsumption <= (tier.UpperLimit - previousLimit))
+                {
+               
+                    tierConsumption = remainingConsumption;
+                }
+                else
+                {
+                    
+                    tierConsumption = tier.UpperLimit - previousLimit;
+                }
+
+              
+                totalAmount += Convert.ToDecimal(tierConsumption * tier.TierPrice);
+
+              
+                remainingConsumption -= tierConsumption;
+                previousLimit = tier.UpperLimit;
+
+                if (remainingConsumption <= 0)
+                {
+                    break;
+                }
+            }
+
+          
+            if (remainingConsumption > 0)
+            {
+                var lastTier = tiers.Last();
+                totalAmount += Convert.ToDecimal(remainingConsumption * lastTier.TierPrice);
+            }
+
+            return totalAmount;
         }
 
 
@@ -76,9 +117,10 @@ namespace WatersAD.Data.Repository
 
             await CreateAsync(newConsumption);
 
+            var tier = _tierRepository.GetAll().ToList();
 
 
-            var totalAmount = CalculateTotalAmount(matchingTier.TierPrice, model.ConsumptionValue, previousConsumption.ConsumptionValue);
+            var totalAmount = CalculateTotalAmount(tier, model.ConsumptionValue, previousConsumption.ConsumptionValue);
 
 
             var invoice = new Invoice
