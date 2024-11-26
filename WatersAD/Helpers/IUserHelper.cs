@@ -127,5 +127,7 @@ namespace WatersAD.Helpers
         Task<IdentityResult> ResetPasswordAsync(User user, string token, string password);
 
         Task UpdateUserClaimsAsync(User user);
+
+        string GenerateJwtToken(User user);
     }
 }

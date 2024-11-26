@@ -14,23 +14,10 @@ namespace WatersAD.Models
 
         public int ClientId { get; set; }
 
-       
-
         public Client Client { get; set; }
 
         public int WaterMeterId { get; set; }
 
-       
-        //public IEnumerable<SelectListItem> WaterMeters { get; set; }
-        //public WaterMeter WaterMeter { get; set; }
-
-        //public int TierId { get; set; }
-
-        //public Tier Tier { get; set; }
-
-        //public int InvoiceId { get; set; }
-
-        //public Invoice Invoice { get; set; }
 
         [Required]
         [Display(Name = "Order date")]

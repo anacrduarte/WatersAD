@@ -23,6 +23,9 @@ namespace WatersAD.Data.Repository
         {
             return await _context.Invoices
                 .Include(c=> c.Client)
+                .ThenInclude(c=> c.Locality)
+                .ThenInclude(l=> l.City)
+                .ThenInclude(ci=> ci.Country)
                 .FirstOrDefaultAsync(c => c.Id == invoiceId);
 
         }
@@ -31,5 +34,12 @@ namespace WatersAD.Data.Repository
         {
             return await _context.Invoices.Include(i=> i.Client).OrderByDescending(i=> i.InvoiceDate).FirstOrDefaultAsync(i=> i.ClientId == clientId);
         }
-    }
+
+		//public async Task<Invoice> GetLastInvoice(int clientId)
+		//{
+		//	return await _context.Invoices
+		//		.OrderByDescending(i => i.InvoiceDate)
+		//		.FirstOrDefaultAsync(i => i.ClientId == clientId);
+		//}
+	}
 }

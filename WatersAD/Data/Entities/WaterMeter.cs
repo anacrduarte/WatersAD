@@ -48,7 +48,7 @@ namespace WatersAD.Data.Entities
       
         public WaterMeterService WaterMeterService { get; set; }
 
-       
+        [JsonIgnore]
         public ICollection<Consumption> Consumptions { get; set; }
 
   

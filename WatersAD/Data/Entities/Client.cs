@@ -52,16 +52,16 @@ namespace WatersAD.Data.Entities
         [MaxLength(3, ErrorMessage = "The field {0} can contain {1} characters.")]
         public string RemainPostalCode { get; set; }
 
-       
-        public ICollection<WaterMeter> WaterMeters { get; set; }
+		[JsonIgnore]
+		public ICollection<WaterMeter> WaterMeters { get; set; }
 
 
         [Display(Name = "Contador")]
         public int NumberWaterMeters => WaterMeters == null ? 0 : WaterMeters.Count();
 
         public bool IsActive { get; set; } = true;
-
-        public ICollection<Invoice> Invoices { get; set; }
+		[JsonIgnore]
+		public ICollection<Invoice> Invoices { get; set; }
 
         [Display(Name = "Nome")]
         public string FullName

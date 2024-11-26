@@ -1,14 +1,8 @@
-﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Razor.Language.Intermediate;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
-using System.IO;
-using System.Security.Claims;
 using Vereyon.Web;
 using WatersAD.Data.Entities;
-using WatersAD.Enum;
 using WatersAD.Helpers;
 using WatersAD.Models;
 
@@ -31,7 +25,7 @@ namespace WatersAD.Controllers
             _mailHelper = mailHelper;
         }
 
-   
+
 
         /// <summary>
         /// To do login
@@ -61,10 +55,10 @@ namespace WatersAD.Controllers
 
                     var result = await _userHelper.LoginAsync(model);
 
-                   
+
                     if (result.Succeeded)
                     {
-                      
+
                         if (this.Request.Query.Keys.Contains("ReturnUrl"))
                         {
                             return Redirect(this.Request.Query["ReturnUrl"].First());
@@ -75,11 +69,11 @@ namespace WatersAD.Controllers
 
                             return RedirectToAction("Index", "Dashboard");
                         }
-                        else 
+                        else
                         {
                             return RedirectToAction("Index", "Home");
                         }
-                     
+
                     }
 
                     if (result.IsLockedOut)
@@ -89,7 +83,7 @@ namespace WatersAD.Controllers
                     else
                     {
                         _flashMessage.Warning(string.Empty, "Email e palavra-passe incorretos.");
-                        
+
                     }
                 }
                 catch (Exception ex)
@@ -161,8 +155,8 @@ namespace WatersAD.Controllers
                         user = _converterHelper.ToUser(model, path);
 
                         var result = await _userHelper.AddUserAsync(user, model.Password);
-                     
-                      
+
+
 
                         if (!string.IsNullOrEmpty(model.SelectedRole))
                         {
@@ -183,12 +177,12 @@ namespace WatersAD.Controllers
                                            "Water AD - Confirmação de Email",
                                            $"<h1>Águas Duarte - Confirmação de Email</h1>" +
                                                $"Clique no link para poder entrar como utilizador, a sua palavra-passe é {model.Password}, tem que alterar assim que fizer login. " +
-                                               $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>",null, "fatura.pdf");
+                                               $"<p><a href = \"{tokenLink}\">Confirmar Email</a></p>", null, "fatura.pdf");
 
                         if (!response.IsSuccess)
                         {
                             _flashMessage.Danger("Erro ao enviar email de confirmação.");
-                           
+
                             return View(FillInModel(model));
                         }
                         else
@@ -196,9 +190,9 @@ namespace WatersAD.Controllers
                             _flashMessage.Info("Instruções de confirmação de email foram enviadas para o email do utilizador.");
                             return RedirectToAction("Register", "Account");
                         }
-                        
 
-                      
+
+
                     }
                     _flashMessage.Info("Utilizador já existe");
                     return View(FillInModel(model));
@@ -220,12 +214,12 @@ namespace WatersAD.Controllers
             var newModel = new RegisterNewUserViewModel
             {
                 FirstName = model.FirstName,
-               LastName = model.LastName,
+                LastName = model.LastName,
                 Username = model.Username,
                 Address = model.Address,
                 Roles = _userHelper.GetComboTypeRole(),
             };
-         
+
             return newModel;
         }
 
@@ -278,7 +272,7 @@ namespace WatersAD.Controllers
                         user.FirstName = convertUser.FirstName;
                         user.LastName = convertUser.LastName;
                         user.ImageUrl = convertUser.ImageUrl;
-                        
+
 
                         var response = await _userHelper.UpdateUserAsync(user);
 
@@ -306,7 +300,7 @@ namespace WatersAD.Controllers
                 }
 
             }
-           
+
             _flashMessage.Warning("Por favor, corrija os erros no formulário.");
             return View(model);
         }
@@ -342,7 +336,7 @@ namespace WatersAD.Controllers
                         var result = await _userHelper.ChangePasswordAsync(user, model.OldPassword!, model.NewPassword!);
                         if (result.Succeeded)
                         {
-                          var resultLogin = await _userHelper.LoginAsync(new LoginViewModel { UserName = model.Email, Password = model.NewPassword, RememberMe = false});
+                            var resultLogin = await _userHelper.LoginAsync(new LoginViewModel { UserName = model.Email, Password = model.NewPassword, RememberMe = false });
                             if (resultLogin.Succeeded)
                             {
                                 if (this.Request.Query.Keys.Contains("ReturnUrl"))
@@ -470,7 +464,7 @@ namespace WatersAD.Controllers
                     if (user != null)
                     {
                         user.UserType = _converterHelper.ConvertRoleToUserType(model.SelectedRole);
-                    
+
 
                         if (!string.IsNullOrEmpty(model.SelectedRole))
                         {
@@ -541,8 +535,8 @@ namespace WatersAD.Controllers
 
         public IActionResult RecoverPassword()
         {
-           
-            
+
+
             return View();
         }
 
@@ -640,8 +634,8 @@ namespace WatersAD.Controllers
                 return RedirectToAction(nameof(ResetPassword));
             }
 
-            
-            
+
+
         }
 
         public IActionResult NotAuthorized()

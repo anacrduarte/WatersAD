@@ -129,7 +129,7 @@ namespace WatersAD.Data.Repository
                 ClientId = waterMeter.ClientId,
                 Client = waterMeter.Client,
                 InvoiceDate = model.ConsumptionDate.AddDays(5),
-                LimitDate = DateTime.Now.AddDays(30),
+                LimitDate = model.ConsumptionDate.AddDays(35),
             };
 
             await _invoiceRepository.CreateAsync(invoice);
@@ -167,6 +167,9 @@ namespace WatersAD.Data.Repository
         {
             return await _context.Consumptions
                  .Include(c => c.WaterMeter)
+                 .ThenInclude(e => e.Locality)
+                  .ThenInclude(l => l.City)
+                  .ThenInclude(f => f.Country)
                  .Include(c => c.Invoice)
                  .Where(c => c.Invoice.ClientId == id)
                  .ToListAsync();

@@ -99,7 +99,10 @@ namespace WatersAD.Data.Repository
                 .OrderBy(c => c.Name);
         }
 
-        public async Task<Country> GetCountryAsync(City city)
+	
+
+
+		public async Task<Country> GetCountryAsync(City city)
         {
 
             return await _context.Countries
@@ -223,7 +226,26 @@ namespace WatersAD.Data.Repository
 
             return list;
         }
+		public async Task<IEnumerable<City>> GetCitiesByCountryIdAsync(int countryId)
+		{
+			return await _context.Cities
+				.Where(c => c.CountryId == countryId)
+				.ToListAsync();
+		}
 
-    }
+		public async Task<IEnumerable<Locality>> GetLocalitiesByCityIdAsync(int cityId)
+		{
+			return await _context.Localities
+				.Where(c => c.CityId == cityId)
+				.ToListAsync();
+		}
+
+		public async Task<List<Country>> GetAllAsync()
+		{
+			return await _context.Set<Country>()
+								 .AsNoTracking()
+								 .ToListAsync();
+		}
+	}
 
 }

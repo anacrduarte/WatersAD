@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace WatersAD.Data.Entities
 {
@@ -15,6 +16,7 @@ namespace WatersAD.Data.Entities
 
         public int CountryId { get; set; }
 
+        [JsonIgnore]
         public ICollection<Locality> Localities { get; set; }
     }
 }

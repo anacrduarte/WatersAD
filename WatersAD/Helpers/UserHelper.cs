@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using WatersAD.Data;
 using WatersAD.Data.Entities;
 using WatersAD.Enum;
@@ -16,14 +19,16 @@ namespace WatersAD.Helpers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly DataContext _dataContext;
         private readonly IConverterHelper _converterHelper;
+        private readonly IConfiguration _configuration;
 
-        public UserHelper(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityRole> roleManager, DataContext dataContext, IConverterHelper converterHelper)
+        public UserHelper(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityRole> roleManager, DataContext dataContext, IConverterHelper converterHelper, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _dataContext = dataContext;
             _converterHelper = converterHelper;
+            _configuration = configuration;
         }
         public async Task<IdentityResult> AddUserAsync(User user, string password)
         {
@@ -178,7 +183,27 @@ namespace WatersAD.Helpers
         }
 
 
+        public string GenerateJwtToken(User user)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["JWT:Issuer"],
+                audience: _configuration["JWT:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddDays(30),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
 
     }
 }
