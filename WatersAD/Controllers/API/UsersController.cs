@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Security.Claims;
@@ -74,6 +76,7 @@ namespace WatersAD.Controllers.API
         }
 
         [HttpPut("changeuser")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> ChangeUser([FromForm] ChangeUserViewModel model)
         {
 
@@ -316,6 +319,7 @@ namespace WatersAD.Controllers.API
 
 
         [HttpGet("userdetails")]
+      
         public async Task<IActionResult> GetUserDetails()
         {
 

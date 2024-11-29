@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WatersAD.Data.Entities;
 using WatersAD.Data.Repository;
 using WatersAD.Helpers;
@@ -28,6 +30,7 @@ namespace WatersAD.Controllers.API
 
 
         [HttpGet("[action]/{email}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> GetAllInvoices(string email)
         {
             try
@@ -61,6 +64,7 @@ namespace WatersAD.Controllers.API
 
 
         [HttpGet("[action]/{email}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> GetWaterMetersClient(string email)
         {
             try
@@ -103,6 +107,7 @@ namespace WatersAD.Controllers.API
 
 
         [HttpPost("CreateConsumption")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Create([FromBody] ConsumptionViewModel model)
         {
             if (!ModelState.IsValid)
